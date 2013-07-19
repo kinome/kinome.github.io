@@ -384,12 +384,11 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             tempTriples = [];
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
-                var bb = new Blob([str], {type: "text/plain;charset=UTF-8"});
-                console.log(fuse, fuse.writeFile);
+                var bb = new Blob([str], {type: "text/plain; charset=UTF-8"});
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
-                    createTriples(response, fam); 
-                    callback();
+                        createTriples(response, fam); 
+                        callback();
                     });
             };
 
@@ -398,8 +397,8 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 //TODO: Deal with error response
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
-            }
-            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback));
+            };
+            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback);
             
         };
         addBarcodeData = function (barcodeObj) {
@@ -489,62 +488,62 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
     };
 
     saveBarcodes = function (barcodeArr, callback, uiUpdate) {
-        console.error('saveBarcodes removed'); return;
-        //TODO: check user input
-        //variable declarations
-        var i, fuseTableID, finalCallback, lines, rows, thisCallback, uid, date, author;
+        console.error('saveBarcodes removed');
+        return;
+        // //variable declarations
+        // var i, fuseTableID, finalCallback, lines, rows, thisCallback, uid, date, author;
 
-        //variable definitions
-        lines = [];
-        author = "tester";
-        date = (new Date()).toISOString();
+        // //variable definitions
+        // lines = [];
+        // author = "tester";
+        // date = (new Date()).toISOString();
 
-        //TODO: fix this temporary just grabs first file... Pop up menu?
-        /*
-        for (fuseTableID in activeFiles.barcode) {
-            if (activeFiles.barcode.hasOwnProperty(fuseTableID)) {
-                break;
-            }
-        }*/
-        fuseTableID = '1lbl5Cttwj7XIpsd6XSOJFH6lGWsQaWQw9zPKEXY';
-        if (barcodeArr.length > 0) {
-            //fusionTables_barWellFileColumns = ['Barcode_Well', 'JSON', 'RDF', 'Referring Table and Row'];
-            for (i = 0; i < barcodeArr.length; i += 1) {
-                barcodeArr[i].db.barcodeFile = {file: fuseTableID};
-                barcodeArr[i].db.changed = false;
-                uid = 'ft' + fuseTableID + ":" + Math.uuid();
-                lines.push(
-                    [uid, 'uabKin:hasContent', barcodeArr[i].asString('short'), date, author],
-                    [uid, 'uabKin:hasName', barcodeArr[i].name, date, author],
-                    [uid, 'uabKin:fileType', 'uabKin:barcodeFile', date, author],
-                    [uid, 'uabKin:fromGroup', barcodeArr[i].db.originFile.file, date, author]
-                );
-            }
-            thisCallback = function (x, y) {
-                var i, groups, uid, toSubmit;
-                groups = {};
-                toSubmit = [];
-                for (i = 0; i < x.rows.length; i += 1) {
-                    groups[lines[i][0]] = groups[lines[i][0]] || [];
-                    groups[lines[i][0]].push(fuseTableID + '_r_' + x.rows[i][0]);
-                }
-                for (uid in groups) {
-                    if (groups.hasOwnProperty(uid)) {
-                        toSubmit.push([uid, 'uabKin:fileGroup', groups[uid].join('AND'), date, author]);
-                    }
-                }
-                fuse.submitLinesToTable(fuseTableID, tripColumns, toSubmit, function (x, y) {
-                    var i;
-                    for (i = 0; i < x.rows.length; i += 1) {
-                        barcodeArr[i].db.barcodeFile.file = x.rows[i][0]; //TODO: fix this once barcodes are saved with uuids...
-                    }
-                    callback(x, y);
-                });
-            };
-            //TODO: fix documentation in fusionTables.js for this function...
-            fuse.submitLinesToTable(fuseTableID, tripColumns, lines, thisCallback); //TODO: change callback...
-        }
-        fuse.onComplete(uiUpdate);
+
+        // /*
+        // for (fuseTableID in activeFiles.barcode) {
+        //     if (activeFiles.barcode.hasOwnProperty(fuseTableID)) {
+        //         break;
+        //     }
+        // }*/
+        // fuseTableID = '1lbl5Cttwj7XIpsd6XSOJFH6lGWsQaWQw9zPKEXY';
+        // if (barcodeArr.length > 0) {
+        //     //fusionTables_barWellFileColumns = ['Barcode_Well', 'JSON', 'RDF', 'Referring Table and Row'];
+        //     for (i = 0; i < barcodeArr.length; i += 1) {
+        //         barcodeArr[i].db.barcodeFile = {file: fuseTableID};
+        //         barcodeArr[i].db.changed = false;
+        //         uid = 'ft' + fuseTableID + ":" + Math.uuid();
+        //         lines.push(
+        //             [uid, 'uabKin:hasContent', barcodeArr[i].asString('short'), date, author],
+        //             [uid, 'uabKin:hasName', barcodeArr[i].name, date, author],
+        //             [uid, 'uabKin:fileType', 'uabKin:barcodeFile', date, author],
+        //             [uid, 'uabKin:fromGroup', barcodeArr[i].db.originFile.file, date, author]
+        //         );
+        //     }
+        //     thisCallback = function (x, y) {
+        //         var i, groups, uid, toSubmit;
+        //         groups = {};
+        //         toSubmit = [];
+        //         for (i = 0; i < x.rows.length; i += 1) {
+        //             groups[lines[i][0]] = groups[lines[i][0]] || [];
+        //             groups[lines[i][0]].push(fuseTableID + '_r_' + x.rows[i][0]);
+        //         }
+        //         for (uid in groups) {
+        //             if (groups.hasOwnProperty(uid)) {
+        //                 toSubmit.push([uid, 'uabKin:fileGroup', groups[uid].join('AND'), date, author]);
+        //             }
+        //         }
+        //         fuse.submitLinesToTable(fuseTableID, tripColumns, toSubmit, function (x, y) {
+        //             var i;
+        //             for (i = 0; i < x.rows.length; i += 1) {
+        //                 barcodeArr[i].db.barcodeFile.file = x.rows[i][0]; //TODO: fix this once barcodes are saved with uuids...
+        //             }
+        //             callback(x, y);
+        //         });
+        //     };
+        //     //TODO: fix documentation in fusionTables.js for this function...
+        //     fuse.submitLinesToTable(fuseTableID, tripColumns, lines, thisCallback); //TODO: change callback...
+        // }
+        // fuse.onComplete(uiUpdate);
     };
 
 
