@@ -385,7 +385,12 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
                 var bb = new Blob([str], {type: "text/plain;charset=UTF-8"});
-                fuse.writeFile(bb, files[RDF.dataFolder], function (response) { createTriples(response, fam); callback();});
+                console.log(fuse, fuse.writeFile);
+                fuse.writeFile(bb, files[RDF.dataFolder], 
+                    function (response) {
+                    createTriples(response, fam); 
+                    callback();
+                    });
             };
 
             //This function responds to the file being written to google
@@ -394,7 +399,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
             }
-            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback());
+            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback));
             
         };
         addBarcodeData = function (barcodeObj) {
