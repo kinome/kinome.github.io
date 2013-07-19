@@ -1,14 +1,14 @@
-/*global amdjs, document, KINOMICS, google, console, $, jQuery*/
+/*global M, document, KINOMICS, google, console, $, jQuery*/
 
 //TODO: slider bar for R^2, without the installed package? Not high priority, but probably best to remove this framework
-var optionsElem;
+
 KINOMICS.qualityControl.UI = (function () {
 	'use strict';
 
 	//variable declarations
 	var barcodes, barContainer, barDiv, buttonRow, buttonWell, dataAnalysisObj,  fitCurvesBut, figureColumn, figureInfoColumn,
 		lib, loadingBarRow, qcBody, reportError, run, startNextPeptide, tableSpot, workerObj, sliderbar,
-		fitCurvesWorkersFile;
+		fitCurvesWorkersFile, optionsElem, fileManagerDA, fuse, S3DB;
 
 	//variable definitions
 	lib = {};
@@ -18,6 +18,9 @@ KINOMICS.qualityControl.UI = (function () {
 	dataAnalysisObj = KINOMICS.qualityControl.DA;
 	fitCurvesWorkersFile = 'js/qualityControl/fitCurvesWorker.js';
 	barcodes = KINOMICS.barcodes;
+	fileManagerDA = KINOMICS.fileManager.DA;
+	fuse = KINOMICS.fileManager.DA.fusionTables;
+	S3DB = KINOMICS.fileManager.DA.S3DB;
 
 	//local functions
 	reportError = function (err) {
@@ -54,25 +57,27 @@ KINOMICS.qualityControl.UI = (function () {
 		wellRow =  $('<div/>', {'class': "row"}).appendTo(qcTab);
 		tempElem = $('<div/>', {'class': "span12"}).appendTo(wellRow);
 		buttonWell = $('<div/>', {'class': "well"}).appendTo(tempElem).hide();
-		buttonRow = $('<div/>', {'class': "row"}).appendTo(buttonWell);
+		tempElem = $('<div/>', {'class': "row"}).appendTo(buttonWell);
+		buttonRow = $('<div/>', {'class': "span11"}).appendTo(tempElem);
 		$('<div/>', {'class': "row", html: "&nbsp;"}).appendTo(buttonWell); // for spacing...
 		loadingBarRow = $('<div/>', {'class': "row"}).appendTo(buttonWell);
 
 		//The place for the options
 		tempElem = $('<div/>', {'class': "row"}).appendTo(buttonWell);
 		tempElem = $('<div/>', {'class': "span11"}).appendTo(tempElem);
-		tempElem = $('<div/>', {'class': 'accordion', id: 'accOpt'}).appendTo(tempElem);
+		tempElem = $('<div/>', {'class': 'accordion'}).appendTo(tempElem);
+		tempElem = $('<div/>', {'class': 'accordion-group'}).appendTo(tempElem);
 		$('<div/>', {'class': 'accordion-heading'}).append(
 			$('<a/>', {
 				'class': 'accordion-toggle',
 				'data-toggle': "collapse",
-				'data-parent': "#accOpt",
-				'href': "#collapseOpt",
-				'html': 'Display Options'
+				'data-target': "#collapseOpt",
+				'html': '<small><i class=icon-chevron-down></i></small>Display Options'
 			})
 		).appendTo(tempElem);
 		tempElem = $('<div/>', {id: 'collapseOpt', 'class': 'accordion-body collapse'}).appendTo(tempElem);
 		optionsElem = $('<div/>', {'class': 'accordion-inner'}).appendTo(tempElem);
+
 
 		//The place for the table, figures, and figure info
 		qcBody = $('<div/>', {'class': "row"}).appendTo(qcTab).hide();
@@ -126,22 +131,33 @@ KINOMICS.qualityControl.UI = (function () {
 					run(update)();
 					lib.update = updateActive; // Turns update feature back on.
 					mainLib.QCtable.update();
+					mainLib.saveDataBut.update();
+					//TODO: update/create save button
 				}
 			});
 		};
 
 		update = function () {
-			var bw;
+			var bw, upd = 0;
 			element.button('complete');
+			//TODO: fix globals issue...
+			barcodes = KINOMICS.barcodes;
+			console.log('here...', barcodes);
 			for (bw in barcodes) {
 				if (barcodes.hasOwnProperty(bw)) {
+					console.log('cycling', bw);
 					$('#tempQCMessage').hide();
 					buttonWell.show();
 					if (barcodes[bw].db.fit === false) {
+						console.log('false indeed...');
 						element.button('reset');
 						element.unbind('click');
 						element.click(fitCurvesClick);
 						return;
+					} else if (!upd) {
+						mainLib.QCtable.update();
+						mainLib.saveDataBut.update();
+						upd += 1;
 					}
 				}
 			}
@@ -149,13 +165,13 @@ KINOMICS.qualityControl.UI = (function () {
 
 		//Actually create the element
 		//Create fit curves button
-		tempElem = $('<div/>', {'class': 'span3'}).appendTo(buttonRow);
+		// tempElem = $('<div/>', {'class': 'span3'}).appendTo(buttonRow);
 		element = $('<button/>', {
 			'class': 'btn btn-primary',
 			'data-loading-text': 'Fitting Data, this may take a while',
 			'data-complete-text': 'Curves have been fitted',
 			text: 'Fit Curves'
-		}).appendTo(tempElem);
+		}).appendTo(buttonRow);
 
 		//Creates the loading bar
 		tempElem = $('<div/>', {'class': 'span11'}).appendTo(loadingBarRow);
@@ -165,7 +181,60 @@ KINOMICS.qualityControl.UI = (function () {
 		return lib;
 	}(lib));
 
-/*	lib.optionsCol = (function () {
+	lib.saveDataBut = (function (mainLib) {
+		//variable declarations
+		var button, click, lib, update, loading;
+
+		//variable definitions
+		lib = {};
+		loading = false;
+
+		lib.update = function () {
+			//TODO: user docs, this updates the save data button
+			update();
+		};
+
+		click = function (evt) {
+			loading = true;
+			button.button('loading');
+			button.unbind('click');
+			//fileManagerDA.saveChanges(barcodes, options.currentDB);
+			//TODO: Deal with multiple options to save files to...
+			fileManagerDA.saveChanges(barcodes, fuse.saveBarcodes, function () {}, function () {
+				loading = false;
+				update();
+			});
+		};
+
+		update = function () {
+			var bar;
+			if (loading) {
+				return;
+			}
+			button.button('complete');
+			for (bar in barcodes) {
+				if (barcodes.hasOwnProperty(bar) && barcodes[bar].db.changed && !loading) {
+					button.button('reset');
+					button.click(click);
+				}
+			}
+		};
+
+		//Make element icon-upload
+		(function () {
+			button = $('<button />', {
+				'class': 'btn btn-primary pull-right',
+				'data-loading-text': 'Saving data, this may take a while',
+				'data-complete-text': 'All Data Saved',
+				text: 'Save Changes'
+			}).button('complete').appendTo(buttonRow);
+		}());
+
+		return lib;
+	}(lib));
+
+	//This will be for the option element when there are more options...
+	/*	lib.optionsCol = (function () {
 		//variable declartions
 		var lib;
 
@@ -260,10 +329,10 @@ KINOMICS.qualityControl.UI = (function () {
 				ind = i + tableStart;
 				if (ind < len) {
 					if (barArr[ind] === barSelected) {
-						html = '<b>' + barArr[ind] + '</b>';
+						html = '<b>' + barcodes[barArr[ind]].name + '</b>';
 						barInd = ind;
 					} else {
-						html = barArr[ind];
+						html = barcodes[barArr[ind]].name;
 					}
 					tableRows[0][i].html(html);
 					tableRows[0][i].data('barcodeWell', barArr[ind]);
@@ -305,11 +374,11 @@ KINOMICS.qualityControl.UI = (function () {
 
 			for (i = 0; i < idsPerPage; i += 1) {
 				ind = i + tableStart;
-				data = barcodes[barSelected].peptides[pepArr[ind]];
-				peptide = pepArr[ind];
-				peptide = peptide.replace(/(r|c)_(\d+)/g, '$1-$2');
-				peptide = peptide.replace(/_/g, ' ');
 				if (ind < len) {
+					data = barcodes[barSelected].peptides[pepArr[ind]];
+					peptide = pepArr[ind];
+					peptide = peptide.replace(/(r|c)_(\d+)/g, '$1-$2');
+					peptide = peptide.replace(/_/g, ' ');
 					if (data.postWash.R2 < flagR ||
 							data.timeSeries.R2 < flagR) {
 						flag = "&nbsp;<i class=icon-exclamation-sign></i>";
@@ -348,7 +417,7 @@ KINOMICS.qualityControl.UI = (function () {
 			if (pepInd < pepL - 1) {
 				//normal
 				pepSelected = pepArr[pepInd + 1];
-				pepCurrentPage += (pepInd + 1) % idsPerPage ? 0 : 1;
+				pepCurrentPage = Math.floor((pepInd + 1) / idsPerPage) + 1;
 				pepRefresh();
 				mainLib.plots.update();
 			} else if (barInd < barL - 1) {
@@ -357,7 +426,7 @@ KINOMICS.qualityControl.UI = (function () {
 				$('<tr>').click(barClicked).data("barcodeWell", barSelected).click();
 				pepSelected = pepArr[0];
 				pepCurrentPage = 1;
-				barCurrentPage += (barInd + 1) % idsPerPage ? 0 : 1;
+				barCurrentPage = Math.floor((barInd + 1) / idsPerPage)  + 1;
 				barRefresh();
 				pepRefresh();
 				mainLib.plots.update();
@@ -377,7 +446,7 @@ KINOMICS.qualityControl.UI = (function () {
 			if (pepInd > 0) {
 				//normal
 				pepSelected = pepArr[pepInd - 1];
-				pepCurrentPage -= pepInd % idsPerPage ? 0 : 1;
+				pepCurrentPage = Math.floor((pepInd - 1) / idsPerPage) + 1;
 				pepRefresh();
 				mainLib.plots.update();
 			} else if (barInd > 0) {
@@ -386,7 +455,7 @@ KINOMICS.qualityControl.UI = (function () {
 				$('<tr>').click(barClicked).data("barcodeWell", barSelected).click();
 				pepSelected = pepArr[pepArr.length - 1];
 				pepCurrentPage = Math.floor(pepArr.length / 10) + 1;
-				barCurrentPage += barInd % idsPerPage ? 0 : 1;
+				barCurrentPage = Math.floor((barInd - 1) / idsPerPage) + 1;
 				barRefresh();
 				pepRefresh();
 				mainLib.plots.update();
@@ -406,10 +475,11 @@ KINOMICS.qualityControl.UI = (function () {
 			var tempElem;
 			//variable definitions
 
-			tempElem = $('<div/>', {"class": 'pagination'}).appendTo(figureInfoColumn);
-			tempElem = $('<ul/>').appendTo(tempElem);
-			$('<li/>', {html: "<a><i class=icon-arrow-left></i>Prev</a>"}).appendTo(tempElem).click(prevPep);
-			$('<li/>', {html: "<a>Next<i class=icon-arrow-right></i></a>"}).appendTo(tempElem).click(nextPep);
+			tempElem = $('<div/>', {"class": 'row'}).appendTo(figureInfoColumn);
+			tempElem = $('<div/>', {"class": 'span2'}).appendTo(tempElem);
+			tempElem = $('<div/>', {"class": 'btn-group'}).appendTo(tempElem);
+			$('<button/>', {'class': 'btn', html: "<i class=icon-arrow-left></i>&nbsp;Prev"}).appendTo(tempElem).click(prevPep);
+			$('<button/>', {'class': 'btn', html: "Next&nbsp;<i class=icon-arrow-right></i>"}).appendTo(tempElem).click(nextPep);
 		};
 
 		update = function () {
@@ -435,7 +505,7 @@ KINOMICS.qualityControl.UI = (function () {
 		//sets up the table element
 		(function () {
 			//variable declarations
-			var slideFunc, dataTable, i, Rdisp, row, tempElem;
+			var cell, slideFunc, dataTable, i, Rdisp, row, tempElem;
 
 			//variable definitions
 
@@ -445,7 +515,7 @@ KINOMICS.qualityControl.UI = (function () {
 
 			//Add the header
 			tempElem = $('<tr/>').appendTo(dataTable);
-			$('<th/>', {text: "UIDs"}).appendTo(tempElem); // was #tdbars
+			$('<th/>', {text: "Barcodes"}).appendTo(tempElem); // was #tdbars
 			$('<th/>', {text: "Peptides"}).appendTo(tempElem); // was #theadPep
 
 			//Add the rows
@@ -469,41 +539,41 @@ KINOMICS.qualityControl.UI = (function () {
 			row = $('<tr/>').appendTo(dataTable);
 
 			//Barcode
-			tempElem = $('<td/>').appendTo(row);
-			tempElem = $('<div/>', {"class": "pagination"}).appendTo(tempElem);
-			tempElem = $('<ul/>').appendTo(tempElem);
-			$('<li/>', {html: "<a><i class = icon-arrow-left></i></a>"}).appendTo(tempElem).click(function () {
+			cell = $('<td/>', {'style': 'text-align: center', html: '<br />'}).appendTo(row);
+			tempElem = $('<div/>', {'class': 'btn-group'}).appendTo(cell);
+			$('<button/>', {'class': 'btn', html: "<i class = icon-arrow-left></i>"}).appendTo(tempElem).click(function () {
 				barCurrentPage -= barCurrentPage > 1 ? 1 : 0;
 				barRefresh();
 			});
-			barPageElem = $('<li/>', {html: "<a>Page 1/1</a>"}).appendTo(tempElem);
-			$('<li/>', {html: "<a><i class = icon-arrow-right></i></a>"}).appendTo(tempElem).click(function () {
-				barCurrentPage += barCurrentPage <= Math.floor(barArr.length / idsPerPage) ? 1 : 0;
+			barPageElem = $('<button/>', {'class': 'btn', html: "Page 1/1"}).appendTo(tempElem);
+			$('<button/>', {'class': 'btn', html: "<i class = icon-arrow-right></i>"}).appendTo(tempElem).click(function () {
+				barCurrentPage += barCurrentPage < Math.floor(barArr.length / idsPerPage) + 1 ? 1 : 0;
 				barRefresh();
 			});
+			$('<br/>').appendTo(cell);
 
 			//Peptides
-			tempElem = $('<td/>').appendTo(row);
-			tempElem = $('<div/>', {"class": "pagination"}).appendTo(tempElem);
-			tempElem = $('<ul/>').appendTo(tempElem);
-			$('<li/>', {html: "<a><i class = icon-arrow-left></i></a>"}).appendTo(tempElem).click(function () {
+			cell = $('<td/>', {'style': 'text-align: center', html: '<br />'}).appendTo(row);
+			tempElem = $('<div/>', {'class': 'btn-group'}).appendTo(cell);
+			$('<button/>', {'class': 'btn', html: "<i class = icon-arrow-left></i>"}).appendTo(tempElem).click(function () {
 				pepCurrentPage -= pepCurrentPage > 1 ? 1 : 0;
 				pepRefresh();
 			});
-			pepPageElem = $('<li/>', {html: "<a>Page 1/1</a>"}).appendTo(tempElem);
-			$('<li/>', {html: "<a><i class = icon-arrow-right></i></a>"}).appendTo(tempElem).click(function () {
-				pepCurrentPage += pepCurrentPage <= Math.floor(pepArr.length / idsPerPage) ? 1 : 0;
+			pepPageElem = $('<button/>', {'class': 'btn', html: "Page 1/1"}).appendTo(tempElem);
+			$('<button/>', {'class': 'btn', html: "<i class = icon-arrow-right></i>"}).appendTo(tempElem).click(function () {
+				pepCurrentPage += pepCurrentPage < Math.floor(pepArr.length / idsPerPage) + 1 ? 1 : 0;
 				pepRefresh();
 			});
+			$('<br/>').appendTo(cell);
 
 			//Slider bar
-			Rdisp = $('<dt/>', {id: "Number", html: "Flag cutoff: " + amdjs.doMathSrc("R^2=0.80")}).appendTo(sliderbar);
+			Rdisp = $('<dt/>', {id: "Number", text: "Flag cutoff: "}).append(M.sToMathE("R^2=0.80")).appendTo(sliderbar);
 			tempElem = $('<dd/>').appendTo(sliderbar);
 			slider = $('<div/>', {"class": "sliderbar"}).appendTo(tempElem);
 
 			slideFunc = function () {
 				flagR = slider.noUiSlider("getValue");
-				Rdisp.html("Flag cutoff: " + amdjs.doMathSrc("R^2=" + (Math.round(flagR * 100) / 100).toFixed(2)));
+				Rdisp.empty().text("Flag cutoff: ").append(M.sToMathE("R^2=" + (Math.round(flagR * 100) / 100).toFixed(2)));
 				if (barSelected) {
 					pepRefresh();
 				}
@@ -539,7 +609,7 @@ KINOMICS.qualityControl.UI = (function () {
 
 		makePostWashFigure = function () {
 			//variable declarations
-			var eq, chart, data, dataTable, i, indent, length, max, min, options, params;
+			var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
 			//TODO: pass in barcode/peptide so it only has to be grabbed once, maybe make them part of lib defined by update();
 			//variable defintions
 			eq = KINOMICS.postWashFunc;
@@ -582,15 +652,15 @@ KINOMICS.qualityControl.UI = (function () {
 
 			//Actual data to be listed
 		    figureTwoInfo.empty();
-		    figureTwoInfo.html(
-				"<dl><dt>Figure 2:</dt><small>" +
-					"<dd>" + amdjs.doMathSrc("R^2= " + Math.round(data.R2 * 100) / 100) + "</dd>" +
-					"<dt>" + "Equation:</dt><dd>" +
-					amdjs.doMathSrc("y(t)=k·t+y_0") + "</dd>" +
-					"<dt>" + "With parameters:</dt><dd>" +
-					indent + amdjs.doMathSrc("k=" + Math.round(params[0] * 100) / 100) + "</dd><dd>" +
-					indent + amdjs.doMathSrc("y_0=" + Math.round(params[1] * 100) / 100) + "</dd></small></dl>"
-			);
+		    $("<dt/>", {text: 'Figure 2:'}).appendTo(figureTwoInfo);
+			tempElem = $("<dl/>").appendTo(figureTwoInfo);
+			tempElem = $('<small/>').appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
+			$('<dt/>', {text: 'Equation'}).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("y(t)=k·t+y_0")).appendTo(tempElem);
+			$('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("k=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("y_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
 
 			//This chart was added in a while back...	
 		    chart = new google.visualization.ComboChart(document.getElementById('chart2'));
@@ -600,7 +670,7 @@ KINOMICS.qualityControl.UI = (function () {
 
 		makeTimeSeriesFigure = function () {
 			//variable declarations
-			var eq, chart, data, dataTable, i, indent, length, max, min, options, params;
+			var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
 
 			//variable defintions
 			eq = KINOMICS.timeSeriesFunc;
@@ -644,16 +714,16 @@ KINOMICS.qualityControl.UI = (function () {
 
 			//Actual data to be listed
 		    figureOneInfo.empty();
-		    figureOneInfo.html(
-				"<dl><dt>Figure 1:</dt><small>" +
-					"<dd>" + amdjs.doMathSrc("R^2= " + Math.round(data.R2 * 100) / 100) + "</dd>" +
-					"<dt>" + "Equation:</dt><dd>" +
-					amdjs.doMathSrc("y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}") + "</dd>" +
-					"<dt>" + "With parameters:</dt><dd>" +
-					indent + amdjs.doMathSrc("v_{i}=" + Math.round(params[0] * 100) / 100) + "</dd><dd>" +
-					indent + amdjs.doMathSrc("c_0=" + Math.round(params[1] * 100) / 100) + "</dd><dd>" +
-					indent + amdjs.doMathSrc("y_{max}=" + Math.round(params[2] * 100) / 100) + "</dd></small></dl>"
-			);
+		    $("<dt/>", {text: 'Figure 1:'}).appendTo(figureOneInfo);
+			tempElem = $("<dl/>").appendTo(figureOneInfo);
+			tempElem = $('<small/>').appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
+			$('<dt/>', {text: 'Equation'}).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}")).appendTo(tempElem);
+			$('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("v_{i}=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("c_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
+			$('<dd/>').append(M.sToMathE("y_{max}=" + Math.round(params[2] * 100) / 100)).appendTo(tempElem);
 
 			//This chart was added in a while back...	
 		    chart = new google.visualization.ComboChart(document.getElementById('chart1'));
@@ -692,6 +762,7 @@ KINOMICS.qualityControl.UI = (function () {
 				point = chart.getSelection();
 				point = point[0];
 				barcodes[barcode].db.changed = true;
+				mainLib.saveDataBut.update(); // update save data button
 				data = barcodes[barcode].peptides[peptide][analysis];
 
 				//Change from good to bad
@@ -730,7 +801,7 @@ KINOMICS.qualityControl.UI = (function () {
 
 			//Height must be there so the charts to not get bigger over time...
 			tempElem = $('<div/>', {"class": "row"}).appendTo(figureColumn);
-			figureInfoHeader = $('<div/>', {"class": "span4"}).appendTo(tempElem);
+			figureInfoHeader = $('<div/>', {"class": "offset1 span3"}).appendTo(tempElem);
 			figureOne = $('<div/>', {id: 'chart1', style: 'height:221px'}).appendTo(figureColumn);
 			figureTwo = $('<div/>', {id: 'chart2', style: 'height:221px'}).appendTo(figureColumn);
 		}());
