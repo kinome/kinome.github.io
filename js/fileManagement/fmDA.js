@@ -366,8 +366,8 @@ KINOMICS.fileManager.DA = (function () {
 
                 //Finally add the x-values to each of the peptides...
                 for (i = 0; i < input_obj.parents.length; i += 1) {
-                    pw_x = input_obj.parents[i].dataArr.exposureTime;
-                    ts_x = input_obj.parents[i].dataArr.cycle;
+                    pw_x = input_obj.parents[i].dataArr.postWash.exposureTime;
+                    ts_x = input_obj.parents[i].dataArr.timeSeries.cycle;
                     for (pep in input_obj.parents[i].peptides) {// This is the peptide level
                         if (input_obj.parents[i].peptides.hasOwnProperty(pep)) {
                             input_obj.parents[i].peptides.hasOwnProperty(pep).timeSeries.xVals = ts_x;
