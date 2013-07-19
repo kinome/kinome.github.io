@@ -379,7 +379,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             });
         };
         saveBarcode = function (dataObj) {
-            var fam, famObj, doc, tempTrips, i, writeIt, createTriples;
+            var fam, famObj, doc, tempTrips, i, writeIt, tempTriples, createTriples;
 
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
