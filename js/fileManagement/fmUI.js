@@ -324,7 +324,7 @@ KINOMICS.fileManager.UI = (function () {
 			tempElem = $('<div/>', {'class': 'sidebar-nav'}).appendTo(navigationBar);
 			tempElem = $('<ul/>', {'class': 'nav nav-list'}).appendTo(tempElem);
 			$('<li />', {'class': 'nav-header', text: 'Collections'}).appendTo(tempElem);
-			$('<li />', {'class': 'active', html: '<a>Anaylses</a>'}).click(function () {
+			$('<li />', {'class': 'active', html: '<a>Analyses</a>'}).click(function () {
 				tempElem.find('li:not(.nav-header)').attr('class', '');
 				$(this).attr('class', 'active');
 				setDataType('analysis');
