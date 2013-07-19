@@ -384,7 +384,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
                 var bb = new Blob([str], {type: "text/plain;charset=UTF-8"});
-                fuse.writeFile(bb, files[RDF.dataFolder], function (response) { callback(response, fam)});
+                fuse.writeFile(bb, files[RDF.dataFolder], function (response) { createTriples(response, fam); callback();});
             };
 
             //This function responds to the file being written to google
@@ -392,34 +392,9 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 //TODO: Deal with error response
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
-                console.log("here!!", response, fam);
             }
-            console.log('hereish', dataObj.data);
-            dataObj.callback();
-            // for (fam in dataObj.data.families) {
-            //     if (dataObj.data.families.hasOwnProperty(fam)) {
-            //         doc = {parents: [fam], uuids: {}};
-            //         famObj = dataObj.data.families[fam];
-            //         for (i = 0; i < famObj.length; i += 1) {
-            //             doc[famObj[i]] = dataObj.data.uuids[famObj[i]];
-            //         }
-            //         writeIt(JSON.stringify(doc), fam, createTriples);
-            //     }
-            // }
-
-
-            // newTable('barcode_' + dataObj.id, files[RDF.dataFolder], function (res) {
-            //  //TODO: get rid of blank function.
-            //  //TODO: add error if array is not 2D to submitLinesToTable...
-            //  tempTrips.push([RDF.list(res.tableId), RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
-            //  tempTrips.push([RDF.list(res.tableId), RDF.name, dataObj.data.name, Math.uuid(), currentDate(), userName()]);
-            //  tempTrips.push([RDF.list(dataObj.batchID), RDF.data, RDF.list(res.tableId), Math.uuid(), currentDate(), userName()]);
-            //  //TODO: add in information for the by subject array, makes mistakes otherwise...
-            //  files[RDF.data].push(tempTrips[1]);
-            //  fuse.submitLinesToTable(res.tableId, tripColumns, [[dataObj.id, RDF.hasData, dataObj.data.asString('short'), Math.uuid(), currentDate(), userName()]], function () {});
-            //  fuse.submitLinesToTable(currentConfig, tripColumns, tempTrips, function () {});
-            //  fuse.onComplete(dataObj.callback);
-            // });
+            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback());
+            
         };
         addBarcodeData = function (barcodeObj) {
             //TODO: get rid of globals
