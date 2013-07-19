@@ -370,8 +370,8 @@ KINOMICS.fileManager.DA = (function () {
                     ts_x = input_obj.parents[i].dataArr.timeSeries.cycle;
                     for (pep in input_obj.parents[i].peptides) {// This is the peptide level
                         if (input_obj.parents[i].peptides.hasOwnProperty(pep)) {
-                            input_obj.parents[i].peptides[pep]timeSeries.xVals = ts_x;
-                            input_obj.parents[i].peptides[pep]postWash.xVals = pw_x;
+                            input_obj.parents[i].peptides[pep].timeSeries.xVals = ts_x;
+                            input_obj.parents[i].peptides[pep].postWash.xVals = pw_x;
                         }
                     }
                 }
