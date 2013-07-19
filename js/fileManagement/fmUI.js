@@ -438,7 +438,7 @@ KINOMICS.fileManager.UI = (function () {
 			 	//Where cancel upload would be
 				tempElem = $("<td />").appendTo(trow);
 				$('<button />', {'class': 'btn btn-danger',
-					html: "<i class='icon-trash icon-white'></i>Remove From List"}).
+					html: "<i class='icon-trash icon-white'></i> Remove From List"}).
 					appendTo(tempElem);
 
 				table.append(trow);
