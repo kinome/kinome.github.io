@@ -384,8 +384,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             tempTriples = [];
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
-                var bb = new Blob([str], {type: "text/plain;charset=UTF-8"});
-                console.log(fuse, fuse.writeFile);
+                var bb = new Blob([str], {type: "text/plain; charset=UTF-8"});
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
                         createTriples(response, fam); 
