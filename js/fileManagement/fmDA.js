@@ -512,7 +512,8 @@ KINOMICS.fileManager.DA = (function () {
                         for (i = 0; i < tempObj.length; i += 1) {
                             bar.uuids[tempObj[i]] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
                         }
-                        cdb.saveBarcode({id: prop, data: bar, name: 'bar' + that.JSON.uuids[prop].barcode + '_well' + that.JSON.uuids[prop].row, batchID: batchID, callback: callback});
+                        console.log(prop);
+                        cdb.saveBarcode({id: prop, data: bar, name: 'bar' + that.JSON.uuids[prop.replace('&','')].barcode + '_well' + that.JSON.uuids[prop.replace('&','')].row + '.txt', batchID: batchID, callback: callback});
                     };
                 };
                 funcs.push(collapse);
