@@ -306,7 +306,7 @@ KINOMICS.fileManager.DA = (function () {
 
             setPropsMain = function (obj, uuid) {
                 //This stores the uuid as a property without it getting in the way
-                Object.defineProperty(obj[i], 'uuid', {
+                Object.defineProperty(obj, 'uuid', {
                     enumerable: false,
                     configurable: false,
                     writable: false,
