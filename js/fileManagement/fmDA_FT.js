@@ -383,8 +383,9 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
 
             tempTriples = [];
             //This function creates a blob from the string and sends to to google
-            writeIt = function (str, fam, callback) {
+            writeIt = function (str, fam, name, callback) {
                 var bb = new Blob([str], {type: "text/plain; charset=UTF-8"});
+                bb.name = ;
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
                         createTriples(response, fam); 
@@ -398,7 +399,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
             };
-            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.callback);
+            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.name, dataObj.callback);
             
         };
         addBarcodeData = function (barcodeObj) {
