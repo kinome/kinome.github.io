@@ -356,7 +356,6 @@ KINOMICS.fileManager.DA = (function () {
                         ref = input_obj.parents[i];
                         input_obj.parents[i] = input_obj.uuids[ref.replace(/^\&/, '')];
                         //This stores the uuid as a property without it getting in the way
-                        setPropsMain(input_obj.parents[i], ref)
                         //This stores the dereference so it can be undone
                         (function (obj, i, ref) {
                             expanded.push(function () {obj[i] = ref; });
