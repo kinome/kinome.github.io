@@ -381,6 +381,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         saveBarcode = function (dataObj) {
             var fam, famObj, doc, tempTrips, i, writeIt, tempTriples, createTriples;
 
+            tempTriples = [];
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, fam, callback) {
                 var bb = new Blob([str], {type: "text/plain;charset=UTF-8"});
