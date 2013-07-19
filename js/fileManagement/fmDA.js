@@ -306,12 +306,14 @@ KINOMICS.fileManager.DA = (function () {
 
             setPropsMain = function (obj, uuid) {
                 //This stores the uuid as a property without it getting in the way
-                Object.defineProperty(obj, 'uuid', {
-                    enumerable: false,
-                    configurable: false,
-                    writable: false,
-                    value: uuid
-                });
+                if (! obj.hasOwnProperty(uuid)) {
+                    Object.defineProperty(obj, 'uuid', {
+                        enumerable: false,
+                        configurable: false,
+                        writable: false,
+                        value: uuid
+                    });
+                }
             };
 
             expand = function (callback) {
@@ -355,7 +357,6 @@ KINOMICS.fileManager.DA = (function () {
                     if (isRef(input_obj.parents[i])) {
                         ref = input_obj.parents[i];
                         input_obj.parents[i] = input_obj.uuids[ref.replace(/^\&/, '')];
-                        //This stores the uuid as a property without it getting in the way
                         //This stores the dereference so it can be undone
                         (function (obj, i, ref) {
                             expanded.push(function () {obj[i] = ref; });
