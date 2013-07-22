@@ -39,7 +39,6 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         triplesData: "dataTriples",
         flatFile: "flatFile",
         file: 'hasFile',
-        hasData: 'hasData',
         dataFolder: "dataFolder",
         configFolder: "configFolder",
         analysisFolder: "analysisFolder",
@@ -400,7 +399,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 console.log(response);
                 tempTriples.push([dataObj.id, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.id, RDF.file, response.downloadUrl, Math.uuid(), currentDate(), userName()]);
-                tempTriples.push([dataObj.batchID, RDF.hasData, dataObj.id, Math.uuid(), currentDate(), userName()]);
+                tempTriples.push([dataObj.batchID, RDF.data, dataObj.id, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.id, RDF.name, dataObj.name, Math.uuid(), currentDate(), userName()]);
                 fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) { console.log('written....')});
             };
@@ -427,7 +426,9 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             var i, result;
             result = [];
             for (i = 0; i < files[RDF.batch].length; i += 1) {
-                result.push({id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], files: bySubject[files[RDF.batch][i][0]][RDF.data]});
+                result.push({id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], barcodes: bySubject[files[RDF.batch][i][0]][RDF.data].map(function (x) {
+                    return x[2];
+                })});
             }
             return result;
         };
