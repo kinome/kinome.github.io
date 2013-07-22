@@ -1,4 +1,5 @@
 /*global KINOMICS, console, FileReader, $*/
+/*jslint todo: true */
 //TODO: error reporting for user very important here, make a failed save a ! or a yeild sign.
 //TODO: change error so it only occurs on a barcode by barcode basis.
 
@@ -306,7 +307,7 @@ KINOMICS.fileManager.DA = (function () {
 
             setPropsMain = function (obj, uuid) {
                 //This stores the uuid as a property without it getting in the way
-                if (! obj.hasOwnProperty(uuid)) {
+                if (!obj.hasOwnProperty(uuid)) {
                     Object.defineProperty(obj, 'uuid', {
                         enumerable: false,
                         configurable: false,
@@ -503,7 +504,6 @@ KINOMICS.fileManager.DA = (function () {
                 var prop, funcs = [], addBarcodeData;
                 addBarcodeData = function (prop) {
                     return function (callback) {
-                        console.log('prop:', prop);
                         //TODO: fix data thing... 
                         var i, bar, tempObj;
                         bar = {parents: [prop], uuids: {}, families: {}};
@@ -512,8 +512,7 @@ KINOMICS.fileManager.DA = (function () {
                         for (i = 0; i < tempObj.length; i += 1) {
                             bar.uuids[tempObj[i]] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
                         }
-                        console.log(prop);
-                        cdb.saveBarcode({id: prop, data: bar, name: 'bar' + that.JSON.uuids[prop.replace('&','')].barcode + '_well' + that.JSON.uuids[prop.replace('&','')].row + '.txt', batchID: batchID, callback: callback});
+                        cdb.saveBarcode({id: prop.replace('&', ''), data: bar, name: 'bar' + that.JSON.uuids[prop.replace('&', '')].barcode + '_well' + that.JSON.uuids[prop.replace('&', '')].row + '.txt', batchID: batchID, callback: callback});
                     };
                 };
                 funcs.push(collapse);

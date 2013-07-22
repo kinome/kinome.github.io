@@ -1,4 +1,5 @@
 /*global KINOMICS, jQuery, $, console, gapi, RegExp*/
+/*jslint todo: true */
 // var glob;
 var queryTriples, triples, glob, files;
 KINOMICS.fileManager.DA.fusionTables = (function () {
@@ -379,27 +380,31 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             });
         };
         saveBarcode = function (dataObj) {
-            var fam, famObj, doc, tempTrips, i, writeIt, tempTriples, createTriples;
+            var doc, tempTrips, i, writeIt, tempTriples, createTriples;
 
             tempTriples = [];
             //This function creates a blob from the string and sends to to google
-            writeIt = function (str, fam, name, callback) {
+            writeIt = function (str, name, callback) {
                 var bb = new Blob([str], {type: "text/plain; charset=UTF-8"});
                 bb.name = name;
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
-                        createTriples(response, fam); 
+                        createTriples(response); 
                         callback();
                     });
             };
 
             //This function responds to the file being written to google
-            createTriples = function (response, fam) {
+            createTriples = function (response) {
                 //TODO: Deal with error response
-                tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
-                tempTriples.push([fam, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
+                console.log(response);
+                tempTriples.push([dataObj.id, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
+                tempTriples.push([dataObj.id, RDF.file, response.downloadUrl, Math.uuid(), currentDate(), userName()]);
+                tempTriples.push([dataObj.batchID, RDF.hasData, dataObj.id, Math.uuid(), currentDate(), userName()]);
+                tempTriples.push([dataObj.id, RDF.name, dataObj.name, Math.uuid(), currentDate(), userName()]);
+                fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) { console.log('written....')});
             };
-            writeIt(JSON.stringify(dataObj.data), dataObj.batch, dataObj.name, dataObj.callback);
+            writeIt(JSON.stringify(dataObj.data), dataObj.name, dataObj.callback);
             
         };
         addBarcodeData = function (barcodeObj) {
