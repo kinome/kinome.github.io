@@ -319,12 +319,14 @@ KINOMICS.fileManager.UI = (function () {
                     that.attr('class', 'btn btn-warning');
                     that.html("<i class='icon-refresh icon-white'></i>");
                     analysis.loadData({info: obj, callback: function () {
-                        KINOMICS.barcodes = analysis.main;
                         if (obj.files) {
                             console.log('here I am look at me', obj);
                             for (i = 0; i < obj.files.length; i += 1) {
                                 currentLoaded[obj.files[i][2]] = 1;
                             }
+                        }
+                        if (obj.type === 'batch') {
+                            obj.barcodes.map(function (x) { currentLoaded[x] = 1; });
                         }
                         currentLoaded[obj.id] = 1;
                         qcUI.fitCurvesBut.update();
@@ -354,8 +356,7 @@ KINOMICS.fileManager.UI = (function () {
                 tempElem = $('<td />').appendTo(trow);
                 pushButton = $('<button />', {'class': 'btn btn-success',
                     html: "<i class='icon-plus icon-white'></i>"}).click(addToAnalysis(linesObj.objects[i])).appendTo(tempElem);
-                console.log(currentLoaded);
-                if (analysis && (analysis.main[linesObj.objects[i].id] || currentLoaded[linesObj.objects[i].id])) {
+                if (analysis && (currentLoaded[linesObj.objects[i].id])) {
                     pushButton.attr('class', 'btn btn-info');
                     pushButton.html("<i class='icon-ok icon-white'></i>");
                     pushButton.unbind('click');
@@ -395,6 +396,7 @@ KINOMICS.fileManager.UI = (function () {
             obj = thisDA.newDataObject();
             addLinesToTable({objects: obj.listBatches(), 'class': 'batch'});
             addLinesToTable({objects: obj.listData(), 'class': 'data'});
+            obj = {};
         };
 
         return lib;

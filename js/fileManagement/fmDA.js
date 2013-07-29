@@ -113,12 +113,11 @@ KINOMICS.fileManager.DA = (function () {
         unloading = false;
         queue = [];
         ana = {};
-        ana.data = [];
+        ana.data = lib.newDataObject();
         ana.id = Math.uuid();
         ana.name = initialObj.name;
-        ana.main = {};
         ana.date = (new Date()).toISOString();
-
+        KINOMICS.barcodes = ana.data.JSON;
         queuePush = function (array) {
             var i;
             //Adds something to the adjacent place in the queue instead of the end.
@@ -141,19 +140,10 @@ KINOMICS.fileManager.DA = (function () {
             queuePush([function (qContinue) {
                 var data, callback;
                 callback = function () {
-                    var prop;
-                    for (prop in data.JSON) {
-                        if (data.JSON.hasOwnProperty(prop)) {
-                            //makes link to data itself...
-                            ana.main[prop] = data.JSON[prop];
-                        }
-                    }
                     dataObj.callback();
                     qContinue();
                 };
-                data = lib.newDataObject();
-                ana.data.push(data);
-                data.loadData({info: dataObj.info, callback: callback});
+                ana.data.loadData({info: dataObj.info, callback: callback});
             }]);
         };
 
@@ -334,7 +324,7 @@ KINOMICS.fileManager.DA = (function () {
                                         obj[i] = input_obj.uuids[ref.replace(/^\&/, '')];
                                         //This stores the dereference so it can be undone
                                         (function (obj, i, ref) {
-                                            expanded.push(function () {obj[i] = ref; });
+                                            expanded.push(function () {obj[i] = ref.replace(/^\&/, ''); });
                                         }(obj, i, ref));
                                     }
                                 }
@@ -345,7 +335,7 @@ KINOMICS.fileManager.DA = (function () {
                                         obj[key2] = input_obj.uuids[ref.replace(/^\&/, '')];
                                         //This stores the dereference so it can be undone
                                         (function (obj, key2, ref) {
-                                            expanded.push(function () {obj[key2] = ref; });
+                                            expanded.push(function () {obj[key2] = ref.replace(/^\&/, ''); });
                                         }(obj, key2, ref));
                                     }
                                 }
@@ -360,7 +350,7 @@ KINOMICS.fileManager.DA = (function () {
                         input_obj.parents[i] = input_obj.uuids[ref.replace(/^\&/, '')];
                         //This stores the dereference so it can be undone
                         (function (obj, i, ref) {
-                            expanded.push(function () {obj[i] = ref; });
+                            expanded.push(function () {obj[i] = ref.replace(/^\&/, ''); });
                         }(input_obj.parents, i, ref));
                     }
                 }
@@ -427,44 +417,71 @@ KINOMICS.fileManager.DA = (function () {
         };
 
         data.expand = function (callback) {
-            queuePush([function (c2) {
-                expand();
-                if (typeof callback === 'function') {
-                    callback();
-                }
-                c2();
-            }]);
+            expand();
+            callback();
         };
 
         data.collapse = function (callback) {
-            queuePush([function (c2) {
-                console.log('here...');
-                collapse();
-                if (typeof callback === 'function') {
-                    callback();
-                }
-                c2();
-            }]);
+            collapse();
+            callback();
         };
 
         data.loadData = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
-            //Note once this occurs, saving should no longer be an option
-            batchID = "";
+            var i, mainCallback, funcs;
+
+            funcs = [];
+            //Note once this occurs, saving should no longer be an option            
             data.save = function () {
                 console.error('Cannot save when data has been loaded from database');
             };
-            queuePush([function (qContinue) {
-                var callbackFunc = function (triples) {
-                    var i;
-                    for (i = 0; i < triples.rows.length; i += 1) {
-                        data.JSON[[triples.rows[i][0]]] = expandBarcodeWell(JSON.parse(triples.rows[i][2]));
-                    }
-                    dataObj.callback();
-                    qContinue();
+            console.log(dataObj);
+
+            mainCallback = function (uuid) {
+                return function (qContinue) {
+                    cdb.loadData({uuid: uuid, callback: function (response) {
+                        var prop, prop2, temp;
+                        temp = JSON.parse(response);
+                        for (prop in temp) {
+                            if (temp.hasOwnProperty(prop)) {
+                                //Check to see if data already exists
+                                if (data.JSON.hasOwnProperty(prop)) {
+                                    if (typeof temp[prop] === 'object') {
+                                        //As an array the concat method works well
+                                        if (temp[prop] instanceof Array) {
+                                            data.JSON[prop] = data.JSON[prop].concat(temp[prop]);
+                                        } else {
+                                            //Just an object here
+                                            for (prop2 in temp[prop]) {
+                                                if (temp[prop].hasOwnProperty(prop2)) {
+                                                    data.JSON[prop][prop2] = temp[prop][prop2];
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    data.JSON[prop] = temp[prop];
+                                }
+                            }
+                        }
+                        qContinue();
+                    }});
                 };
-                cdb.loadData({data: [dataObj.info], callback: callbackFunc});
-            }]);
+            };
+
+            if (dataObj.info.type === 'batch') {
+                for (i = 0; i < dataObj.info.barcodes; i += 1) {
+                    funcs.push(mainCallback(dataObj.info.barcodes[i]));
+                }
+            } else {
+                funcs.push(mainCallback(dataObj.info.id));
+            }
+            // funcs.push(data.expand);
+            funcs.push(function (cb) { 
+                dataObj.callback()
+                cb();
+            });
+            queuePush(funcs);
         };
 
         data.listBatches = function () {
@@ -509,8 +526,9 @@ KINOMICS.fileManager.DA = (function () {
                         bar = {parents: [prop], uuids: {}, families: {}};
                         tempObj = that.JSON.families[prop];
                         bar.families[prop] = tempObj;
+                        bar.uuids[prop.replace(/^\&/, '')] = that.JSON.uuids[prop.replace(/^\&/, '')];
                         for (i = 0; i < tempObj.length; i += 1) {
-                            bar.uuids[tempObj[i]] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
+                            bar.uuids[tempObj[i].replace(/^\&/, '')] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
                         }
                         cdb.saveBarcode({id: prop.replace('&', ''), data: bar, name: 'bar' + that.JSON.uuids[prop.replace('&', '')].barcode + '_well' + that.JSON.uuids[prop.replace('&', '')].row + '.txt', batchID: batchID, callback: callback});
                     };

@@ -1,6 +1,6 @@
 /*global KINOMICS, jQuery, $, console, gapi, RegExp*/
 /*jslint todo: true */
-// var glob;
+var globFT = [];
 var queryTriples, triples, glob, files;
 KINOMICS.fileManager.DA.fusionTables = (function () {
     'use strict';
@@ -363,13 +363,13 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 } else {
                     //Triples: BatchID RDF:type RDF:batch, BatchID RDF:file {}.id, {}.id RDF:type flatFile, {}.id RDF:gdJSON {}
                     // tempTriples.push([RDF.list(batchID), RDF.type, RDF.batch, Math.uuid(), currentDate(), userName()]);
-                    // tempTriples.push([RDF.list(batchID), RDF.file, response.downloadUrl, Math.uuid(), currentDate(), userName()]);
+                    // tempTriples.push([RDF.list(batchID), RDF.file, response.webContentLink, Math.uuid(), currentDate(), userName()]);
                     // tempTriples.push([RDF.list(batchID), RDF.name, writeFileObj.data.name, Math.uuid(), currentDate(), userName()]);
-                    tempTriples.push([response.downloadUrl, RDF.type, RDF.flatFile, Math.uuid(), currentDate(), userName()]);
-                    tempTriples.push([response.downloadUrl, RDF.name, writeFileObj.data.name, Math.uuid(), currentDate(), userName()]);
+                    tempTriples.push([response.webContentLink, RDF.type, RDF.flatFile, Math.uuid(), currentDate(), userName()]);
+                    tempTriples.push([response.webContentLink, RDF.name, writeFileObj.data.name, Math.uuid(), currentDate(), userName()]);
                     tempTriples.push([RDF.list(writeFileObj.batchID), RDF.type, RDF.batch, Math.uuid(), currentDate(), userName()]);
                     tempTriples.push([RDF.list(writeFileObj.batchID), RDF.name, writeFileObj.data.name, Math.uuid(), currentDate(), userName()]);
-                    tempTriples.push([RDF.list(writeFileObj.batchID), RDF.file, response.downloadUrl, Math.uuid(), currentDate(), userName()]);
+                    tempTriples.push([RDF.list(writeFileObj.batchID), RDF.file, response.webContentLink, Math.uuid(), currentDate(), userName()]);
                     files[RDF.flatFile].push(tempTriples[1]);
                     files[RDF.batch].push(tempTriples[3]);
                     fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) {
@@ -398,7 +398,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 //TODO: Deal with error response
                 console.log(response);
                 tempTriples.push([dataObj.id, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
-                tempTriples.push([dataObj.id, RDF.file, response.downloadUrl, Math.uuid(), currentDate(), userName()]);
+                tempTriples.push([dataObj.id, RDF.file, response.webContentLink, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.batchID, RDF.data, dataObj.id, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.id, RDF.name, dataObj.name, Math.uuid(), currentDate(), userName()]);
                 fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) { console.log('written....')});
@@ -426,7 +426,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             var i, result;
             result = [];
             for (i = 0; i < files[RDF.batch].length; i += 1) {
-                result.push({id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], barcodes: bySubject[files[RDF.batch][i][0]][RDF.data].map(function (x) {
+                result.push({id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], type: 'batch', date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], barcodes: bySubject[files[RDF.batch][i][0]][RDF.data].map(function (x) {
                     return x[2];
                 })});
             }
@@ -436,7 +436,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             var i, result;
             result = [];
             for (i = 0; i < files[RDF.data].length; i += 1) {
-                result.push({id: files[RDF.data][i][0], name: files[RDF.data][i][2], date: files[RDF.data][i][4], creator: files[RDF.data][i][5]});
+                result.push({id: files[RDF.data][i][0], name: files[RDF.data][i][2], type: RDF.data, date: files[RDF.data][i][4], creator: files[RDF.data][i][5]});
             }
             return result;
         };
@@ -446,29 +446,11 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
     (function () {
         //TODO: deal with error from fusion tables call...
         lib.loadData = function (dataObj) {
-            var i, list, eachFileFunc, result;
-            result = {kind: "", rows: [], columns: []};
-            eachFileFunc = function (data) {
-                result.kind = data.kind;
-                result.columns = data.columns;
-                result.rows = result.rows.concat(data.rows);
-            };
-            for (i = 0; i < dataObj.data.length; i += 1) {
-                if (bySubject[dataObj.data[i].id][RDF.type][0][2] === RDF.data) {
-                    fuse.queryTable(dataObj.data[i].id, {}, eachFileFunc);
-                } else if (bySubject[dataObj.data[i].id][RDF.type][0][2] === RDF.batch) {
-                    //Much more complicated procedure, get list of files and query all of them
-                    //Concat the results, and return that result.
-                    list = bySubject[dataObj.data[i].id][RDF.data];
-                    for (i = 0; i < list.length; i += 1) {
-                        fuse.queryTable(list[i][2], {}, eachFileFunc);
-                    }
-                } else {
-                    console.error('Did not recognize type of: ' + dataObj.data[i].id);
-                }
-            }
-            fuse.onComplete(function () {
-                dataObj.callback(result);
+            globFT.push(dataObj);
+            var file = bySubject[dataObj.uuid][RDF.file][0][2];
+            file = file.replace(/([\S\s]+id\=)([\S\s]+)(\&export[\S\s]+)/, "$2");
+            fuse.readFile(file, function (response) {
+                dataObj.callback(response);
             });
         };
     }());
