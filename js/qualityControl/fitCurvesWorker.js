@@ -1,7 +1,7 @@
 /*global self: false */
 
 // TODO: check user input...
-
+var globWork = [];
 //Container for all code. Will be run on load
 (function () {
     'use strict';
@@ -121,11 +121,12 @@
         //variable defintions
         if (type === 'postWash') {
             func = postWashFunc;
-            X = points.exposureTime;
+            X = points.xVals;
         } else {
             func = timeSeriesFunc;
-            X = points.cycleNum;
+            X = points.xVals;
         }
+        globWork.push(points);
         xIni = [];
         xVec = [];
         yIni = [];

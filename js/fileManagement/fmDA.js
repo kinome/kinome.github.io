@@ -118,6 +118,7 @@ KINOMICS.fileManager.DA = (function () {
         ana.name = initialObj.name;
         ana.date = (new Date()).toISOString();
         KINOMICS.barcodes = ana.data.JSON;
+        globs.push(['analysis', ana]);
         queuePush = function (array) {
             var i;
             //Adds something to the adjacent place in the queue instead of the end.
@@ -352,6 +353,9 @@ KINOMICS.fileManager.DA = (function () {
                         (function (obj, i, ref) {
                             expanded.push(function () {obj[i] = ref.replace(/^\&/, ''); });
                         }(input_obj.parents, i, ref));
+                        //Add data object
+                        input_obj.parents[i].db = input_obj.parents[i].db || {};
+                        input_obj.parents[i].db.fit = false;
                     }
                 }
 
@@ -417,8 +421,7 @@ KINOMICS.fileManager.DA = (function () {
         };
 
         data.expand = function (callback) {
-            expand();
-            callback();
+            expand(callback);
         };
 
         data.collapse = function (callback) {
@@ -464,7 +467,7 @@ KINOMICS.fileManager.DA = (function () {
                                 }
                             }
                         }
-                        qContinue();
+                        data.expand(qContinue);
                     }});
                 };
             };

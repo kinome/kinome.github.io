@@ -1,5 +1,5 @@
 /*global KINOMICS: false, console: false */
-
+/*jslint todo: true */
 KINOMICS.qualityControl.DA = (function () {
     'use strict';
 
@@ -108,8 +108,8 @@ KINOMICS.qualityControl.DA = (function () {
         workers = workerObj.startWorkers({filename: workersFile, num_workers: 4});
 
         //Start submitting jobs
-        for (barWell in barWellObj) {
-            if (barWellObj.hasOwnProperty(barWell) && barWellObj[barWell].db.fit === false) {
+        for (barWell = 0; barWell < barWellObj.length; barWell += 1) {
+            if (barWellObj[barWell].db.fit === false) {
                 barWellChanged.push(barWell);
                 //Hopefully I can get rid of the barcodesAnalyzed part, and just update the table...
                 barcodesAnalyzed.push(barWell);

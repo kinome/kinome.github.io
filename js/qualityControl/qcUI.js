@@ -138,27 +138,21 @@ KINOMICS.qualityControl.UI = (function () {
         };
 
         update = function () {
-            var bw, upd = 0;
+            var i, upd = 0;
             element.button('complete');
-            //TODO: fix globals issue...
-            barcodes = KINOMICS.barcodes;
-            console.log('here...', barcodes);
-            for (bw in barcodes) {
-                if (barcodes.hasOwnProperty(bw)) {
-                    console.log('cycling', bw);
-                    $('#tempQCMessage').hide();
-                    buttonWell.show();
-                    if (barcodes[bw].db.fit === false) {
-                        console.log('false indeed...');
-                        element.button('reset');
-                        element.unbind('click');
-                        element.click(fitCurvesClick);
-                        return;
-                    } else if (!upd) {
-                        mainLib.QCtable.update();
-                        mainLib.saveDataBut.update();
-                        upd += 1;
-                    }
+            barcodes = KINOMICS.barcodes.parents || barcodes;
+            for (i = 0; i < barcodes.length; i += 1 ) {
+                $('#tempQCMessage').hide();
+                buttonWell.show();
+                if (barcodes[i].db.fit === false) {
+                    element.button('reset');
+                    element.unbind('click');
+                    element.click(fitCurvesClick);
+                    return;
+                } else if (!upd) {
+                    mainLib.QCtable.update();
+                    mainLib.saveDataBut.update();
+                    upd += 1;
                 }
             }
         };
