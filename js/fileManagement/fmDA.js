@@ -325,7 +325,7 @@ KINOMICS.fileManager.DA = (function () {
                                         obj[i] = input_obj.uuids[ref.replace(/^\&/, '')];
                                         //This stores the dereference so it can be undone
                                         (function (obj, i, ref) {
-                                            expanded.push(function () {obj[i] = ref.replace(/^\&/, ''); });
+                                            expanded.push(function () {obj[i] = ref; });
                                         }(obj, i, ref));
                                     }
                                 }
@@ -336,7 +336,7 @@ KINOMICS.fileManager.DA = (function () {
                                         obj[key2] = input_obj.uuids[ref.replace(/^\&/, '')];
                                         //This stores the dereference so it can be undone
                                         (function (obj, key2, ref) {
-                                            expanded.push(function () {obj[key2] = ref.replace(/^\&/, ''); });
+                                            expanded.push(function () {obj[key2] = ref; });
                                         }(obj, key2, ref));
                                     }
                                 }
@@ -351,7 +351,7 @@ KINOMICS.fileManager.DA = (function () {
                         input_obj.parents[i] = input_obj.uuids[ref.replace(/^\&/, '')];
                         //This stores the dereference so it can be undone
                         (function (obj, i, ref) {
-                            expanded.push(function () {obj[i] = ref.replace(/^\&/, ''); });
+                            expanded.push(function () {obj[i] = ref; });
                         }(input_obj.parents, i, ref));
                         //Add data object
                         input_obj.parents[i].db = input_obj.parents[i].db || {};
