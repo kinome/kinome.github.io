@@ -4,7 +4,7 @@ KINOMICS.qualityControl.DA = (function () {
     'use strict';
 
     //Local Variables
-    var lib, barWellObj, dataUpdateCallback, fitCurve, fitCurves, makeDeepCopy, reportError, run;
+    var lib, barWellObj, dataUpdateCallback, fitCurve, fitCurves, reportError, run;
 
     //Define variables
     lib = {};
@@ -26,6 +26,10 @@ KINOMICS.qualityControl.DA = (function () {
         Fits all curves that do not already have data...
         *//////////////////////////////////////////////////////////////
         run(fitCurves)(input_obj);
+    };
+    lib.functions = {
+        postWash: 'postWashEq.js',
+        cycling: 'cyclingEq.js'
     };
 
     //Define Local functions
@@ -66,7 +70,6 @@ KINOMICS.qualityControl.DA = (function () {
             callback = input_obj.callback || function () {};
             peptide = input_obj.peptide;
             //TODO: check user input
-
             worker.submitJob([barWellObj[barcode].peptides[peptide][analysisType], barcode, peptide, analysisType],
                 dataUpdateCallback);
 
@@ -116,9 +119,9 @@ KINOMICS.qualityControl.DA = (function () {
                 for (peptide in barWellObj[barWell].peptides) {
                     if (barWellObj[barWell].peptides.hasOwnProperty(peptide)) {
                         //TODO: add in dealing with '0' data, and errors based on barcode_well rather than file.
-                        workers.submitJob([makeDeepCopy(barWellObj[barWell].peptides[peptide].postWash), barWell, peptide, "postWash"],
+                        workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                             updateData);
-                        workers.submitJob([makeDeepCopy(barWellObj[barWell].peptides[peptide].timeSeries), barWell, peptide, "timeSeries"],
+                        workers.submitJob([barWellObj[barWell].peptides[peptide].timeSeries, barWell, peptide, "timeSeries"],
                             updateData);
                         total += 2;
                     }
@@ -147,26 +150,7 @@ KINOMICS.qualityControl.DA = (function () {
         });
     };
 
-    makeDeepCopy = function (obj) {
-        //This function accesses all portions of the data and makes a copy to insure properties with getters/setters work
-        var outObj, prop, i;
-        if (typeof obj !== 'object') {
-            outObj = obj;
-        } else if (Array.isArray(obj)) {
-            outObj = [];
-            for (i = 0; i < obj.length; i += 1) {
-                outObj[i] = makeDeepCopy(obj[i]);
-            }
-        } else {
-            outObj = {};
-            for (prop in obj) {
-                if (obj.hasOwnProperty(prop)) {
-                    outObj[prop] = makeDeepCopy(obj[prop]);
-                }
-            }
-        }
-        return outObj;
-    };
+    
 
     reportError = function (err) {
         return console.log("Error with quality control data analysis: " + err + "\nTo display more information for any" +
