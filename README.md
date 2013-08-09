@@ -1,4 +1,3 @@
-kinomicDataQC
-=============
+UAB Kinome Core
+===============
 
-Quality control tools for kinomic data
