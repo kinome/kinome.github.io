@@ -182,7 +182,7 @@ var globWork = [];
         peptide = event.data[2];
         points = event.data[0];
         type = event.data[3];
-        self.postMesage(event.data);
+        self.postMessage(event.data);
         // runCond = determineRunningConditions(points, type);
 
         // result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
