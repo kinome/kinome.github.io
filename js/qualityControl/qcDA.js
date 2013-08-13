@@ -15,15 +15,16 @@ KINOMICS.qualityControl.DA = (function () {
 
     //preload equations
     (function () {
-        var eq, i, suc, er;
-        suc = function (obj) {
+        var type, i, suc, er;
+        
+        suc = function (arr, ind) {
             return function (x) {
                 var sol, url;
-                url = obj;
-                sol = eval('sol=' + x.replace(/[\n\r]+/g, ''));
-                obj = sol;
-                obj.string = x;
-                obj.url = url;
+                url = arr[ind];
+                sol = eval('sol=' + x.replace(/[^\n\r]+?\/\/[^\n\r]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
+                arr[ind] = sol;
+                arr[ind].string = x;
+                arr[ind].url = url;
             };
         };
         //TODO: make this a better error function..
@@ -31,13 +32,13 @@ KINOMICS.qualityControl.DA = (function () {
             console.log(x.error, 'it does not work...');
         };
 
-        for (eq in lib.functions) {
-            if (lib.functions.hasOwnProperty(eq)) {
-                for (i = 0; i < lib.functions[eq]; i += 1) {
+        for (type in lib.functions) {
+            if (lib.functions.hasOwnProperty(type)) {
+                for (i = 0; i < lib.functions[type].length; i += 1) {
                     $.ajax({
                         dataType: "text",
-                        url: lib.functions[eq][i],
-                        success: suc(lib.functions[eq][i]),
+                        url: lib.functions[type][i],
+                        success: suc(lib.functions[type], i),
                         error: er
                     });
                 }
@@ -172,7 +173,7 @@ KINOMICS.qualityControl.DA = (function () {
                                 mainObj.postWash.models.push({
                                     equation: lib.functions.postWash[j],
                                     goodData: [],
-                                    x_values: mainObj.postWash.x_vals,
+                                    x_values: mainObj.postWash.xVals,
                                     y_values: mainObj.postWash.medSigMBack
                                 });
                                 mainObj.postWash.medSigMBack.map(function () {
@@ -180,7 +181,7 @@ KINOMICS.qualityControl.DA = (function () {
                                 });
                             }
                             //Finally submit the job
-                            workers.submitJob([mainObj.postWash.models[skip]], function (x) { console.log(x); });
+                            workers.submitJob([JSON.parse(JSON.stringify(mainObj.postWash.models[skip]))], function (x) { console.log(x); });
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);
