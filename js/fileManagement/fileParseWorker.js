@@ -16,7 +16,7 @@
         var a, b;
         a = 1;
         b = '';
-        while (a < 36) {
+        while (a < 37) {
             b += a * 51 & 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-';
             a += 1;
         }
