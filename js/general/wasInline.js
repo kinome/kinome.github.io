@@ -21,4 +21,14 @@ $('#tag1').click(function (e)
         });
         
 
-Math.uuid = function(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b};
+Math.uuid = function () {
+    /*jslint bitwise: true, plusplus: true*/
+    var a, b;
+    a = 1;
+    b = '';
+    while (a < 36) {
+        b += a * 51 & 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-';
+        a += 1;
+    }
+    return b;
+};
