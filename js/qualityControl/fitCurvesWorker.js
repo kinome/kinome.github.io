@@ -7,7 +7,7 @@ var globWork = [];
     'use strict';
 
     //variable declarations
-    var fmincon, determineRunningConditions, postWashFunc, timeSeriesFunc;
+    var fmincon, determineRunningConditions, postWashFunc, cycleSeriesFunc;
 
     //variable definitions
     postWashFunc = function (xVector, params) {
@@ -15,7 +15,7 @@ var globWork = [];
         return params[0] * xVector[0] + params[1];
     };
 
-    timeSeriesFunc = function (xVector, P) {
+    cycleSeriesFunc = function (xVector, P) {
         //Yo + 1/[1/(k*[x-Xo])+1/Ymax]   P[0]=k, P[1]= Xo, p[2] = Ymax
         //if (xVector[0] < P[1]) {return Infinity; }
         return 1 / (1 / (P[0] * (xVector[0] - P[1])) + 1 / P[2]);
@@ -123,7 +123,7 @@ var globWork = [];
             func = postWashFunc;
             X = points.xVals;
         } else {
-            func = timeSeriesFunc;
+            func = cycleSeriesFunc;
             X = points.xVals;
         }
         globWork.push(points);

@@ -346,11 +346,11 @@
             peptidesOut = {};
 
 
-            //Change dataArr into two parts: postWash and timeSeries
+            //Change dataArr into two parts: postWash and cycleSeries
             for (i = 0; i < arrLength; i += 1) {
                 if (metaDataArr.cycle[i] < maxCycle) { // Defined in previous function and checked for existance
-                    targetObj = metaDataArr.timeSeries; //Defined in previous function
-                    targetProp = 'timeSeries';
+                    targetObj = metaDataArr.cycleSeries; //Defined in previous function
+                    targetProp = 'cycleSeries';
                 } else {
                     targetObj = metaDataArr.postWash; //Defined in previous function
                     targetProp = 'postWash';
@@ -358,7 +358,7 @@
                 //This is for the 'meta data'
                 for (prop in metaDataArr) {
                     if (metaDataArr.hasOwnProperty(prop) &&
-                            (prop !== 'timeSeries' && prop !== 'postWash')) {
+                            (prop !== 'cycleSeries' && prop !== 'postWash')) {
                         targetObj[prop] = targetObj[prop] || [];
                         targetObj[prop].push(metaDataArr[prop][i]);
                     }
@@ -368,7 +368,7 @@
                     if (peptidesIn.hasOwnProperty(peptide)) {
                         peptideCount += 1;
                         peptidesOut[peptide] = peptidesOut[peptide] || {
-                            timeSeries: {medSigMBack: []},
+                            cycleSeries: {medSigMBack: []},
                             postWash: {medSigMBack: []}
                         };
                         peptidesOut[peptide][targetProp].medSigMBack.push(parseFloat(peptidesIn[peptide][i]));
@@ -379,13 +379,13 @@
             //Loop through one more time and delete old (non timeseries or postwash) objects
             for (prop in metaDataArr) {
                 if (metaDataArr.hasOwnProperty(prop) &&
-                        (prop !== 'timeSeries' && prop !== 'postWash')) {
+                        (prop !== 'cycleSeries' && prop !== 'postWash')) {
                     delete metaDataArr[prop];
                 }
             }
 
             //Make final metadata check to determine if both post wash and timeseries information have been given
-            if (metaDataArr.timeSeries.cycle === undefined) {
+            if (metaDataArr.cycleSeries.cycle === undefined) {
                 throw "Must export cycle numbers from bionavigator in xtab format for time " +
                     "series and post wash data to use this parser (You are missing time series).";
             }
@@ -412,7 +412,7 @@
                 dataArr: {
                     cycle: metaDataObj.Cycle || undefined,
                     exposureTime: metaDataObj.Exposure_time || undefined,
-                    timeSeries: {},
+                    cycleSeries: {},
                     postWash: {}
                 },
                 filter: metaDataObj.Filter || undefined,
@@ -476,7 +476,7 @@
         fileObj = collectBarWell(fileObj);
 
         //make the final transformation to barcode/well from barcode_well->arrays to 
-            //barcode_well: {metadata, ..., peptides: { peptide: {timeSeries: {dataArr}, postwash: {dataArr}}}}
+            //barcode_well: {metadata, ..., peptides: { peptide: {cycleSeries: {dataArr}, postwash: {dataArr}}}}
             //Note that in an effort to store less data no link to cycle number nor exposure time was made in peptide
             //That will be added by creating the functional peptide on the other side of this processing
         barWellObj = transformFile(fileObj);

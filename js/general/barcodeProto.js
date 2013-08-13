@@ -53,7 +53,7 @@ KINOMICS.expandBarcodeWell = (function () {
         if (lengthStr === 'short') {
             for (peptide in that.peptides) {
                 if (that.peptides.hasOwnProperty(peptide)) {
-                    delete that.peptides[peptide].timeSeries.cycleNum;
+                    delete that.peptides[peptide].cycleSeries.cycleNum;
                     delete that.peptides[peptide].postWash.exposureTime;
                 }
             }
@@ -119,25 +119,25 @@ KINOMICS.expandBarcodeWell = (function () {
         }
 
         //Change cylces and exposure times to numbers
-        toNumber(obj.dataArr.timeSeries.cycle);
+        toNumber(obj.dataArr.cycleSeries.cycle);
         toNumber(obj.dataArr.postWash.exposureTime);
         toNumber(obj.dataArr.postWash.cycle);
-        toNumber(obj.dataArr.timeSeries.exposureTime);
+        toNumber(obj.dataArr.cycleSeries.exposureTime);
 
-        //define references to obj.dataArr.timeSeries and
+        //define references to obj.dataArr.cycleSeries and
             //obj.dataArr.postWash - note this minimizes the
             //memory needed
         for (peptide in obj.peptides) {
             if (obj.peptides.hasOwnProperty(peptide)) {
                 //check user input 2
-                if (obj.peptides[peptide].timeSeries === undefined || obj.peptides[peptide].postWash === undefined) {
+                if (obj.peptides[peptide].cycleSeries === undefined || obj.peptides[peptide].postWash === undefined) {
                     throw "All peptides must have both time series and post wash data " + peptide +
                         " is missing one of them.";
                 }
-                obj.peptides[peptide].timeSeries.cycleNum = obj.dataArr.timeSeries.cycle;
+                obj.peptides[peptide].cycleSeries.cycleNum = obj.dataArr.cycleSeries.cycle;
                 obj.peptides[peptide].postWash.exposureTime = obj.dataArr.postWash.exposureTime;
                 toNumber(obj.peptides[peptide].postWash.number); //Make the values into numbers
-                toNumber(obj.peptides[peptide].timeSeries.number); //Make the values into numbers
+                toNumber(obj.peptides[peptide].cycleSeries.number); //Make the values into numbers
             }
         }
 

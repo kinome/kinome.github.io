@@ -374,7 +374,7 @@ KINOMICS.qualityControl.UI = (function () {
                     peptide = peptide.replace(/(r|c)_(\d+)/g, '$1-$2');
                     peptide = peptide.replace(/_/g, ' ');
                     if (data.postWash.R2 < flagR ||
-                            data.timeSeries.R2 < flagR) {
+                            data.cycleSeries.R2 < flagR) {
                         flag = "&nbsp;<i class=icon-exclamation-sign></i>";
                     } else {
                         flag = "";
@@ -667,8 +667,8 @@ KINOMICS.qualityControl.UI = (function () {
             var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
 
             //variable defintions
-            eq = KINOMICS.timeSeriesFunc;
-            data = barcodes[barcode].peptides[peptide].timeSeries;
+            eq = KINOMICS.cycleSeriesFunc;
+            data = barcodes[barcode].peptides[peptide].cycleSeries;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             params = data.parameters;
             length = data.cycleNum.length;
@@ -722,7 +722,7 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart1'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick('timeSeries', chart));
+            google.visualization.events.addListener(chart, 'select', chartClick('cycleSeries', chart));
         };
 
         update = function () {

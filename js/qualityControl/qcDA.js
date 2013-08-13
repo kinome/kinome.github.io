@@ -170,7 +170,7 @@ KINOMICS.qualityControl.DA = (function () {
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);
-                        // workers.submitJob([barWellObj[barWell].peptides[peptide].timeSeries, barWell, peptide, "timeSeries"],
+                        // workers.submitJob([barWellObj[barWell].peptides[peptide].cycleSeries, barWell, peptide, "cycleSeries"],
                         //     updateData);
                         // total += 2;
                     }

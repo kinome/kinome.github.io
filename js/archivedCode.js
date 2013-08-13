@@ -51,9 +51,9 @@ expandBarcodeWell = (function () {
                 if (lengthStr === 'short') {
                     for (peptide in that.peptides) {
                         if (that.peptides.hasOwnProperty(peptide)) {
-                            delete that.peptides[peptide].timeSeries.cycleNum;
+                            delete that.peptides[peptide].cycleSeries.cycleNum;
                             delete that.peptides[peptide].postWash.exposureTime;
-                            delete that.peptides[peptide].timeSeries.goodData;
+                            delete that.peptides[peptide].cycleSeries.goodData;
                             delete that.peptides[peptide].postWash.goodData;
                         }
                     }
@@ -103,12 +103,12 @@ expandBarcodeWell = (function () {
                 }
 
                 //Change cylces and exposure times to numbers
-                toNumber(obj.dataArr.timeSeries.cycle);
+                toNumber(obj.dataArr.cycleSeries.cycle);
                 toNumber(obj.dataArr.postWash.exposureTime);
                 toNumber(obj.dataArr.postWash.cycle);
-                toNumber(obj.dataArr.timeSeries.exposureTime);
+                toNumber(obj.dataArr.cycleSeries.exposureTime);
 
-                //define references to obj.dataArr.timeSeries and
+                //define references to obj.dataArr.cycleSeries and
                     //obj.dataArr.postWash - note this minimizes the
                     //memory needed
                 //TODO: make this a more permenate solution...
@@ -118,22 +118,22 @@ expandBarcodeWell = (function () {
                 for (peptide in obj.peptides) {
                     if (obj.peptides.hasOwnProperty(peptide)) {
                         //check user input 2
-                        if (obj.peptides[peptide].timeSeries === undefined || obj.peptides[peptide].postWash === undefined) {
+                        if (obj.peptides[peptide].cycleSeries === undefined || obj.peptides[peptide].postWash === undefined) {
                             throw "All peptides must have both time series and post wash data " + peptide +
                                 " is missing one of them.";
                         }
-                        obj.peptides[peptide].timeSeries.cycleNum = obj.dataArr.timeSeries.cycle;
+                        obj.peptides[peptide].cycleSeries.cycleNum = obj.dataArr.cycleSeries.cycle;
                         obj.peptides[peptide].postWash.exposureTime = obj.dataArr.postWash.exposureTime;
                         toNumber(obj.peptides[peptide].postWash.number); //Make the values into numbers
-                        toNumber(obj.peptides[peptide].timeSeries.number); //Make the values into numbers
-                        obj.peptides[peptide].timeSeries.goodData = [];
+                        toNumber(obj.peptides[peptide].cycleSeries.number); //Make the values into numbers
+                        obj.peptides[peptide].cycleSeries.goodData = [];
                         obj.peptides[peptide].postWash.goodData = [];
                         obj.peptides[peptide].addProperty = addSetterProp; //To keep track of changes to the object
-                        for (i = 0; i < obj.peptides[peptide].timeSeries.number.length; i += 1) {
-                            addSetterProp(obj.peptides[peptide].timeSeries.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'timeSeries', prop: 'goodData'});
+                        for (i = 0; i < obj.peptides[peptide].cycleSeries.number.length; i += 1) {
+                            addSetterProp(obj.peptides[peptide].cycleSeries.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'goodData'});
                         }
                         for (i = 0; i < obj.peptides[peptide].postWash.number.length; i += 1) {
-                            addSetterProp(obj.peptides[peptide].postWash.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'timeSeries', prop: 'goodData'});
+                            addSetterProp(obj.peptides[peptide].postWash.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'goodData'});
                         }
                     }
                 }
