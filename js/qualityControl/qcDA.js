@@ -156,13 +156,17 @@ KINOMICS.qualityControl.DA = (function () {
                         mainObj = barWellObj[barWell].peptides[peptide];
                         if (!mainObj.postWash.models) {
                             mainObj.postWash.models = [];
-                            for (j = 0; j <  lib.functions.postWash.length; j += 1) {
-                                mainObj.postWash.models.push({
-                                    equation: lib.functions.postWash[j],
-                                    goodData: [],
-                                });
-                                // workers.submitJob([]);
-                            }
+                        }
+                        for (j = 0; j <  lib.functions.postWash.length; j += 1) {
+                            mainObj.postWash.models.push({
+                                equation: lib.functions.postWash[j],
+                                goodData: [],
+                                x_values: mainObj.postWash.x_vals,
+                                v_values: mainObj.postWash.medSigMBack
+                            });
+                            mainObj.postWash.medSigMBack.map(function () {
+                                mainObj.postWash.models[mainObj.postWash.models.length -1].goodData.push(true);
+                            });
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);
