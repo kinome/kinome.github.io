@@ -1,4 +1,4 @@
-/*global KINOMICS: false, console: false */
+/*global KINOMICS: false, console: false, $ */
 /*jslint todo: true */
 KINOMICS.qualityControl.DA = (function () {
     'use strict';
@@ -8,6 +8,43 @@ KINOMICS.qualityControl.DA = (function () {
 
     //Define variables
     lib = {};
+    lib.functions = {
+        postWash: ['js/qualityControl/postWashEq.js'],
+        cycling: ['js/qualityControl/cyclingEq.js']
+    };
+
+    //preload equations
+    (function () {
+        var eq, i, suc, er;
+        suc = function (obj) {
+            return function (x) {
+                var sol, url;
+                url = obj;
+                sol = eval('sol=' + x.replace(/[\n\r]+/g, ''));
+                obj = sol;
+                obj.string = x;
+                obj.url = url;
+            };
+        };
+        //TODO: make this a better error function..
+        er = function (x) {
+            console.log(x.error, 'it does not work...');
+        };
+
+        for (eq in lib.functions) {
+            if (lib.functions.hasOwnProperty(eq)) {
+                for (i = 0; i < lib.functions[eq]; i += 1) {
+                    $.ajax({
+                        dataType: "text",
+                        url: lib.functions[eq][i],
+                        success: suc(lib.functions[eq][i]),
+                        error: er
+                    });
+                }
+            }
+        }
+    }());
+
 
     //Define global functions
     lib.fitCurve = function (input_obj) {
@@ -26,10 +63,6 @@ KINOMICS.qualityControl.DA = (function () {
         Fits all curves that do not already have data...
         *//////////////////////////////////////////////////////////////
         run(fitCurves)(input_obj);
-    };
-    lib.functions = {
-        postWash: 'postWashEq.js',
-        cycling: 'cyclingEq.js'
     };
 
     //Define Local functions
@@ -67,7 +100,7 @@ KINOMICS.qualityControl.DA = (function () {
             //variable definitions
             analysisType = input_obj.analysisType;
             barcode = input_obj.barcode;
-            callback = input_obj.callback || function () {};
+            callback = input_obj.callback || function (x) {if (x !== undefined) { console.log(x); } };
             peptide = input_obj.peptide;
             //TODO: check user input
             worker.submitJob([barWellObj[barcode].peptides[peptide][analysisType], barcode, peptide, analysisType],
@@ -82,7 +115,8 @@ KINOMICS.qualityControl.DA = (function () {
     fitCurves = function (input_obj) {
         //variable declarations
         var callback, progressBar, barcodesAnalyzed, barContainer, barWell, barWellChanged, progress,
-            peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length;
+            peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
+            j, mainObj;
 
         //variable definitions
         barcodesAnalyzed = [];
@@ -119,11 +153,22 @@ KINOMICS.qualityControl.DA = (function () {
                 for (peptide in barWellObj[barWell].peptides) {
                     if (barWellObj[barWell].peptides.hasOwnProperty(peptide)) {
                         //TODO: add in dealing with '0' data, and errors based on barcode_well rather than file.
-                        workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
-                            updateData);
-                        workers.submitJob([barWellObj[barWell].peptides[peptide].timeSeries, barWell, peptide, "timeSeries"],
-                            updateData);
-                        total += 2;
+                        mainObj = barWellObj[barWell].peptides[peptide];
+                        if (! mainObj.postWash.models) {
+                            mainObj.postWash.models = [];
+                            for (j = 0; j <  lib.functions.postWash.length; j += 1) {
+                                mainObj.postWash.models.push({
+                                    equation: lib.functions.postWash[j],
+                                    goodData: [],
+                                });
+                                // workers.submitJob([]);
+                            }
+                        }
+                        // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
+                        //     updateData);
+                        // workers.submitJob([barWellObj[barWell].peptides[peptide].timeSeries, barWell, peptide, "timeSeries"],
+                        //     updateData);
+                        // total += 2;
                     }
                 }
             }

@@ -367,6 +367,12 @@ KINOMICS.fileManager.DA = (function () {
                         if (input_obj.parents[i].peptides.hasOwnProperty(pep)) {
                             input_obj.parents[i].peptides[pep].timeSeries.xVals = ts_x;
                             input_obj.parents[i].peptides[pep].postWash.xVals = pw_x;
+                            (function (obj, prop) {
+                                expanded.push(function () {delete obj[prop]; });
+                            }(input_obj.parents[i].peptides[pep].timeSeries, 'xVals'));
+                            (function (obj, prop) {
+                                expanded.push(function () {delete obj[prop]; });
+                            }(input_obj.parents[i].peptides[pep].postWash, 'xVals'));
                         }
                     }
                 }
@@ -480,8 +486,8 @@ KINOMICS.fileManager.DA = (function () {
                 funcs.push(mainCallback(dataObj.info.id));
             }
             // funcs.push(data.expand);
-            funcs.push(function (cb) { 
-                dataObj.callback()
+            funcs.push(function (cb) {
+                dataObj.callback();
                 cb();
             });
             queuePush(funcs);

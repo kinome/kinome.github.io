@@ -11,7 +11,17 @@
 
     //local functions
     //This line must be commented out for jsLint to pass...
-    Math.uuid = function(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b};
+    Math.uuid = function () {
+        /*jslint bitwise: true, plusplus: true*/
+        var a, b;
+        a = 1;
+        b = '';
+        while (a < 36) {
+            b += a * 51 & 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-';
+            a += 1;
+        }
+        return b;
+    };
     beginParse = function (file) {
         file = file.replace(/\r/g, "\n");
         file = file.replace(/\n+$/g, "\n");
@@ -358,10 +368,10 @@
                     if (peptidesIn.hasOwnProperty(peptide)) {
                         peptideCount += 1;
                         peptidesOut[peptide] = peptidesOut[peptide] || {
-                            timeSeries: {number: []},
-                            postWash: {number: []}
+                            timeSeries: {medSigMBack: []},
+                            postWash: {medSigMBack: []}
                         };
-                        peptidesOut[peptide][targetProp].number.push(peptidesIn[peptide][i]);
+                        peptidesOut[peptide][targetProp].medSigMBack.push(parseFloat(peptidesIn[peptide][i]));
                     }
                 }
             }

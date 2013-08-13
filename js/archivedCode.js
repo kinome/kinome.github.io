@@ -145,3 +145,25 @@ expandBarcodeWell = (function () {
             };
             return func;
         }());
+
+
+makeDeepCopy = function (obj) {
+        //This function accesses all portions of the data and makes a copy to insure properties with getters/setters work
+        var outObj, prop, i;
+        if (typeof obj !== 'object') {
+            outObj = obj;
+        } else if (Array.isArray(obj)) {
+            outObj = [];
+            for (i = 0; i < obj.length; i += 1) {
+                outObj[i] = makeDeepCopy(obj[i]);
+            }
+        } else {
+            outObj = {};
+            for (prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    outObj[prop] = makeDeepCopy(obj[prop]);
+                }
+            }
+        }
+        return outObj;
+    };
