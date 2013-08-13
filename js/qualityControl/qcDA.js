@@ -154,7 +154,7 @@ KINOMICS.qualityControl.DA = (function () {
                     if (barWellObj[barWell].peptides.hasOwnProperty(peptide)) {
                         //TODO: add in dealing with '0' data, and errors based on barcode_well rather than file.
                         mainObj = barWellObj[barWell].peptides[peptide];
-                        if (! mainObj.postWash.models) {
+                        if (!mainObj.postWash.models) {
                             mainObj.postWash.models = [];
                             for (j = 0; j <  lib.functions.postWash.length; j += 1) {
                                 mainObj.postWash.models.push({

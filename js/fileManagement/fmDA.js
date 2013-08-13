@@ -367,11 +367,13 @@ KINOMICS.fileManager.DA = (function () {
                         if (input_obj.parents[i].peptides.hasOwnProperty(pep)) {
                             input_obj.parents[i].peptides[pep].timeSeries.xVals = ts_x;
                             input_obj.parents[i].peptides[pep].postWash.xVals = pw_x;
+
                             (function (obj, prop) {
-                                expanded.push(function () {delete obj[prop]; });
+                                expanded.push(function () {delete obj[prop]; console.log('I told you sean')});
                             }(input_obj.parents[i].peptides[pep].timeSeries, 'xVals'));
+
                             (function (obj, prop) {
-                                expanded.push(function () {delete obj[prop]; });
+                                expanded.push(function () {delete obj[prop]; console.log("If I've told you once I've told you a thousand times")});
                             }(input_obj.parents[i].peptides[pep].postWash, 'xVals'));
                         }
                     }
