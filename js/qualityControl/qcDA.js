@@ -180,7 +180,7 @@ KINOMICS.qualityControl.DA = (function () {
                                 });
                             }
                             //Finally submit the job
-                            workers.submitJob(mainObj.postWash.models[skip]);
+                            workers.submitJob([mainObj.postWash.models[skip]], function (x) { console.log(x); });
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);

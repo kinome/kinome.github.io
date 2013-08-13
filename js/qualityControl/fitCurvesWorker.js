@@ -182,12 +182,12 @@ var globWork = [];
         peptide = event.data[2];
         points = event.data[0];
         type = event.data[3];
+        self.postMesage(event.data);
+        // runCond = determineRunningConditions(points, type);
 
-        runCond = determineRunningConditions(points, type);
+        // result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
 
-        result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
-
-        //return result
-        self.postMessage([barcode, peptide, type, result]);
+        // //return result
+        // self.postMessage([barcode, peptide, type, result]);
     };
 }());
