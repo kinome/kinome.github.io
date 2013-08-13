@@ -369,11 +369,11 @@ KINOMICS.fileManager.DA = (function () {
                             input_obj.parents[i].peptides[pep].postWash.xVals = pw_x;
 
                             (function (obj, prop) {
-                                expanded.push(function () {delete obj[prop]; console.log('I told you sean')});
+                                expanded.push(function () {delete obj[prop]; });
                             }(input_obj.parents[i].peptides[pep].timeSeries, 'xVals'));
 
                             (function (obj, prop) {
-                                expanded.push(function () {delete obj[prop]; console.log("If I've told you once I've told you a thousand times")});
+                                expanded.push(function () {delete obj[prop]; });
                             }(input_obj.parents[i].peptides[pep].postWash, 'xVals'));
                         }
                     }
