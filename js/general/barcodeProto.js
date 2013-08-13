@@ -136,8 +136,8 @@ KINOMICS.expandBarcodeWell = (function () {
                 }
                 obj.peptides[peptide].cycleSeries.cycleNum = obj.dataArr.cycleSeries.cycle;
                 obj.peptides[peptide].postWash.exposureTime = obj.dataArr.postWash.exposureTime;
-                toNumber(obj.peptides[peptide].postWash.number); //Make the values into numbers
-                toNumber(obj.peptides[peptide].cycleSeries.number); //Make the values into numbers
+                toNumber(obj.peptides[peptide].postWash.medSigMBack); //Make the values into numbers
+                toNumber(obj.peptides[peptide].cycleSeries.medSigMBack); //Make the values into numbers
             }
         }
 

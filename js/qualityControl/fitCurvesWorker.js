@@ -137,7 +137,7 @@ var globWork = [];
             if (points.goodData[i]) {
                 xIni.push([X[i]]);
                 xVec.push(X[i]);
-                yIni.push(points.number[i]);
+                yIni.push(points.medSigMBack[i]);
             }
         }
 

@@ -618,9 +618,9 @@ KINOMICS.qualityControl.UI = (function () {
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
                 if (data.goodData[i]) {
-                    dataTable.push([data.exposureTime[i], data.number[i], null, null]);
+                    dataTable.push([data.exposureTime[i], data.medSigMBack[i], null, null]);
                 } else {
-                    dataTable.push([data.exposureTime[i], null, data.number[i], null]);
+                    dataTable.push([data.exposureTime[i], null, data.medSigMBack[i], null]);
                 }
             }
 
@@ -680,9 +680,9 @@ KINOMICS.qualityControl.UI = (function () {
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
                 if (data.goodData[i]) {
-                    dataTable.push([data.cycleNum[i], data.number[i], null, null]);
+                    dataTable.push([data.cycleNum[i], data.medSigMBack[i], null, null]);
                 } else {
-                    dataTable.push([data.cycleNum[i], null, data.number[i], null]);
+                    dataTable.push([data.cycleNum[i], null, data.medSigMBack[i], null]);
                 }
             }
 
