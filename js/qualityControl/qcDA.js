@@ -116,7 +116,7 @@ KINOMICS.qualityControl.DA = (function () {
         //variable declarations
         var callback, progressBar, barcodesAnalyzed, barContainer, barWell, barWellChanged, progress,
             peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
-            j, mainObj;
+            j, skip, mainObj;
 
         //variable definitions
         barcodesAnalyzed = [];
@@ -157,16 +157,30 @@ KINOMICS.qualityControl.DA = (function () {
                         if (!mainObj.postWash.models) {
                             mainObj.postWash.models = [];
                         }
+                        //Add all the equations making sure that they do not already exist
                         for (j = 0; j <  lib.functions.postWash.length; j += 1) {
-                            mainObj.postWash.models.push({
-                                equation: lib.functions.postWash[j],
-                                goodData: [],
-                                x_values: mainObj.postWash.x_vals,
-                                v_values: mainObj.postWash.medSigMBack
+                            skip = -1;
+                            //Does it already exist?
+                            mainObj.postWash.models.map(function (x, ind) {
+                                if (x.equation.url === lib.functions.postWash[j].url) {
+                                    skip = ind;
+                                }
                             });
-                            mainObj.postWash.medSigMBack.map(function () {
-                                mainObj.postWash.models[mainObj.postWash.models.length -1].goodData.push(true);
-                            });
+                            //Add the needed components if not
+                            if (skip < 0) {
+                                skip = mainObj.postWash.models.length;
+                                mainObj.postWash.models.push({
+                                    equation: lib.functions.postWash[j],
+                                    goodData: [],
+                                    x_values: mainObj.postWash.x_vals,
+                                    y_values: mainObj.postWash.medSigMBack
+                                });
+                                mainObj.postWash.medSigMBack.map(function () {
+                                    mainObj.postWash.models[skip].goodData.push(true);
+                                });
+                            }
+                            //Finally submit the job
+                            workers.submitJob(mainObj.postWash.models[skip]);
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);
@@ -199,7 +213,6 @@ KINOMICS.qualityControl.DA = (function () {
         });
     };
 
-    
 
     reportError = function (err) {
         return console.log("Error with quality control data analysis: " + err + "\nTo display more information for any" +
