@@ -28,7 +28,7 @@ KINOMICS.qualityControl.DA = (function () {
         };
         //TODO: make this a better error function..
         er = function (x) {
-            console.log(x.error, 'it does not work...');
+            console.error(x.error, 'it does not work...');
         };
 
         for (type in lib.functions) {
@@ -77,7 +77,6 @@ KINOMICS.qualityControl.DA = (function () {
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
         data.totalSqrErrors = fit.totalSqrErrors;
-        console.log(data);
     };
 
     fitCurve = function (input_obj) {
@@ -186,14 +185,12 @@ KINOMICS.qualityControl.DA = (function () {
                                 }
                                 //Add all the equations making sure that they do not already exist
                                 for (j = 0; j <  lib.functions[type].length; j += 1) {
-                                    console.log('stop 3');
                                     // Initialize main object as needed
                                     skip = initializeMainObject(mainObj, lib.functions[type][j]);
                                     //Finally submit the job
                                     submitObj = JSON.parse(JSON.stringify(mainObj.models[skip]));
                                     submitObj.uuid = mainObj.uuid;
                                     submitObj.modelInd = skip;
-                                    console.log(submitObj);
                                     workers.submitJob([submitObj], updateData);
                                     total += 1;
                                 }
@@ -227,7 +224,7 @@ KINOMICS.qualityControl.DA = (function () {
 
 
     reportError = function (err) {
-        return console.log("Error with quality control data analysis: " + err + "\nTo display more information for any" +
+        return console.error("Error with quality control data analysis: " + err + "\nTo display more information for any" +
             " function type <func_name> instead of <func_name>(...)");
     };
 
