@@ -402,7 +402,21 @@
 
         mergeMetaData = function (metaDataObj) {
             //variable declarations
-            var  prop, result, returnObj;
+            var  prop, result, returnObj, makeNumber;
+
+            //function definitions
+            makeNumber = function (x) {
+                var sol = x;
+                if (typeof x === 'string' && x.match(/^[\d\.\-\,e\+]+$/)) {
+                    x = x.replace(/\,/g, '');
+                    if (x.match(/\.|e/)) {
+                        sol = parseFloat(x);
+                    } else {
+                        sol = parseInt(x, 10);
+                    }
+                }
+                return sol;
+            };
 
             //variable definitions
             returnObj = {
@@ -410,8 +424,8 @@
                 barcode: metaDataObj.Barcode || undefined,
                 col: metaDataObj.Col || undefined,
                 dataArr: {
-                    cycle: metaDataObj.Cycle || undefined,
-                    exposureTime: metaDataObj.Exposure_time || undefined,
+                    cycle: metaDataObj.Cycle.map(makeNumber) || undefined,
+                    exposureTime: metaDataObj.Exposure_time.map(makeNumber) || undefined,
                     cycleSeries: {},
                     postWash: {}
                 },
@@ -437,7 +451,7 @@
                     }
                     result = determineSameness(returnObj[prop]);
                     if (result.array) {
-                        returnObj.dataArr[prop] = result.array;
+                        returnObj.dataArr[prop] = result.array.map(makeNumber);
                         delete returnObj[prop];
                     } else {
                         returnObj[prop] = result;

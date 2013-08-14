@@ -113,7 +113,7 @@ KINOMICS.qualityControl.DA = (function () {
         //variable declarations
         var callback, progressBar, barcodesAnalyzed, barWell, barWellChanged, progress,
             peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
-            j, skip, mainObj, submitObj, type, initializeMainObject;
+            j, skip, mainObj, submitObj, type, initializeMainObject, typeObj;
 
         //variable definitions
         barcodesAnalyzed = [];
@@ -138,7 +138,6 @@ KINOMICS.qualityControl.DA = (function () {
             progressBar.width(percentFinished + '%');
             progressBar.text(percentFinished + '%');
         };
-
         initializeMainObject = function (mainObj, func) {
             var skip;
             skip = -1;
@@ -179,17 +178,17 @@ KINOMICS.qualityControl.DA = (function () {
                         mainObj = barWellObj[barWell].peptides[peptide];
                         for (type in mainObj) {
                             if (mainObj.hasOwnProperty(type)) {
-                                mainObj = mainObj[type];
-                                if (!mainObj.models) {
-                                    mainObj.models = [];
+                                typeObj = mainObj[type];
+                                if (!typeObj.models) {
+                                    typeObj.models = [];
                                 }
                                 //Add all the equations making sure that they do not already exist
                                 for (j = 0; j <  lib.functions[type].length; j += 1) {
                                     // Initialize main object as needed
-                                    skip = initializeMainObject(mainObj, lib.functions[type][j]);
+                                    skip = initializeMainObject(typeObj, lib.functions[type][j]);
                                     //Finally submit the job
-                                    submitObj = JSON.parse(JSON.stringify(mainObj.models[skip]));
-                                    submitObj.uuid = mainObj.uuid;
+                                    submitObj = JSON.parse(JSON.stringify(typeObj.models[skip]));
+                                    submitObj.uuid = typeObj.uuid;
                                     submitObj.modelInd = skip;
                                     workers.submitJob([submitObj], updateData);
                                     total += 1;

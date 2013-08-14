@@ -1,4 +1,5 @@
 /*global M, document, KINOMICS, google, console, $, jQuery*/
+/*jslint todo: true */
 
 //TODO: slider bar for R^2, without the installed package? Not high priority, but probably best to remove this framework
 
@@ -32,11 +33,11 @@ KINOMICS.qualityControl.UI = (function () {
     run = function (func) {
         return function () {
             var y;
-            try {
+            // try {
                 y = func.apply(null, arguments);
-            } catch (err) {
-                reportError(err);
-            }
+            // } catch (err) {
+            //     reportError(err);
+            // }
             return y;
         };
     };
@@ -144,14 +145,13 @@ KINOMICS.qualityControl.UI = (function () {
             element.button('complete');
             barcodes = KINOMICS.barcodes.parents || barcodes;
             currentAnalysis = KINOMICS.barcodes;
-            for (i = 0; i < barcodes.length; i += 1 ) {
+            for (i = 0; i < barcodes.length; i += 1) {
                 $('#tempQCMessage').hide();
                 buttonWell.show();
                 if (barcodes[i].db.fit === false) {
                     element.button('reset');
                     element.unbind('click');
                     element.click(fitCurvesClick);
-                    return;
                 } else if (!upd) {
                     mainLib.QCtable.update();
                     mainLib.saveDataBut.update();
@@ -268,7 +268,7 @@ KINOMICS.qualityControl.UI = (function () {
             /*////////////////////////////////////////////////////////////////////////////////
             This function takes no arguments, and returns the current barcode displayed.
             */////////////////////////////////////////////////////////////////////////////////
-            return barSelected || undefined;
+            return barSelected === 0 ? 0 : barSelected || undefined;
         };
 
         lib.getCurrentPep = function () {
@@ -487,12 +487,12 @@ KINOMICS.qualityControl.UI = (function () {
             qcBody.show();
 
             //loop through barcodes to determine if any are ready for display
-            for (bw in barcodes) {
-                if (barcodes.hasOwnProperty(bw) && barcodes[bw].db && barcodes[bw].db.fit) {
+            for (bw = 0; bw < barcodes.length; bw += 1) {
+                if (barcodes[bw].db && barcodes[bw].db.fit) {
                     barArr.push(bw);
                 }
             }
-            barArr.sort();
+            barArr = barArr.sort(function (a, b) { return barcodes[a].name > barcodes[b].name ? 1 : -1; });
             if (barSelected) {
                 barCurrentPage = Math.floor(barArr.indexOf(barSelected) / idsPerPage) + 1;
             }
@@ -606,24 +606,24 @@ KINOMICS.qualityControl.UI = (function () {
 
         makePostWashFigure = function () {
             //variable declarations
+            //TODO: combine these into one function...
             var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
-            //TODO: pass in barcode/peptide so it only has to be grabbed once, maybe make them part of lib defined by update();
             //variable defintions
             eq = KINOMICS.postWashFunc;
             dataTable = [["exposure time", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
-            data = barcodes[barcode].peptides[peptide].postWash;
+            data = barcodes[barcode].peptides[peptide].postWash.models[0];
             params = data.parameters;
-            length = data.exposureTime.length;
-            max = Math.max.apply(null, data.exposureTime);
-            min = Math.min.apply(null, data.exposureTime);
+            length = data.x_values.length;
+            max = Math.max.apply(null, data.x_values);
+            min = Math.min.apply(null, data.x_values);
             indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
                 if (data.accurateData[i]) {
-                    dataTable.push([data.exposureTime[i], data.medSigMBack[i], null, null]);
+                    dataTable.push([data.x_values[i], data.y_values[i], null, null]);
                 } else {
-                    dataTable.push([data.exposureTime[i], null, data.medSigMBack[i], null]);
+                    dataTable.push([data.x_values[i], null, data.y_values[i], null]);
                 }
             }
 
@@ -667,25 +667,26 @@ KINOMICS.qualityControl.UI = (function () {
 
         makeTimeSeriesFigure = function () {
             //variable declarations
+            //TODO: combine these into one function...
             var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
 
             //variable defintions
-            eq = KINOMICS.cycleSeriesFunc;
-            data = barcodes[barcode].peptides[peptide].cycleSeries;
+            data = barcodes[barcode].peptides[peptide].cycleSeries.models[0];
+            eq = data.equation.func;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             params = data.parameters;
-            length = data.cycleNum.length;
-            max = Math.max.apply(null, data.cycleNum);
-            min = Math.min.apply(null, data.cycleNum);
+            length = data.x_values.length;
+            max = Math.max.apply(null, data.x_values);
+            min = Math.min.apply(null, data.x_values);
             indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
             //TODO: turn this portion into a function call?
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
                 if (data.accurateData[i]) {
-                    dataTable.push([data.cycleNum[i], data.medSigMBack[i], null, null]);
+                    dataTable.push([data.x_values[i], data.y_values[i], null, null]);
                 } else {
-                    dataTable.push([data.cycleNum[i], null, data.medSigMBack[i], null]);
+                    dataTable.push([data.x_values[i], null, data.y_values[i], null]);
                 }
             }
 
@@ -735,7 +736,7 @@ KINOMICS.qualityControl.UI = (function () {
             barcode = mainLib.QCtable.getCurrentBar();
             peptide = mainLib.QCtable.getCurrentPep();
 
-            if (!barcode || !peptide) {
+            if (barcode === undefined || !peptide) {
                 figureColumn.hide();
                 figureInfoColumn.hide();
                 throw "Need to select both a peptide and a barcode to display figures";

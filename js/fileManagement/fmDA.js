@@ -354,8 +354,11 @@ KINOMICS.fileManager.DA = (function () {
                             expanded.push(function () {obj[i] = ref; });
                         }(input_obj.parents, i, ref));
                         //Add data object
-                        input_obj.parents[i].db = input_obj.parents[i].db || {};
-                        input_obj.parents[i].db.fit = false;
+                        if (!input_obj.parents[i].db) {
+                            input_obj.parents[i].db = {};
+                            input_obj.parents[i].db.fit = false;
+                            input_obj.parents[i].name = 'bar' + input_obj.parents[i].barcode + '_well' + input_obj.parents[i].row;
+                        }
                     }
                 }
 
