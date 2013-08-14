@@ -341,6 +341,9 @@ KINOMICS.qualityControl.UI = (function () {
 
             //update page number
             barPageElem.html('<a>Page ' + barCurrentPage + '/' + (Math.floor(len / idsPerPage) + 1) + '</a>');
+            if (pepSelected) {
+                pepRefresh();
+            }
         };
 
         pepClicked = function () {
@@ -376,8 +379,9 @@ KINOMICS.qualityControl.UI = (function () {
                     peptide = pepArr[ind];
                     peptide = peptide.replace(/(r|c)_(\d+)/g, '$1-$2');
                     peptide = peptide.replace(/_/g, ' ');
-                    if (data.postWash.R2 < flagR ||
-                            data.cycleSeries.R2 < flagR) {
+                    //TODO generalize this to work with any number of models or types
+                    if (data.postWash.models[0].R2 < flagR ||
+                            data.cycleSeries.models[0].R2 < flagR) {
                         flag = "&nbsp;<i class=icon-exclamation-sign></i>";
                     } else {
                         flag = "";
@@ -674,8 +678,8 @@ KINOMICS.qualityControl.UI = (function () {
 
             //variable defintions
             ind = 0;
-            uuid = barcodes[barcode].peptides[peptide].postWash.uuid;
-            data = barcodes[barcode].peptides[peptide].postWash.models[ind];
+            uuid = barcodes[barcode].peptides[peptide].cycleSeries.uuid;
+            data = barcodes[barcode].peptides[peptide].cycleSeries.models[ind];
             eq = data.equation.func;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             params = data.parameters;
@@ -782,7 +786,7 @@ KINOMICS.qualityControl.UI = (function () {
                     data: data,
                     uuid: uuid,
                     ind: ind,
-                    callback: update
+                    callback: function () { update(); mainLib.QCtable.update(); }
                 });
             };
         };
