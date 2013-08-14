@@ -11,15 +11,15 @@
 		//return params[0]+1/(1/(params[1]*(xVector[0]-params[2]))+1/params[3]);
 	},
 	setInitial: function (x_vector, y_values) {
-		var vi, Ym, c, xS, xMin, xMax, yMin, yMax, y0, x_values, yN;
+		var vi, Ym, c, xS, xMin, xMax, yMin, yMax, y0, x_values =[], yN;
 
 		x_vector.map(function (x) { x_values.push(x[0]); });
 		xS = JSON.parse(JSON.stringify(x_values));
         xS = xS.sort();
         xMin = xS.shift();
         xMax = xS.pop();
-        y0 = y_values[xVec.indexOf(xMin)];
-        yN = y_values[xVec.indexOf(xMax)];
+        y0 = y_values[x_vector.indexOf(xMin)];
+        yN = y_values[x_vector.indexOf(xMax)];
         yMin = Math.min.apply(null, y_values);
         yMax = Math.max.apply(null, y_values);
 

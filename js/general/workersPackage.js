@@ -40,7 +40,7 @@ KINOMICS.workers = (function () {
     };
 
     reportError = function (err) {
-        return console.log("Worker error: " + err + "\nTo display more information for any" +
+        return console.error("Worker error: " + err + "\nTo display more information for any" +
             " function type <func_name> instead of <func_name>()");
     };
 

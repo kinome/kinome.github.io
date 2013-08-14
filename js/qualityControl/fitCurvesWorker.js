@@ -1,4 +1,5 @@
 /*global self: false */
+/*jslint evil:true, todo: true */
 
 // TODO: check user input...
 //Container for all code. Will be run on load
@@ -103,13 +104,11 @@
 
     determineRunningConditions = function (object) {
         //variable declarations
-        var func, i, X, xIni, xS, xVec, xMax, xMin, y0, yIni, yMax, yMin, yN,
-            Ym, vi, c, params, length, equationObj;
-        eval('equationObj=' + object.equation.string);
+        var i, X, xIni, yIni, length, equationObj;
+        equationObj = eval('equationObj=' + object.equation.string);
         //variable defintions
         X = object.x_values;
         xIni = [];
-        xVec = [];
         yIni = [];
         length = X.length;
 
@@ -120,13 +119,12 @@
                 yIni.push(object.y_values[i]);
             }
         }
-
         return {params: equationObj.setInitial(xIni, yIni), X: xIni, y: yIni, func: equationObj.func};
     };
 
     self.onmessage = function (event) {
         //variable declarations
-        var barcode, peptide, points, result, runCond, type, x0;
+        var result, runCond;
         //variable definitions
         runCond = determineRunningConditions(event.data[0]);
 

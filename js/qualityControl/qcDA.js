@@ -1,5 +1,5 @@
-/*global KINOMICS: false, console: false, $ */
-/*jslint todo: true */
+/*global KINOMICS: false, console: false, $*/
+/*jslint evil:true, todo: true */
 KINOMICS.qualityControl.DA = (function () {
     'use strict';
 
@@ -10,18 +10,17 @@ KINOMICS.qualityControl.DA = (function () {
     lib = {};
     lib.functions = {
         postWash: ['js/qualityControl/postWashEq.js'],
-        cycling: ['js/qualityControl/cyclingEq.js']
+        cycleSeries: ['js/qualityControl/cyclingEq.js']
     };
 
     //preload equations
     (function () {
         var type, i, suc, er;
-        
         suc = function (arr, ind) {
             return function (x) {
                 var sol, url;
                 url = arr[ind];
-                sol = eval('sol=' + x.replace(/[^\n\r]+?\/\/[^\n\r]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
+                sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
                 arr[ind] = sol;
                 arr[ind].string = x;
                 arr[ind].url = url;
@@ -69,12 +68,11 @@ KINOMICS.qualityControl.DA = (function () {
     //Define Local functions
     dataUpdateCallback = function (event) {
         //variable declarations
-        var originalObj, data, fit, params, peptideI, percentFinished, R2, totalSSE, type;
+        var originalObj, data, fit;
         //Get location of original data
         originalObj = event.data.shift();
         fit = event.data.shift();
         data = currentAnalysis.uuids[originalObj.uuid].models[originalObj.modelInd];
-        // console.log("Came back for barcode: " + barcode + " peptide: " + peptideI);
         //variable defintions
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
@@ -95,7 +93,7 @@ KINOMICS.qualityControl.DA = (function () {
         worker = workerObj.startWorkers({filename: workerFile, num_workers: 1});
         fitCurve = function (input_obj) {
             //variable declarations
-            var analysisType, barcode, callback, data, peptide;
+            var analysisType, barcode, callback, peptide;
 
             //variable definitions
             analysisType = input_obj.analysisType;
@@ -114,9 +112,9 @@ KINOMICS.qualityControl.DA = (function () {
 
     fitCurves = function (input_obj) {
         //variable declarations
-        var callback, progressBar, barcodesAnalyzed, barContainer, barWell, barWellChanged, progress,
+        var callback, progressBar, barcodesAnalyzed, barWell, barWellChanged, progress,
             peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
-            j, skip, mainObj, submitObj;
+            j, skip, mainObj, submitObj, type, initializeMainObject;
 
         //variable definitions
         barcodesAnalyzed = [];
@@ -142,6 +140,31 @@ KINOMICS.qualityControl.DA = (function () {
             progressBar.text(percentFinished + '%');
         };
 
+        initializeMainObject = function (mainObj, func) {
+            var skip;
+            skip = -1;
+            //Does it already exist? - Right now this checks URL, ideal it will check screen
+            mainObj.models.map(function (x, ind) {
+                if (x.equation.url === func.url) {
+                    skip = ind;
+                }
+            });
+            //Add the needed components if not
+            if (skip < 0) {
+                skip = mainObj.models.length;
+                mainObj.models.push({
+                    equation: func,
+                    accurateData: [],
+                    x_values: mainObj.xVals,
+                    y_values: mainObj.medSigMBack
+                });
+                mainObj.medSigMBack.map(function () {
+                    mainObj.models[skip].accurateData.push(true);
+                });
+            }
+            return skip;
+        };
+
         //Open workers
         workers = workerObj.startWorkers({filename: workersFile, num_workers: 4});
 
@@ -155,42 +178,27 @@ KINOMICS.qualityControl.DA = (function () {
                     if (barWellObj[barWell].peptides.hasOwnProperty(peptide)) {
                         //TODO: add in dealing with '0' data, and errors based on barcode_well rather than file.
                         mainObj = barWellObj[barWell].peptides[peptide];
-                        if (!mainObj.postWash.models) {
-                            mainObj.postWash.models = [];
-                        }
-                        //Add all the equations making sure that they do not already exist
-                        for (j = 0; j <  lib.functions.postWash.length; j += 1) {
-                            skip = -1;
-                            //Does it already exist?
-                            mainObj.postWash.models.map(function (x, ind) {
-                                if (x.equation.url === lib.functions.postWash[j].url) {
-                                    skip = ind;
+                        for (type in mainObj) {
+                            if (mainObj.hasOwnProperty(type)) {
+                                mainObj = mainObj[type];
+                                if (!mainObj.models) {
+                                    mainObj.models = [];
                                 }
-                            });
-                            //Add the needed components if not
-                            if (skip < 0) {
-                                skip = mainObj.postWash.models.length;
-                                mainObj.postWash.models.push({
-                                    equation: lib.functions.postWash[j],
-                                    accurateData: [],
-                                    x_values: mainObj.postWash.xVals,
-                                    y_values: mainObj.postWash.medSigMBack
-                                });
-                                mainObj.postWash.medSigMBack.map(function () {
-                                    mainObj.postWash.models[skip].accurateData.push(true);
-                                });
+                                //Add all the equations making sure that they do not already exist
+                                for (j = 0; j <  lib.functions[type].length; j += 1) {
+                                    console.log('stop 3');
+                                    // Initialize main object as needed
+                                    skip = initializeMainObject(mainObj, lib.functions[type][j]);
+                                    //Finally submit the job
+                                    submitObj = JSON.parse(JSON.stringify(mainObj.models[skip]));
+                                    submitObj.uuid = mainObj.uuid;
+                                    submitObj.modelInd = skip;
+                                    console.log(submitObj);
+                                    workers.submitJob([submitObj], updateData);
+                                    total += 1;
+                                }
                             }
-                            //Finally submit the job
-                            submitObj = JSON.parse(JSON.stringify(mainObj.postWash.models[skip]));
-                            submitObj.uuid = mainObj.postWash.uuid;
-                            submitObj.modelInd = skip;
-                            workers.submitJob([submitObj], updateData);
                         }
-                        // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
-                        //     updateData);
-                        // workers.submitJob([barWellObj[barWell].peptides[peptide].cycleSeries, barWell, peptide, "cycleSeries"],
-                        //     updateData);
-                        // total += 2;
                     }
                 }
             }
