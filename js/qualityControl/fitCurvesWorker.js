@@ -14,14 +14,14 @@
     fmincon = (function () {
         //please note - this is a minimized version of fmincon from amdjs_1.1.0.js
         //variable declarations
-        var avg, sqrSumOfErrors, sqrSumOfDeviations, func;
+        var sqrSumOfErrors, sqrSumOfDeviations, func;
 
         //variable defintions
 
         //function definitions
         func = function (fun, x0, X, y) {
             //variable definitions
-            var corrIsh, count, itt, lastItter, options, parI, SSDTot, sse, SSETot, x1;
+            var corrIsh, itt, lastItter, options, parI, SSDTot, sse, SSETot, x1;
 
             //variable declarations
             options = {
@@ -30,7 +30,6 @@
                 minPer: 1e-6
             };
             lastItter = Infinity;
-            count = 0;
             x1 = JSON.parse(JSON.stringify(x0));
 
             //Actually begin looping through all the data
@@ -108,9 +107,7 @@
             Ym, vi, c, params, length, equationObj;
         eval('equationObj=' + object.equation.string);
         //variable defintions
-        func = equationObj.func;
         X = object.x_values;
-        
         xIni = [];
         xVec = [];
         yIni = [];
@@ -119,43 +116,12 @@
         //determine what points are 'good'
         for (i = 0; i < length; i += 1) {
             if (object.accurateData[i]) {
-                xIni.push([X[i]]);
-                xVec.push(X[i]);
+                xIni.push([X[i]]); // This is to be used for the curve fitting
                 yIni.push(object.y_values[i]);
             }
         }
 
-        if (object.type === "postWash") {
-            xMin = Math.min.apply(null, xVec);
-            yMin = Math.min.apply(null, yIni);
-            yMin = yMin === 0 ? 10 : yMin;
-            xMin = xMin === 0 ? 10 : xMin;
-            params = [yMin / xMin, xMin];
-        } else {
-            //P[0] = Yo P[1]=k, P[2]= Xo, p[3] = Ymax
-            xS = JSON.parse(JSON.stringify(xVec));
-            xS = xS.sort();
-            xMin = xS.shift();
-            xMax = xS.pop();
-            y0 = yIni[xVec.indexOf(xMin)];
-            yN = yIni[xVec.indexOf(xMax)];
-            yMin = Math.min.apply(null, yIni);
-            yMax = Math.max.apply(null, yIni);
-
-            //Deal with overall negative slopes
-            Ym = ((yN - y0) / (xMax - xMin) < 0) ? yMin : yMax;
-
-            //Assign parameters
-            vi = Ym / 5;
-            vi = vi === 0 ? -10 : vi;
-            Ym = Ym === 0 ? -10 : Ym;
-            // y0 = Ym === y0 ? Ym - 1 : y0;
-            // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
-            xMin = xMin || 10;
-            c = y0 / xMin || -10;
-            params =  [vi, c, Ym];
-        }
-        return {params: params, X: xIni, y: yIni, func: func};
+        return {params: equationObj.setInitial(xIni, yIni), X: xIni, y: yIni, func: equationObj.func};
     };
 
     self.onmessage = function (event) {

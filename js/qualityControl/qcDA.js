@@ -184,7 +184,6 @@ KINOMICS.qualityControl.DA = (function () {
                             submitObj = JSON.parse(JSON.stringify(mainObj.postWash.models[skip]));
                             submitObj.uuid = mainObj.postWash.uuid;
                             submitObj.modelInd = skip;
-                            submitObj.type = "postWash";
                             workers.submitJob([submitObj], updateData);
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
