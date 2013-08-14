@@ -607,11 +607,13 @@ KINOMICS.qualityControl.UI = (function () {
         makePostWashFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
+            var eq, uuid, ind, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
             //variable defintions
             eq = KINOMICS.postWashFunc;
             dataTable = [["exposure time", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
-            data = barcodes[barcode].peptides[peptide].postWash.models[0];
+            ind = 0;
+            uuid = barcodes[barcode].peptides[peptide].postWash.uuid;
+            data = barcodes[barcode].peptides[peptide].postWash.models[ind];
             params = data.parameters;
             length = data.x_values.length;
             max = Math.max.apply(null, data.x_values);
@@ -662,16 +664,18 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart2'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick('postWash', chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(data, uuid, ind, chart));
         };
 
         makeTimeSeriesFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
+            var ind, uuid, eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
 
             //variable defintions
-            data = barcodes[barcode].peptides[peptide].cycleSeries.models[0];
+            ind = 0;
+            uuid = barcodes[barcode].peptides[peptide].postWash.uuid;
+            data = barcodes[barcode].peptides[peptide].postWash.models[ind];
             eq = data.equation.func;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             params = data.parameters;
@@ -726,7 +730,7 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart1'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick('cycleSeries', chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(data, uuid, ind, chart));
         };
 
         update = function () {
@@ -751,17 +755,16 @@ KINOMICS.qualityControl.UI = (function () {
             }
         };
 
-        chartClick = function (analysis, chart) {
+        chartClick = function (data, uuid, ind, chart) {
             return function () {
                 //variable declarations
-                var point, data;
+                var point;
 
                 //variable definitions
                 point = chart.getSelection();
                 point = point[0];
                 barcodes[barcode].db.changed = true;
                 mainLib.saveDataBut.update(); // update save data button
-                data = barcodes[barcode].peptides[peptide][analysis];
 
                 //Change from good to bad
                 if (point && Number(point.column) === 1) {
@@ -776,10 +779,9 @@ KINOMICS.qualityControl.UI = (function () {
                 dataAnalysisObj.fitCurve({
                     workersLocation: workerObj,
                     workersFile: fitCurvesWorkersFile,
-                    barWellContainer: barcodes,
-                    analysisType: analysis,
-                    barcode: barcode,
-                    peptide: peptide,
+                    data: data,
+                    uuid: uuid,
+                    ind: ind,
                     callback: update
                 });
             };

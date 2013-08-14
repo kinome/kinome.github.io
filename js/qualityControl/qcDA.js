@@ -92,17 +92,19 @@ KINOMICS.qualityControl.DA = (function () {
         worker = workerObj.startWorkers({filename: workerFile, num_workers: 1});
         fitCurve = function (input_obj) {
             //variable declarations
-            var analysisType, barcode, callback, peptide;
+            var callback, uuid, ind, typeObj, submitObj;
 
             //variable definitions
-            analysisType = input_obj.analysisType;
-            barcode = input_obj.barcode;
             callback = input_obj.callback || function (x) {if (x !== undefined) { console.log(x); } };
-            peptide = input_obj.peptide;
-            //TODO: check user input
-            worker.submitJob([barWellObj[barcode].peptides[peptide][analysisType], barcode, peptide, analysisType],
-                dataUpdateCallback);
+            typeObj = input_obj.data;
+            uuid = input_obj.uuid;
+            ind = input_obj.ind;
 
+            //TODO: check user input
+            submitObj = JSON.parse(JSON.stringify(typeObj));
+            submitObj.uuid = uuid;
+            submitObj.modelInd = ind;
+            worker.submitJob([submitObj], dataUpdateCallback);
             worker.onComplete(callback);
         };
         //call the new definition to do work
