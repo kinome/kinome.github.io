@@ -8,7 +8,7 @@ KINOMICS.qualityControl.UI = (function () {
     //variable declarations
     var barcodes, barContainer, barDiv, buttonRow, buttonWell, dataAnalysisObj,  fitCurvesBut, figureColumn, figureInfoColumn,
         lib, loadingBarRow, qcBody, reportError, run, startNextPeptide, tableSpot, workerObj, sliderbar,
-        fitCurvesWorkersFile, optionsElem, fileManagerDA, fuse, S3DB;
+        fitCurvesWorkersFile, optionsElem, fileManagerDA, fuse, S3DB, currentAnalysis;
 
     //variable definitions
     lib = {};
@@ -18,6 +18,7 @@ KINOMICS.qualityControl.UI = (function () {
     dataAnalysisObj = KINOMICS.qualityControl.DA;
     fitCurvesWorkersFile = 'js/qualityControl/fitCurvesWorker.js';
     barcodes = KINOMICS.barcodes;
+    currentAnalysis = KINOMICS.barcodes;
     fileManagerDA = KINOMICS.fileManager.DA;
     fuse = KINOMICS.fileManager.DA.fusionTables;
     S3DB = KINOMICS.fileManager.DA.S3DB;
@@ -121,6 +122,7 @@ KINOMICS.qualityControl.UI = (function () {
                 progressBar: progressBar,
                 barWellContainer: barcodes,
                 workersLocation: workerObj,
+                currentAnalysis: currentAnalysis,
                 workersFile: fitCurvesWorkersFile,
                 callback: function () {
                     var bw;
@@ -141,6 +143,7 @@ KINOMICS.qualityControl.UI = (function () {
             var i, upd = 0;
             element.button('complete');
             barcodes = KINOMICS.barcodes.parents || barcodes;
+            currentAnalysis = KINOMICS.barcodes;
             for (i = 0; i < barcodes.length; i += 1 ) {
                 $('#tempQCMessage').hide();
                 buttonWell.show();
@@ -617,7 +620,7 @@ KINOMICS.qualityControl.UI = (function () {
 
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
-                if (data.goodData[i]) {
+                if (data.accurateData[i]) {
                     dataTable.push([data.exposureTime[i], data.medSigMBack[i], null, null]);
                 } else {
                     dataTable.push([data.exposureTime[i], null, data.medSigMBack[i], null]);
@@ -679,7 +682,7 @@ KINOMICS.qualityControl.UI = (function () {
             //TODO: turn this portion into a function call?
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
-                if (data.goodData[i]) {
+                if (data.accurateData[i]) {
                     dataTable.push([data.cycleNum[i], data.medSigMBack[i], null, null]);
                 } else {
                     dataTable.push([data.cycleNum[i], null, data.medSigMBack[i], null]);
@@ -761,11 +764,11 @@ KINOMICS.qualityControl.UI = (function () {
 
                 //Change from good to bad
                 if (point && Number(point.column) === 1) {
-                    data.goodData[point.row - 1] = false;
+                    data.accurateData[point.row - 1] = false;
                     //refit curve...
                 //change from bad to good
                 } else if (point && Number(point.column) === 2) {
-                    data.goodData[point.row - 1] = true;
+                    data.accurateData[point.row - 1] = true;
                 }
 
                 //refit, then replot

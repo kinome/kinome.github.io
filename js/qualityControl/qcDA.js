@@ -4,7 +4,7 @@ KINOMICS.qualityControl.DA = (function () {
     'use strict';
 
     //Local Variables
-    var lib, barWellObj, dataUpdateCallback, fitCurve, fitCurves, reportError, run;
+    var lib, barWellObj, currentAnalysis, dataUpdateCallback, fitCurve, fitCurves, reportError, run;
 
     //Define variables
     lib = {};
@@ -69,18 +69,17 @@ KINOMICS.qualityControl.DA = (function () {
     //Define Local functions
     dataUpdateCallback = function (event) {
         //variable declarations
-        var barcode, data, fit, params, peptideI, percentFinished, R2, totalSSE, type;
+        var originalObj, data, fit, params, peptideI, percentFinished, R2, totalSSE, type;
         //Get location of original data
-        barcode = event.data.shift();
-        peptideI = event.data.shift();
-        type = event.data.shift();
+        originalObj = event.data.shift();
         fit = event.data.shift();
-        data = barWellObj[barcode].peptides[peptideI][type];
+        data = currentAnalysis.uuids[originalObj.uuid].models[originalObj.modelInd];
         // console.log("Came back for barcode: " + barcode + " peptide: " + peptideI);
         //variable defintions
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
         data.totalSqrErrors = fit.totalSqrErrors;
+        console.log(data);
     };
 
     fitCurve = function (input_obj) {
@@ -117,11 +116,12 @@ KINOMICS.qualityControl.DA = (function () {
         //variable declarations
         var callback, progressBar, barcodesAnalyzed, barContainer, barWell, barWellChanged, progress,
             peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
-            j, skip, mainObj;
+            j, skip, mainObj, submitObj;
 
         //variable definitions
         barcodesAnalyzed = [];
         barWellObj = input_obj.barWellContainer;
+        currentAnalysis = input_obj.currentAnalysis;
         barWellChanged = [];
         percentFinished = 0;
         progress = 0;
@@ -172,16 +172,20 @@ KINOMICS.qualityControl.DA = (function () {
                                 skip = mainObj.postWash.models.length;
                                 mainObj.postWash.models.push({
                                     equation: lib.functions.postWash[j],
-                                    goodData: [],
+                                    accurateData: [],
                                     x_values: mainObj.postWash.xVals,
                                     y_values: mainObj.postWash.medSigMBack
                                 });
                                 mainObj.postWash.medSigMBack.map(function () {
-                                    mainObj.postWash.models[skip].goodData.push(true);
+                                    mainObj.postWash.models[skip].accurateData.push(true);
                                 });
                             }
                             //Finally submit the job
-                            workers.submitJob([JSON.parse(JSON.stringify(mainObj.postWash.models[skip]))], function (x) { console.log(x); });
+                            submitObj = JSON.parse(JSON.stringify(mainObj.postWash.models[skip]));
+                            submitObj.uuid = mainObj.postWash.uuid;
+                            submitObj.modelInd = skip;
+                            submitObj.type = "postWash";
+                            workers.submitJob([submitObj], updateData);
                         }
                         // workers.submitJob([barWellObj[barWell].peptides[peptide].postWash, barWell, peptide, "postWash"],
                         //     updateData);

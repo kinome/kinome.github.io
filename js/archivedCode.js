@@ -53,8 +53,8 @@ expandBarcodeWell = (function () {
                         if (that.peptides.hasOwnProperty(peptide)) {
                             delete that.peptides[peptide].cycleSeries.cycleNum;
                             delete that.peptides[peptide].postWash.exposureTime;
-                            delete that.peptides[peptide].cycleSeries.goodData;
-                            delete that.peptides[peptide].postWash.goodData;
+                            delete that.peptides[peptide].cycleSeries.accurateData;
+                            delete that.peptides[peptide].postWash.accurateData;
                         }
                     }
                 }
@@ -126,14 +126,14 @@ expandBarcodeWell = (function () {
                         obj.peptides[peptide].postWash.exposureTime = obj.dataArr.postWash.exposureTime;
                         toNumber(obj.peptides[peptide].postWash.medSigMBack); //Make the values into numbers
                         toNumber(obj.peptides[peptide].cycleSeries.medSigMBack); //Make the values into numbers
-                        obj.peptides[peptide].cycleSeries.goodData = [];
-                        obj.peptides[peptide].postWash.goodData = [];
+                        obj.peptides[peptide].cycleSeries.accurateData = [];
+                        obj.peptides[peptide].postWash.accurateData = [];
                         obj.peptides[peptide].addProperty = addSetterProp; //To keep track of changes to the object
                         for (i = 0; i < obj.peptides[peptide].cycleSeries.medSigMBack.length; i += 1) {
-                            addSetterProp(obj.peptides[peptide].cycleSeries.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'goodData'});
+                            addSetterProp(obj.peptides[peptide].cycleSeries.accurateData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'accurateData'});
                         }
                         for (i = 0; i < obj.peptides[peptide].postWash.medSigMBack.length; i += 1) {
-                            addSetterProp(obj.peptides[peptide].postWash.goodData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'goodData'});
+                            addSetterProp(obj.peptides[peptide].postWash.accurateData, i, true, {uuid: obj.uuid, peptide: peptide, type: 'cycleSeries', prop: 'accurateData'});
                         }
                     }
                 }

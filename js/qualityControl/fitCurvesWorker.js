@@ -1,26 +1,14 @@
 /*global self: false */
 
 // TODO: check user input...
-var globWork = [];
 //Container for all code. Will be run on load
 (function () {
     'use strict';
 
     //variable declarations
-    var fmincon, determineRunningConditions, postWashFunc, cycleSeriesFunc;
+    var fmincon, determineRunningConditions;
 
     //variable definitions
-    postWashFunc = function (xVector, params) {
-        //Y = mx+b, params[0]=m, parmas[1]=b
-        return params[0] * xVector[0] + params[1];
-    };
-
-    cycleSeriesFunc = function (xVector, P) {
-        //Yo + 1/[1/(k*[x-Xo])+1/Ymax]   P[0]=k, P[1]= Xo, p[2] = Ymax
-        //if (xVector[0] < P[1]) {return Infinity; }
-        return 1 / (1 / (P[0] * (xVector[0] - P[1])) + 1 / P[2]);
-        //return params[0]+1/(1/(params[1]*(xVector[0]-params[2]))+1/params[3]);
-    };
 
     //function definitions
     fmincon = (function () {
@@ -114,19 +102,15 @@ var globWork = [];
         return func;
     }());
 
-    determineRunningConditions = function (points, type) {
+    determineRunningConditions = function (object) {
         //variable declarations
         var func, i, X, xIni, xS, xVec, xMax, xMin, y0, yIni, yMax, yMin, yN,
-            Ym, vi, c, params, length;
+            Ym, vi, c, params, length, equationObj;
+        eval('equationObj=' + object.equation.string);
         //variable defintions
-        if (type === 'postWash') {
-            func = postWashFunc;
-            X = points.xVals;
-        } else {
-            func = cycleSeriesFunc;
-            X = points.xVals;
-        }
-        globWork.push(points);
+        func = equationObj.func;
+        X = object.x_values;
+        
         xIni = [];
         xVec = [];
         yIni = [];
@@ -134,14 +118,14 @@ var globWork = [];
 
         //determine what points are 'good'
         for (i = 0; i < length; i += 1) {
-            if (points.goodData[i]) {
+            if (object.accurateData[i]) {
                 xIni.push([X[i]]);
                 xVec.push(X[i]);
-                yIni.push(points.medSigMBack[i]);
+                yIni.push(object.y_values[i]);
             }
         }
 
-        if (type === "postWash") {
+        if (object.type === "postWash") {
             xMin = Math.min.apply(null, xVec);
             yMin = Math.min.apply(null, yIni);
             yMin = yMin === 0 ? 10 : yMin;
@@ -178,16 +162,10 @@ var globWork = [];
         //variable declarations
         var barcode, peptide, points, result, runCond, type, x0;
         //variable definitions
-        barcode = event.data[1];
-        peptide = event.data[2];
-        points = event.data[0];
-        type = event.data[3];
-        self.postMessage(event.data);
-        // runCond = determineRunningConditions(points, type);
+        runCond = determineRunningConditions(event.data[0]);
 
-        // result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
-
-        // //return result
-        // self.postMessage([barcode, peptide, type, result]);
+        result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
+        //return result
+        self.postMessage([event.data[0], result]);
     };
 }());
