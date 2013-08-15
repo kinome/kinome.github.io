@@ -92,18 +92,15 @@ KINOMICS.qualityControl.DA = (function () {
         worker = workerObj.startWorkers({filename: workerFile, num_workers: 1});
         fitCurve = function (input_obj) {
             //variable declarations
-            var callback, uuid, ind, typeObj, submitObj;
+            var callback, typeObj, submitObj;
 
             //variable definitions
             callback = input_obj.callback || function (x) {if (x !== undefined) { console.log(x); } };
             typeObj = input_obj.data;
-            uuid = input_obj.uuid;
-            ind = input_obj.ind;
 
             //TODO: check user input
             submitObj = JSON.parse(JSON.stringify(typeObj));
             submitObj.uuid = typeObj.uuid;
-
             worker.submitJob([submitObj], dataUpdateCallback);
             worker.onComplete(callback);
         };
@@ -167,7 +164,7 @@ KINOMICS.qualityControl.DA = (function () {
 
         //Open workers
         workers = workerObj.startWorkers({filename: workersFile, num_workers: 4});
-        console.log(currentAnalysis);
+
         //Start submitting jobs
         for (barWell = 0; barWell < barWellObj.length; barWell += 1) {
             if (barWellObj[barWell].db.fit === false) {
@@ -189,7 +186,6 @@ KINOMICS.qualityControl.DA = (function () {
                                     // Initialize main object as needed
                                     modelObj = initializeMainObject(typeObj, lib.functions[type][j]);
                                     //Finally submit the job
-                                    console.log(modelObj)
                                     submitObj = JSON.parse(JSON.stringify(modelObj));
                                     submitObj.uuid = modelObj.uuid;
                                     workers.submitJob([submitObj], updateData);
@@ -232,11 +228,11 @@ KINOMICS.qualityControl.DA = (function () {
     run = function (func) {
         return function () {
             var y;
-            // try {
+            try {
                 y = func.apply(null, arguments);
-            // } catch (err) {
-            //     reportError(err);
-            // }
+            } catch (err) {
+                reportError(err);
+            }
             return y;
         };
     };

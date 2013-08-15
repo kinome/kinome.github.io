@@ -23,7 +23,7 @@ KINOMICS.qualityControl.UI = (function () {
 
     //local functions
     reportError = function (err) {
-        return console.log("Kinomics User Interface Error: " + err + "\nTo display more information for any" +
+        return console.error("Kinomics User Interface Error: " + err + "\nTo display more information for any" +
             " function type <func_name> instead of <func_name>(...)");
     };
 
