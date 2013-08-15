@@ -7,9 +7,9 @@ KINOMICS.qualityControl.UI = (function () {
     'use strict';
 
     //variable declarations
-    var barcodes, barContainer, barDiv, buttonRow, buttonWell, dataAnalysisObj,  fitCurvesBut, figureColumn, figureInfoColumn,
+    var barcodes, barContainer, buttonRow, buttonWell, dataAnalysisObj,  figureColumn, figureInfoColumn,
         lib, loadingBarRow, qcBody, reportError, run, startNextPeptide, tableSpot, workerObj, sliderbar,
-        fitCurvesWorkersFile, optionsElem, fileManagerDA, fuse, S3DB, currentAnalysis;
+        fitCurvesWorkersFile, optionsElem, currentAnalysis;
 
     //variable definitions
     lib = {};
@@ -20,9 +20,6 @@ KINOMICS.qualityControl.UI = (function () {
     fitCurvesWorkersFile = 'js/qualityControl/fitCurvesWorker.js';
     barcodes = KINOMICS.barcodes;
     currentAnalysis = KINOMICS.barcodes;
-    fileManagerDA = KINOMICS.fileManager.DA;
-    fuse = KINOMICS.fileManager.DA.fusionTables;
-    S3DB = KINOMICS.fileManager.DA.S3DB;
 
     //local functions
     reportError = function (err) {
@@ -33,11 +30,11 @@ KINOMICS.qualityControl.UI = (function () {
     run = function (func) {
         return function () {
             var y;
-            // try {
+            try {
                 y = func.apply(null, arguments);
-            // } catch (err) {
-            //     reportError(err);
-            // }
+            } catch (err) {
+                reportError(err);
+            }
             return y;
         };
     };
@@ -94,10 +91,9 @@ KINOMICS.qualityControl.UI = (function () {
     //The following functions are for various elements of the page, in the order they appear top->bottom, left->right
     lib.fitCurvesBut = (function (mainLib) {
         //variable declarations
-        var element, fitCurves, fitCurvesClick, lib, progressBar, tempElem, that, update, updateActive;
+        var element, fitCurves, fitCurvesClick, lib, progressBar, tempElem, update, updateActive;
 
         //variable definitions
-        that = this;
         lib = {};
         fitCurves = dataAnalysisObj.fitCurves;
 
@@ -119,14 +115,12 @@ KINOMICS.qualityControl.UI = (function () {
             barContainer.show();
             //fit the curves
             fitCurves({
-                button: fitCurvesBut,
                 progressBar: progressBar,
                 barWellContainer: barcodes,
                 workersLocation: workerObj,
                 currentAnalysis: currentAnalysis,
                 workersFile: fitCurvesWorkersFile,
                 callback: function () {
-                    var bw;
                     element.button('complete');
                     barContainer.hide();
                     progressBar.hide();
@@ -134,7 +128,7 @@ KINOMICS.qualityControl.UI = (function () {
                     run(update)();
                     lib.update = updateActive; // Turns update feature back on.
                     mainLib.QCtable.update();
-                    mainLib.saveDataBut.update();
+                    //mainLib.saveDataBut.update();
                     //TODO: update/create save button
                 }
             });
@@ -154,7 +148,7 @@ KINOMICS.qualityControl.UI = (function () {
                     element.click(fitCurvesClick);
                 } else if (!upd) {
                     mainLib.QCtable.update();
-                    mainLib.saveDataBut.update();
+                    //mainLib.saveDataBut.update();
                     upd += 1;
                 }
             }
@@ -178,7 +172,7 @@ KINOMICS.qualityControl.UI = (function () {
         return lib;
     }(lib));
 
-    lib.saveDataBut = (function (mainLib) {
+   /* lib.saveDataBut = (function () {
         //variable declarations
         var button, click, lib, update, loading;
 
@@ -191,7 +185,7 @@ KINOMICS.qualityControl.UI = (function () {
             update();
         };
 
-        click = function (evt) {
+        click = function () {
             loading = true;
             button.button('loading');
             button.unbind('click');
@@ -228,8 +222,8 @@ KINOMICS.qualityControl.UI = (function () {
         }());
 
         return lib;
-    }(lib));
-
+    }());
+*/
     //This will be for the option element when there are more options...
     /*    lib.optionsCol = (function () {
         //variable declartions
@@ -243,13 +237,15 @@ KINOMICS.qualityControl.UI = (function () {
 
     lib.QCtable = (function (mainLib) {
         //variable declarations
-        var flagR, getCurrentBar, getCurrentPep, idsPerPage, lib, replaceFunc, slider, tableRows, update, prevPep, nextPep,
-            barArr, barClicked, barPageElem, barSelected, barCurrentPage, barRefresh, barNextPage, barPrevPage, pepInd,
-            pepArr, pepClicked, pepPageElem, pepSelected, pepCurrentPage, pepRefresh, pepNextPage, pepPrevPage, barInd;
+        var flagR, idsPerPage, lib, slider, tableRows, update, prevPep, nextPep,
+            barArr, barClicked, barPageElem, barSelected, barCurrentPage, barRefresh, pepInd,
+            pepArr, pepClicked, pepPageElem, pepSelected, pepCurrentPage, pepRefresh, barInd;
 
         //variable definitions
-        barArr = []; barCurrentPage = 1;
-        pepArr = []; pepCurrentPage = 1;
+        barArr = [];
+        barCurrentPage = 1;
+        pepArr = [];
+        pepCurrentPage = 1;
         lib = {};
         flagR = 0.8;
         tableRows = [[], []];
@@ -281,7 +277,7 @@ KINOMICS.qualityControl.UI = (function () {
         //function defintions
         barClicked = function () {
             //variable declarations
-            var pep, pepHere, that, tempElem;
+            var pep, pepHere, that;
 
             //variable definitions
             that = $(this);
@@ -348,7 +344,7 @@ KINOMICS.qualityControl.UI = (function () {
 
         pepClicked = function () {
             //variable declarations
-            var pep, that, tempElem;
+            var that;
 
             //variable definitions
             that = $(this);
@@ -364,7 +360,7 @@ KINOMICS.qualityControl.UI = (function () {
         };
         pepRefresh = function () {
             //variable declarations
-            var data, flag, html, htmlLen, i, ind, j, len, peptide, R2cut, tableStart;
+            var data, flag, html, i, ind, len, peptide, tableStart;
 
             //variable definitions
             tableStart = (pepCurrentPage - 1) * 10;
@@ -435,11 +431,6 @@ KINOMICS.qualityControl.UI = (function () {
         };
         prevPep = function () {
             //variable declarations
-            var barL, pepL;
-
-            //variable defintions
-            barL = barArr.length;
-            pepL = pepArr.length;
 
             //Three cases: normal, 
                 // we are at the first pep, 
@@ -461,11 +452,6 @@ KINOMICS.qualityControl.UI = (function () {
                 pepRefresh();
                 mainLib.plots.update();
             }
-        };
-
-        replaceFunc = function (x, y) {
-            //This is used to make sure names are not too long
-            return y + '<br/>';
         };
 
         startNextPeptide = function () {
@@ -594,7 +580,7 @@ KINOMICS.qualityControl.UI = (function () {
     lib.plots = (function (mainLib) {
         //variable declarations
         var barcode, lib, makePostWashFigure, makeTimeSeriesFigure, update,
-            figureInfoHeader, figureOne, figureTwo, figureOneInfo,
+            figureInfoHeader, figureOneInfo,
             figureTwoInfo, chartClick, peptide;
 
         //variable definitions
@@ -611,7 +597,7 @@ KINOMICS.qualityControl.UI = (function () {
         makePostWashFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var eq, uuid, ind, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
+            var eq, uuid, ind, chart, data, dataTable, i, length, max, options, params, tempElem;
             //variable defintions
             eq = KINOMICS.postWashFunc;
             dataTable = [["exposure time", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
@@ -621,8 +607,6 @@ KINOMICS.qualityControl.UI = (function () {
             params = data.parameters;
             length = data.x_values.length;
             max = Math.max.apply(null, data.x_values);
-            min = Math.min.apply(null, data.x_values);
-            indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
             //add values to dataTable
             for (i = 0; i < length; i += 1) {
@@ -674,7 +658,7 @@ KINOMICS.qualityControl.UI = (function () {
         makeTimeSeriesFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var ind, uuid, eq, chart, data, dataTable, i, indent, length, max, min, options, params, tempElem;
+            var ind, uuid, eq, chart, data, dataTable, i, length, max, min, options, params, tempElem;
 
             //variable defintions
             ind = 0;
@@ -686,7 +670,6 @@ KINOMICS.qualityControl.UI = (function () {
             length = data.x_values.length;
             max = Math.max.apply(null, data.x_values);
             min = Math.min.apply(null, data.x_values);
-            indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
             //TODO: turn this portion into a function call?
             //add values to dataTable
@@ -768,7 +751,7 @@ KINOMICS.qualityControl.UI = (function () {
                 point = chart.getSelection();
                 point = point[0];
                 barcodes[barcode].db.changed = true;
-                mainLib.saveDataBut.update(); // update save data button
+                // mainLib.saveDataBut.update(); // update save data button
 
                 //Change from good to bad
                 if (point && Number(point.column) === 1) {
@@ -806,8 +789,8 @@ KINOMICS.qualityControl.UI = (function () {
             //Height must be there so the charts to not get bigger over time...
             tempElem = $('<div/>', {"class": "row"}).appendTo(figureColumn);
             figureInfoHeader = $('<div/>', {"class": "offset1 span3"}).appendTo(tempElem);
-            figureOne = $('<div/>', {id: 'chart1', style: 'height:221px'}).appendTo(figureColumn);
-            figureTwo = $('<div/>', {id: 'chart2', style: 'height:221px'}).appendTo(figureColumn);
+            $('<div/>', {id: 'chart1', style: 'height:221px'}).appendTo(figureColumn);
+            $('<div/>', {id: 'chart2', style: 'height:221px'}).appendTo(figureColumn);
         }());
 
         return lib;
