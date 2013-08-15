@@ -1,3 +1,54 @@
+lib.saveDataBut = (function () {
+        //variable declarations
+        var button, click, lib, update, loading;
+
+        //variable definitions
+        lib = {};
+        loading = false;
+
+        lib.update = function () {
+            //TODO: user docs, this updates the save data button
+            update();
+        };
+
+        click = function () {
+            loading = true;
+            button.button('loading');
+            button.unbind('click');
+            //fileManagerDA.saveChanges(barcodes, options.currentDB);
+            //TODO: Deal with multiple options to save files to...
+            fileManagerDA.saveChanges(barcodes, fuse.saveBarcodes, function () {}, function () {
+                loading = false;
+                update();
+            });
+        };
+
+        update = function () {
+            var bar;
+            if (loading) {
+                return;
+            }
+            button.button('complete');
+            for (bar in barcodes) {
+                if (barcodes.hasOwnProperty(bar) && barcodes[bar].db.changed && !loading) {
+                    button.button('reset');
+                    button.click(click);
+                }
+            }
+        };
+
+        //Make element icon-upload
+        (function () {
+            button = $('<button />', {
+                'class': 'btn btn-primary pull-right',
+                'data-loading-text': 'Saving data, this may take a while',
+                'data-complete-text': 'All Data Saved',
+                text: 'Save Changes'
+            }).button('complete').appendTo(buttonRow);
+        }());
+
+        return lib;
+    }());
 expandBarcodeWell = (function () {
             //variable declarations
             var addSetterProp, changes, createObject, func, save, toString, userSave, userToString, toNumber;
