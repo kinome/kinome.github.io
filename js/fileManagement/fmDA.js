@@ -117,7 +117,7 @@ KINOMICS.fileManager.DA = (function () {
         ana.id = Math.uuid();
         ana.name = initialObj.name;
         ana.date = (new Date()).toISOString();
-        KINOMICS.barcodes = ana.data.JSON;
+        KINOMICS.barcodes = ana.data;
         globs.push(['analysis', ana]);
         queuePush = function (array) {
             var i;
@@ -186,7 +186,7 @@ KINOMICS.fileManager.DA = (function () {
     };
 
     lib.newDataObject = function () {
-        var expand, collapse, unfoldTriples, that, batchID, data, fileObj, queue, unloading, queuePush;
+        var addObject, expand, collapse, unfoldTriples, that, batchID, data, fileObj, queue, unloading, queuePush;
 
         queue = [];
         data = {};
@@ -307,7 +307,23 @@ KINOMICS.fileManager.DA = (function () {
                     });
                 }
             };
-
+            addObject = function (inputObj) {
+                var newUUID = Math.uuid();
+                data.JSON.uuids[newUUID] = inputObj.child;
+                inputObj.parent[inputObj.key] = data.JSON.uuids[newUUID];
+                Object.defineProperty(data.JSON.uuids[newUUID], 'uuid', {
+                    enumerable: false,
+                    configurable: false,
+                    writable: false,
+                    value: newUUID
+                });
+                (function (obj, key, ref) {
+                    expanded.push(function () {
+                        obj[key] = ref;
+                    });
+                }(inputObj.parent, inputObj.key, '&' + newUUID));
+                return inputObj.child;
+            };
             expand = function (callback) {
                 //This has two major goals, to expand on the parents/uuids to make a full unit and to create setter properties for tracking analytical steps
                 var i, key, key2, pw_x, ts_x, pep, obj, ref, input_obj;
@@ -440,6 +456,10 @@ KINOMICS.fileManager.DA = (function () {
             callback();
         };
 
+        data.addObject = function (inputObj) {
+            return addObject(inputObj);
+        };
+
         data.loadData = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
             var i, mainCallback, funcs;
@@ -452,7 +472,9 @@ KINOMICS.fileManager.DA = (function () {
             console.log(dataObj);
 
             mainCallback = function (uuid) {
+                // console.log('Being called once: ' + uuid);
                 return function (qContinue) {
+                    // console.log('here: ' + uuid);
                     cdb.loadData({uuid: uuid, callback: function (response) {
                         var prop, prop2, temp;
                         temp = JSON.parse(response);
@@ -484,7 +506,7 @@ KINOMICS.fileManager.DA = (function () {
             };
 
             if (dataObj.info.type === 'batch') {
-                for (i = 0; i < dataObj.info.barcodes; i += 1) {
+                for (i = 0; i < dataObj.info.barcodes.length; i += 1) {
                     funcs.push(mainCallback(dataObj.info.barcodes[i]));
                 }
             } else {

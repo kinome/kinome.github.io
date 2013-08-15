@@ -72,7 +72,7 @@ KINOMICS.qualityControl.DA = (function () {
         //Get location of original data
         originalObj = event.data.shift();
         fit = event.data.shift();
-        data = currentAnalysis.uuids[originalObj.uuid].models[originalObj.modelInd];
+        data = currentAnalysis.JSON.uuids[originalObj.uuid];
         //variable defintions
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
@@ -102,8 +102,8 @@ KINOMICS.qualityControl.DA = (function () {
 
             //TODO: check user input
             submitObj = JSON.parse(JSON.stringify(typeObj));
-            submitObj.uuid = uuid;
-            submitObj.modelInd = ind;
+            submitObj.uuid = typeObj.uuid;
+
             worker.submitJob([submitObj], dataUpdateCallback);
             worker.onComplete(callback);
         };
@@ -115,7 +115,7 @@ KINOMICS.qualityControl.DA = (function () {
         //variable declarations
         var callback, progressBar, barcodesAnalyzed, barWell, barWellChanged, progress,
             peptide, percentFinished, total, updateData, workers, workersFile, workerObj, i, length,
-            j, skip, mainObj, submitObj, type, initializeMainObject, typeObj;
+            j, modelObj, mainObj, submitObj, type, initializeMainObject, typeObj;
 
         //variable definitions
         barcodesAnalyzed = [];
@@ -141,33 +141,33 @@ KINOMICS.qualityControl.DA = (function () {
             progressBar.text(percentFinished + '%');
         };
         initializeMainObject = function (mainObj, func) {
-            var skip;
+            var skip, i;
             skip = -1;
             //Does it already exist? - Right now this checks URL, ideal it will check screen
-            mainObj.models.map(function (x, ind) {
-                if (x.equation.url === func.url) {
-                    skip = ind;
+            for (i = 0; i < mainObj.models.length; i += 1) {
+                if (mainObj.models.equation.url === func.url) {
+                    skip = i;
                 }
-            });
+            }
             //Add the needed components if not
             if (skip < 0) {
                 skip = mainObj.models.length;
-                mainObj.models.push({
+                currentAnalysis.addObject({parent: mainObj.models, key: skip, child: {
                     equation: func,
                     accurateData: [],
                     x_values: mainObj.xVals,
                     y_values: mainObj.medSigMBack
-                });
-                mainObj.medSigMBack.map(function () {
+                }});
+                for (i = 0; i < mainObj.medSigMBack.length; i += 1) {
                     mainObj.models[skip].accurateData.push(true);
-                });
+                }
             }
-            return skip;
+            return mainObj.models[skip];
         };
 
         //Open workers
         workers = workerObj.startWorkers({filename: workersFile, num_workers: 4});
-
+        console.log(currentAnalysis);
         //Start submitting jobs
         for (barWell = 0; barWell < barWellObj.length; barWell += 1) {
             if (barWellObj[barWell].db.fit === false) {
@@ -182,16 +182,16 @@ KINOMICS.qualityControl.DA = (function () {
                             if (mainObj.hasOwnProperty(type)) {
                                 typeObj = mainObj[type];
                                 if (!typeObj.models) {
-                                    typeObj.models = [];
+                                    currentAnalysis.addObject({parent: typeObj, key: 'models', child: []});
                                 }
                                 //Add all the equations making sure that they do not already exist
                                 for (j = 0; j <  lib.functions[type].length; j += 1) {
                                     // Initialize main object as needed
-                                    skip = initializeMainObject(typeObj, lib.functions[type][j]);
+                                    modelObj = initializeMainObject(typeObj, lib.functions[type][j]);
                                     //Finally submit the job
-                                    submitObj = JSON.parse(JSON.stringify(typeObj.models[skip]));
-                                    submitObj.uuid = typeObj.uuid;
-                                    submitObj.modelInd = skip;
+                                    console.log(modelObj)
+                                    submitObj = JSON.parse(JSON.stringify(modelObj));
+                                    submitObj.uuid = modelObj.uuid;
                                     workers.submitJob([submitObj], updateData);
                                     total += 1;
                                 }
@@ -232,11 +232,11 @@ KINOMICS.qualityControl.DA = (function () {
     run = function (func) {
         return function () {
             var y;
-            try {
+            // try {
                 y = func.apply(null, arguments);
-            } catch (err) {
-                reportError(err);
-            }
+            // } catch (err) {
+            //     reportError(err);
+            // }
             return y;
         };
     };

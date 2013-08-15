@@ -110,7 +110,7 @@ KINOMICS.qualityControl.UI = (function () {
         //local functions
         fitCurvesClick = function () {
             element.unbind('click');
-            lib.update = function () {}; //This is so the button cannot be updated while curves are being fit.
+            lib.update = ""; //This is so the button cannot be updated while curves are being fit.
             element.button('loading');
             barContainer.show();
             //fit the curves
@@ -137,7 +137,7 @@ KINOMICS.qualityControl.UI = (function () {
         update = function () {
             var i, upd = 0;
             element.button('complete');
-            barcodes = KINOMICS.barcodes.parents || barcodes;
+            barcodes = KINOMICS.barcodes.JSON.parents || barcodes;
             currentAnalysis = KINOMICS.barcodes;
             for (i = 0; i < barcodes.length; i += 1) {
                 $('#tempQCMessage').hide();
@@ -456,7 +456,7 @@ KINOMICS.qualityControl.UI = (function () {
 
         startNextPeptide = function () {
             //redefine so it doesn't call this more than once.
-            startNextPeptide = function () {};
+            startNextPeptide = "";
 
             //variable declarations
             var tempElem;
@@ -597,12 +597,11 @@ KINOMICS.qualityControl.UI = (function () {
         makePostWashFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var eq, uuid, ind, chart, data, dataTable, i, length, max, options, params, tempElem;
+            var eq, ind, chart, data, dataTable, i, length, max, options, params, tempElem;
             //variable defintions
             eq = KINOMICS.postWashFunc;
             dataTable = [["exposure time", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             ind = 0;
-            uuid = barcodes[barcode].peptides[peptide].postWash.uuid;
             data = barcodes[barcode].peptides[peptide].postWash.models[ind];
             params = data.parameters;
             length = data.x_values.length;
@@ -652,17 +651,16 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart2'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick(data, uuid, ind, chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(data, chart));
         };
 
         makeTimeSeriesFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var ind, uuid, eq, chart, data, dataTable, i, length, max, min, options, params, tempElem;
+            var ind, eq, chart, data, dataTable, i, length, max, min, options, params, tempElem;
 
             //variable defintions
             ind = 0;
-            uuid = barcodes[barcode].peptides[peptide].cycleSeries.uuid;
             data = barcodes[barcode].peptides[peptide].cycleSeries.models[ind];
             eq = data.equation.func;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
@@ -717,7 +715,7 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart1'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick(data, uuid, ind, chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(data, chart));
         };
 
         update = function () {
@@ -742,7 +740,7 @@ KINOMICS.qualityControl.UI = (function () {
             }
         };
 
-        chartClick = function (data, uuid, ind, chart) {
+        chartClick = function (data, chart) {
             return function () {
                 //variable declarations
                 var point;
@@ -767,8 +765,6 @@ KINOMICS.qualityControl.UI = (function () {
                     workersLocation: workerObj,
                     workersFile: fitCurvesWorkersFile,
                     data: data,
-                    uuid: uuid,
-                    ind: ind,
                     callback: function () { update(); mainLib.QCtable.update(); }
                 });
             };
