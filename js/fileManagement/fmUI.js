@@ -119,6 +119,7 @@ KINOMICS.fileManager.UI = (function () {
                 //NOTE: this is changed to call the general write file function
                 //TODO: make sure this works for S3DB and fusion tables
                 //TODO: add loading animation and popup warning for uploading
+                //TODO: fix problem of loading two at the same time when refresh status changes, should be an easy fix with new status tag
                 //thisDA.writeFile({db: saveToDb, file: file, callback: function (x) {console.log(x, '\nFile written\n'); }, parseObj: parseObj});
                 dataObj = thisDA.newDataObject();
                 dataObj.addData({type: 'fileObj', data: file, callback: function (batchObject) {
