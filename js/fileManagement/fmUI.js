@@ -118,6 +118,7 @@ KINOMICS.fileManager.UI = (function () {
                 //reader.onload = makeTableLineForNewFile(file.name, Math.round(file.size / 10.24) / 100, mainLib.table.addLineToTableTop);
                 //NOTE: this is changed to call the general write file function
                 //TODO: make sure this works for S3DB and fusion tables
+                //TODO: add loading animation and popup warning for uploading
                 //thisDA.writeFile({db: saveToDb, file: file, callback: function (x) {console.log(x, '\nFile written\n'); }, parseObj: parseObj});
                 dataObj = thisDA.newDataObject();
                 dataObj.addData({type: 'fileObj', data: file, callback: function (batchObject) {
