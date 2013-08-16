@@ -51,11 +51,12 @@ KINOMICS.fileManager.UI = (function () {
     run = function (func) {
         return function () {
             var y;
-            try {
+            // try {
                 y = func.apply(null, arguments);
-            } catch (err) {
-                reportError(err);
-            }
+            // }
+            // } catch (err) {
+            //     reportError(err);
+            // }
             return y;
         };
     };
@@ -119,8 +120,10 @@ KINOMICS.fileManager.UI = (function () {
                 //TODO: make sure this works for S3DB and fusion tables
                 //thisDA.writeFile({db: saveToDb, file: file, callback: function (x) {console.log(x, '\nFile written\n'); }, parseObj: parseObj});
                 dataObj = thisDA.newDataObject();
-                dataObj.addData({type: 'fileObj', data: file});
-                dataObj.save({callback: mainLib.table.update});
+                dataObj.addData({type: 'fileObj', data: file, callback: function (batchObject) {
+                    mainLib.table.update();
+                }});
+                // dataObj.save({callback: mainLib.table.update});
             }
         };
 
@@ -292,11 +295,12 @@ KINOMICS.fileManager.UI = (function () {
 
     lib.table = (function (mainLib) {
         //variable declarations
-        var addToAnalysis, addLineToTableTop, addLinesToTable, lib, update;
+        var createLine, addToAnalysis, addLineToTableTop, addLinesToTable, dataObj, lib, update;
 
         //variable definitions
         lib = {};
         table.hide();
+        dataObj = thisDA.newDataObject();
 
         //user functions
         lib.update = function () {
@@ -333,6 +337,8 @@ KINOMICS.fileManager.UI = (function () {
                         update();
                         that.attr('class', 'btn btn-info');
                         that.html("<i class='icon-ok icon-white'></i>");
+                        that.unbind('click');
+
                     }});
                 } else {
                     that.click(addToAnalysis(obj));
@@ -343,60 +349,71 @@ KINOMICS.fileManager.UI = (function () {
 
         addLineToTableTop = function (line) {
             //TODO: check user input...
-            table.prepend(line);
+            table.prepend(createLine(line));
         };
 
-        addLinesToTable = function (linesObj) {
-            var i, pushButton, tempElem, trow;
+        createLine = function (obj) {
+            var trow, tempElem, pushButton;
+            //Obj needs to have a type, id, name, and date minimum
+            trow = $('<tr />', {'class': 'tableRow ' + obj.type});
 
-            for (i = 0; i < linesObj.objects.length; i += 1) {
-                trow = $('<tr />', {'class': 'tableRow ' + linesObj['class']});
+            //space
+            tempElem = $('<td />').appendTo(trow);
+            pushButton = $('<button />', {'class': 'btn btn-success',
+                html: "<i class='icon-plus icon-white'></i>"}).click(addToAnalysis(obj)).appendTo(tempElem);
+            if (analysis && (currentLoaded[obj.id])) {
+                pushButton.attr('class', 'btn btn-info');
+                pushButton.html("<i class='icon-ok icon-white'></i>");
+                pushButton.unbind('click');
+                pushButton.click(function (evt) {
+                    evt.preventDefault();
+                });
+            }
 
-                //space
+            //File name
+            $("<td />", {text: obj.name}).appendTo(trow);
+
+            //File date
+            $("<td />", {html: (new Date(obj.date)).toLocaleDateString()}).appendTo(trow);
+
+            //Where loading bar would be
+            $("<td />").appendTo(trow);
+
+            //Download Button - space
+            if (obj.status === 'local') {
                 tempElem = $('<td />').appendTo(trow);
-                pushButton = $('<button />', {'class': 'btn btn-success',
-                    html: "<i class='icon-plus icon-white'></i>"}).click(addToAnalysis(linesObj.objects[i])).appendTo(tempElem);
-                if (analysis && (currentLoaded[linesObj.objects[i].id])) {
-                    pushButton.attr('class', 'btn btn-info');
-                    pushButton.html("<i class='icon-ok icon-white'></i>");
-                    pushButton.unbind('click');
-                }
-
-                //File name
-                $("<td />", {text: linesObj.objects[i].name}).appendTo(trow);
-
-                //File date
-                $("<td />", {html: (new Date(linesObj.objects[i].date)).toLocaleDateString()}).appendTo(trow);
-
-                //Where loading bar would be
-                $("<td />").appendTo(trow);
-
-                //Download Button - space
+                $('<button />', {'class': 'btn btn-info', html: "<i class='icon-upload icon-white'></i> Upload"}).click(function (evt) {
+                    evt.preventDefault();
+                    obj.funcs.save({callback: update});
+                }).appendTo(tempElem);
+            } else {
                 $('<td />').appendTo(trow);
+            }
 
-                 //Where cancel upload would be
-                tempElem = $("<td />").appendTo(trow);
-                $('<button />', {'class': 'btn btn-danger',
-                    html: "<i class='icon-trash icon-white'></i> Remove From List"}).
-                    appendTo(tempElem);
+             //Where cancel upload would be
+            tempElem = $("<td />").appendTo(trow);
+            $('<button />', {'class': 'btn btn-danger',
+                html: "<i class='icon-trash icon-white'></i> Remove From List"}).
+                appendTo(tempElem);
+            return trow;
+        };
 
-                table.append(trow);
+        addLinesToTable = function (linesArr) {
+            var i;
+            for (i = 0; i < linesArr.length; i += 1) {
+                table.append(createLine(linesArr[i]));
             }
             table.show();
             mainLib.formControl.update();
             mainLib.navigationBar.setDataType();
         };
         update = function () {
-            //variable definitions
-            var obj;
             //change display elements
             table.find("tr:.tableRow").remove();
             table.hide();
             $('#defaultFile').hide();
-            obj = thisDA.newDataObject();
-            addLinesToTable({objects: obj.listBatches(), 'class': 'batch'});
-            addLinesToTable({objects: obj.listData(), 'class': 'data'});
-            obj = {};
+            addLinesToTable(dataObj.listBatches());
+            addLinesToTable(dataObj.listData());
         };
 
         return lib;

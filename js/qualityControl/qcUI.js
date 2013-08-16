@@ -682,7 +682,7 @@ KINOMICS.qualityControl.UI = (function () {
                 figureInfoColumn.show();
                 makePostWashFigure();
                 makeTimeSeriesFigure();
-                figureInfoHeader.html('<b>' + barcode +
+                figureInfoHeader.html('<b>' + barcodes[barcode].name +
                     '</b><br /><small>&nbsp;&nbsp;' + peptide + '</small>');
                 return true;
             }

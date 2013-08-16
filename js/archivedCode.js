@@ -1,3 +1,75 @@
+    lib.parseFile = function (input_obj) {
+        /*////////////////////////////////////////////////////////////////////////////////
+        This function uses workers to parse xtab export from bionavigator and adds the
+            data to the global data object: KINOMICS.barcodes
+        ARGV: input_obj has seven required parts, and one optional:
+            file -  (string) the file to be parsed.
+            workerfile - the file that defines the worker's tasks
+            workers - (object) the object that is attached to workersPackage.js
+            barcodes - (object) the object where barcode information is to be added
+            barcodeCreator - (function) function to be called to convert barcode data
+                into complete object, originally: KINOMICS.expandBarcodeWell.
+            database - (object) the database information for future formatting, requires
+                following parameters:
+                { dbType: (string) <fusionTables or S3DB>,
+
+                //For fusion tables:
+                originFile: (string) <fusion table file ID>,
+                originLine: (string/number) <line number of full file contents>,
+                ?BarcodeFileToWriteTo:?
+
+                //For S3DB - ?Shukai will determine, and rewrite.
+                collectionID:
+                ruleID:
+                itemID:
+                }
+            callback - (function) called once file is parsed, no default and is
+                necessary since this function uses web workers, no parameters.
+            onError - (function) [optional] called if a web worker reports an error,
+                default is to call reportError().
+        */////////////////////////////////////////////////////////////////////////////////
+        var that = this;
+        run(parseFile)(input_obj, that);
+    };
+
+lib.saveChanges = function (barcodeObj, currentDB, callback, uiUpdate) {
+        //TODO: user docs
+        run(saveChanges)(barcodeObj, currentDB, callback, uiUpdate);
+    };
+
+    lib.writeFile = function (input_obj) {
+        //TODO: seperate these
+        //TODO: make docs
+        //TODO: check user input
+        if (input_obj.db.name === 'Fusion Tables') {
+            input_obj.db.writeFile(input_obj.file, input_obj.callback, input_obj.parseObj);
+        } else if (input_obj.db.name === 'S3DB') {
+            console.error('S3DB not set up yet');
+        } else {
+            console.error('File cannot be written to unknown database: ' + input_obj.db);
+        }
+    };
+
+    lib.convertToTriples = function (barcode, depth) {
+        var category, triples;
+        triples = [];
+        //TODO: seperate these
+        //TODO: make docs
+        //TODO: check user input
+        //TODO: account for multiple depths, for now, just using metadata depth
+        //TODO: get rid of globals here.
+        for (category in KINOMICS.barcodes[barcode]) {
+            if (KINOMICS.barcodes[barcode].hasOwnProperty(category)) {
+                if (typeof KINOMICS.barcodes[barcode][category] === 'object') {
+                    triples.push([barcode, category, JSON.stringify(KINOMICS.barcodes[barcode][category])]);
+                } else if (typeof KINOMICS.barcodes[barcode][category] !== 'function') {
+                    triples.push([barcode, category, KINOMICS.barcodes[barcode][category]]);
+                }
+            }
+        }
+        return triples;
+    };
+
 lib.saveDataBut = (function () {
         //variable declarations
         var button, click, lib, update, loading;

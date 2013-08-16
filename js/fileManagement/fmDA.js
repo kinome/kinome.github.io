@@ -8,102 +8,20 @@ KINOMICS.fileManager.DA = (function () {
     'use strict';
 
     //variable declarations
-    var lib, parseFile, run, saveChanges, addDataFile,
-        reportError, reportErrorFromWorker, cdb, parseObj;
+    var lib, parseFile, run, saveChanges, addDataFile, localData,
+        reportError, reportErrorFromWorker, cdb, parseObj, localDataAvaliable;
 
 
     //variable definitions
     lib  = {};
-
-/*
-    var fuse = KINOMICS.fileManager.DA.fusionTables;
-    fuse.JSON = 
-    {
-    access_token:"",
-    userName:"",
-    activeTables:new Array(),
-    loggedIn:false,
-    barWellColumns:['Barcode_Well','JSON','RDF','Referring Table and Row']
-    },
-*/
+    localData = {batch: {}, sample: {}};
+    localDataAvaliable = {batches: [], samples: []};
 
     //Define global functions
-    lib.parseFile = function (input_obj) {
-        /*////////////////////////////////////////////////////////////////////////////////
-        This function uses workers to parse xtab export from bionavigator and adds the
-            data to the global data object: KINOMICS.barcodes
-        ARGV: input_obj has seven required parts, and one optional:
-            file -  (string) the file to be parsed.
-            workerfile - the file that defines the worker's tasks
-            workers - (object) the object that is attached to workersPackage.js
-            barcodes - (object) the object where barcode information is to be added
-            barcodeCreator - (function) function to be called to convert barcode data
-                into complete object, originally: KINOMICS.expandBarcodeWell.
-            database - (object) the database information for future formatting, requires
-                following parameters:
-                { dbType: (string) <fusionTables or S3DB>,
-
-                //For fusion tables:
-                originFile: (string) <fusion table file ID>,
-                originLine: (string/number) <line number of full file contents>,
-                ?BarcodeFileToWriteTo:?
-
-                //For S3DB - ?Shukai will determine, and rewrite.
-                collectionID:
-                ruleID:
-                itemID:
-                }
-            callback - (function) called once file is parsed, no default and is
-                necessary since this function uses web workers, no parameters.
-            onError - (function) [optional] called if a web worker reports an error,
-                default is to call reportError().
-        */////////////////////////////////////////////////////////////////////////////////
-        var that = this;
-        run(parseFile)(input_obj, that);
-    };
-
     lib.login = function (db, pack, parse, callback) {
         cdb = db;
         parseObj = parse;
         cdb.login(pack, callback);
-    };
-
-    lib.saveChanges = function (barcodeObj, currentDB, callback, uiUpdate) {
-        //TODO: user docs
-        run(saveChanges)(barcodeObj, currentDB, callback, uiUpdate);
-    };
-
-    lib.writeFile = function (input_obj) {
-        //TODO: seperate these
-        //TODO: make docs
-        //TODO: check user input
-        if (input_obj.db.name === 'Fusion Tables') {
-            input_obj.db.writeFile(input_obj.file, input_obj.callback, input_obj.parseObj);
-        } else if (input_obj.db.name === 'S3DB') {
-            console.error('S3DB not set up yet');
-        } else {
-            console.error('File cannot be written to unknown database: ' + input_obj.db);
-        }
-    };
-
-    lib.convertToTriples = function (barcode, depth) {
-        var category, triples;
-        triples = [];
-        //TODO: seperate these
-        //TODO: make docs
-        //TODO: check user input
-        //TODO: account for multiple depths, for now, just using metadata depth
-        //TODO: get rid of globals here.
-        for (category in KINOMICS.barcodes[barcode]) {
-            if (KINOMICS.barcodes[barcode].hasOwnProperty(category)) {
-                if (typeof KINOMICS.barcodes[barcode][category] === 'object') {
-                    triples.push([barcode, category, JSON.stringify(KINOMICS.barcodes[barcode][category])]);
-                } else if (typeof KINOMICS.barcodes[barcode][category] !== 'function') {
-                    triples.push([barcode, category, KINOMICS.barcodes[barcode][category]]);
-                }
-            }
-        }
-        return triples;
     };
 
     lib.newAnalysisObject = function (initialObj) {
@@ -186,7 +104,12 @@ KINOMICS.fileManager.DA = (function () {
     };
 
     lib.newDataObject = function () {
-        var addObject, expand, collapse, unfoldTriples, that, batchID, data, fileObj, queue, unloading, queuePush;
+        var addObject, expand, collapse, unfoldTriples, that, localBatchID, batchID, data, fileObj, queue, unloading, queuePush;
+
+        //TODO: make it so if a file has already been grabbed from google drive it just grabs the original string
+        //TODO: store the original string when getting data so there is a comparison for analysis storage
+        //TODO: when data is added remove ability to add more and other non needed functions
+        //TODO: when data is loaded remove ability to save, add data and other non needed functions
 
         queue = [];
         data = {};
@@ -194,6 +117,7 @@ KINOMICS.fileManager.DA = (function () {
         that = data;
         unloading = false;
         batchID = Math.uuid();
+        localBatchID = Math.uuid(); // This is the id as long as the data stays local...
 
         data.JSON = {};
         data.string = "";
@@ -259,7 +183,6 @@ KINOMICS.fileManager.DA = (function () {
                 //If an analysis is open, add this to the analysis...
                 //TODO: check for error...
                 data.JSON = evt.data;
-                globs.push(evt.data);
                 //data.save();
                 //variable declarations
                 //globs = [evt.data, data];
@@ -409,8 +332,8 @@ KINOMICS.fileManager.DA = (function () {
         }());
 
         data.addData = function (dataObj) {
-            var that, dealWithInput, readFileObject, parseFileString;
-            that = this;
+            var that, dealWithInput, readFileObject, parseFileString, batchObj;
+            that = data;
             //This grabs the string passed to it, and handles it... Maybe, just deals directly with file object?
             dealWithInput = function (callback) {
                 if (dataObj.type === 'string') {
@@ -445,6 +368,50 @@ KINOMICS.fileManager.DA = (function () {
             };
 
             queuePush([dealWithInput, readFileObject, parseFileString]);
+
+            //To make results avaliable
+            queuePush([function (cb) {
+                var tempObj, bar, that, prop, i, sampleObj, saveOne, samples;
+
+                that = data;
+                samples = [];
+                localData.batch[localBatchID] = localData.batch[localBatchID] || [];
+                batchObj = {funcs: {save: data.save}, barcodes: localData.batch[localBatchID], status: 'local', name: fileObj.name, id: localBatchID, type: 'batch', date: (new Date()).toISOString() };
+
+                saveOne = function (id) {
+                    return function (input_obj) {
+                        input_obj.id = id;
+                        data.save(input_obj);
+                    };
+                };
+
+                //Seperate out the families
+                for (prop in that.JSON.families) {
+                    if (that.JSON.families.hasOwnProperty(prop)) {
+                        bar = {uuids: {}, parents: [prop], families: {}};
+                        tempObj = data.JSON.families[prop];
+                        bar.families[prop] = tempObj;
+                        bar.uuids[prop.replace(/^\&/, '')] = that.JSON.uuids[prop.replace(/^\&/, '')];
+                        for (i = 0; i < tempObj.length; i += 1) {
+                            bar.uuids[tempObj[i].replace(/^\&/, '')] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
+                        }
+                        localData.sample[prop.replace(/^\&/, '')] = bar;
+                        localData.batch[localBatchID].push(prop.replace(/^\&/, ''));
+                        samples.push({funcs: {save: saveOne(prop.replace(/^\&/, ''))}, date: batchObj.date, id: prop.replace(/^\&/, ''), status: 'local', type: 'data', name: 'bar' + data.JSON.uuids[prop.replace(/^\&/, '')].barcode + '_well' + data.JSON.uuids[prop.replace(/^\&/, '')].row });
+                    }
+                }
+                localDataAvaliable.batches.push(batchObj);
+                localDataAvaliable.samples = localDataAvaliable.samples.concat(samples);
+                cb();
+            }]);
+
+            //for callback
+            if (typeof dataObj.callback === 'function') {
+                queuePush([function (cb) {
+                    dataObj.callback(batchObj);
+                    cb();
+                }]);
+            }
         };
 
         data.expand = function (callback) {
@@ -462,7 +429,7 @@ KINOMICS.fileManager.DA = (function () {
 
         data.loadData = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
-            var i, mainCallback, funcs;
+            var i, mainCallback, loadDataToJSON, funcs, localCall;
 
             funcs = [];
             //Note once this occurs, saving should no longer be an option            
@@ -470,42 +437,70 @@ KINOMICS.fileManager.DA = (function () {
                 console.error('Cannot save when data has been loaded from database');
             };
             console.log(dataObj);
+            loadDataToJSON = function (object) {
+                var prop, prop2, i, j, check, against;
+
+                //This makes sure that identical data is not loaded on top of itself.
+                if (data.JSON.parents && object.parents) {
+                    for (i = 0; i < object.parents.length; i += 1) {
+                        check = object.parents[i].uuid || object.parents[i].replace(/^\&/, '');
+                        for (j = 0; j < data.JSON.parents.length; j += 1) {
+                            against = data.JSON.parents[j].uuid || data.JSON.parents[j].replace(/^\&/, '');
+                            if (check === against) {
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                for (prop in object) {
+                    if (object.hasOwnProperty(prop)) {
+                        //Check to see if data already exists
+                        if (data.JSON.hasOwnProperty(prop)) {
+                            if (typeof object[prop] === 'object') {
+                                //As an array the concat method works well
+                                if (object[prop] instanceof Array) {
+                                    data.JSON[prop] = data.JSON[prop].concat(object[prop]);
+                                } else {
+                                    //Just an object here
+                                    for (prop2 in object[prop]) {
+                                        if (object[prop].hasOwnProperty(prop2)) {
+                                            data.JSON[prop][prop2] = object[prop][prop2];
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            data.JSON[prop] = object[prop];
+                        }
+                    }
+                }
+            };
 
             mainCallback = function (uuid) {
                 // console.log('Being called once: ' + uuid);
                 return function (qContinue) {
                     // console.log('here: ' + uuid);
                     cdb.loadData({uuid: uuid, callback: function (response) {
-                        var prop, prop2, temp;
-                        temp = JSON.parse(response);
-                        for (prop in temp) {
-                            if (temp.hasOwnProperty(prop)) {
-                                //Check to see if data already exists
-                                if (data.JSON.hasOwnProperty(prop)) {
-                                    if (typeof temp[prop] === 'object') {
-                                        //As an array the concat method works well
-                                        if (temp[prop] instanceof Array) {
-                                            data.JSON[prop] = data.JSON[prop].concat(temp[prop]);
-                                        } else {
-                                            //Just an object here
-                                            for (prop2 in temp[prop]) {
-                                                if (temp[prop].hasOwnProperty(prop2)) {
-                                                    data.JSON[prop][prop2] = temp[prop][prop2];
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    data.JSON[prop] = temp[prop];
-                                }
-                            }
-                        }
+                        loadDataToJSON(JSON.parse(response));
                         data.expand(qContinue);
                     }});
                 };
             };
 
-            if (dataObj.info.type === 'batch') {
+            localCall = function(object) {
+                return function (cb) {
+                    loadDataToJSON(JSON.parse(JSON.stringify(object)));
+                    data.expand(cb);
+                };
+            };
+            if (localData.sample.hasOwnProperty(dataObj.info.id)) {
+                funcs.push(localCall(localData.sample[dataObj.info.id]));
+            } else if (localData.batch.hasOwnProperty(dataObj.info.id)) {
+                for (i = 0; i < localData.batch[dataObj.info.id].length; i += 1) {
+                    funcs.push(localCall(localData.sample[localData.batch[dataObj.info.id][i]]));
+                }
+            } else if (dataObj.info.type === 'batch') {
                 for (i = 0; i < dataObj.info.barcodes.length; i += 1) {
                     funcs.push(mainCallback(dataObj.info.barcodes[i]));
                 }
@@ -522,7 +517,7 @@ KINOMICS.fileManager.DA = (function () {
 
         data.listBatches = function () {
             //simply returns data list avaliable
-            return ((cdb.listBatches()).sort(function (a, b) {
+            return ((cdb.listBatches()).concat(localDataAvaliable.batches).sort(function (a, b) {
                 if (a.date >= b.date) {
                     return -1;
                 }
@@ -532,7 +527,7 @@ KINOMICS.fileManager.DA = (function () {
 
         data.listData = function () {
             //simply returns data list avaliable
-            return ((cdb.listData()).sort(function (a, b) {
+            return ((cdb.listData()).concat(localDataAvaliable.samples).sort(function (a, b) {
                 if (a.date >= b.date) {
                     return -1;
                 }
@@ -543,42 +538,81 @@ KINOMICS.fileManager.DA = (function () {
         data.save = function (dataObj) {
             var that, fileObjFunc, individualBarcodeFunc;
             //purpose of this is to save data to database, since this is data, new batch id is always created
-            that = this;
+            that = data;
 
             fileObjFunc = function (callback) {
                 if (typeof fileObj === 'object') {
                     //save file object, add information to config file
-                    cdb.writeFile({data: fileObj, callback: callback, batchID: batchID});
+                    cdb.writeFile({data: fileObj, callback: function () {
+                        var i;
+                        fileObj = "";
+                        for (i = 0; i < localDataAvaliable.batches.length; i += 1) {
+                            if (localDataAvaliable.batches[i].id === localBatchID) {
+                                localDataAvaliable.batches[i].name = "Remaining (not uploaded) samples for: " + localDataAvaliable.batches[i].name;
+                            }
+                        }
+                        callback();
+                    }, batchID: batchID});
                 } else {
                     callback();
                 }
             };
+
             individualBarcodeFunc = function (callback) {
-                var prop, funcs = [], addBarcodeData;
-                addBarcodeData = function (prop) {
+                var prop, funcs = [], sendEach;
+
+                funcs.push(collapse);
+                sendEach = function (id) {
                     return function (callback) {
-                        //TODO: fix data thing... 
-                        var i, bar, tempObj;
-                        bar = {parents: [prop], uuids: {}, families: {}};
-                        tempObj = that.JSON.families[prop];
-                        bar.families[prop] = tempObj;
-                        bar.uuids[prop.replace(/^\&/, '')] = that.JSON.uuids[prop.replace(/^\&/, '')];
-                        for (i = 0; i < tempObj.length; i += 1) {
-                            bar.uuids[tempObj[i].replace(/^\&/, '')] = that.JSON.uuids[tempObj[i].replace(/^\&/, '')];
-                        }
-                        cdb.saveBarcode({id: prop.replace('&', ''), data: bar, name: 'bar' + that.JSON.uuids[prop.replace('&', '')].barcode + '_well' + that.JSON.uuids[prop.replace('&', '')].row + '.txt', batchID: batchID, callback: callback});
+                        cdb.saveBarcode({id: id, data: localData.sample[id], name: 'bar' + that.JSON.uuids[id].barcode + '_well' + that.JSON.uuids[id].row + '.txt', batchID: batchID, callback: function () {
+                            var i;
+                            delete localData.sample[id];
+                            delete that.JSON.families['&' + id];
+                            for (i = 0; i < localDataAvaliable.samples.length; i += 1) {
+                                if (localDataAvaliable.samples[i].id === id) {
+                                    localDataAvaliable.samples.splice(i, 1);
+                                }
+                            }
+                            for (i = 0; i < localData.batch[localBatchID].length; i += 1) {
+                                if (localData.batch[localBatchID][i] === id) {
+                                    localData.batch[localBatchID].splice(i, 1);
+                                }
+                            }
+                            callback();
+                        }});
                     };
                 };
-                funcs.push(collapse);
-                for (prop in that.JSON.families) {
-                    if (that.JSON.families.hasOwnProperty(prop)) {
-                        funcs.push(addBarcodeData(prop));
+
+                if (dataObj && dataObj.id) {
+                    console.log(JSON.parse(JSON.stringify([dataObj, dataObj.id, localData])));
+                    funcs.push(sendEach(dataObj.id));
+                } else {
+                    //Send them all away
+                    for (prop in that.JSON.families) {
+                        if (that.JSON.families.hasOwnProperty(prop)) {
+                            funcs.push(sendEach(prop.replace(/^\&/, '')));
+                        }
                     }
+                    //Now remove stuff from local avaliable
+                    funcs.push(function (callback) {
+                        var i;
+                        delete localData.batch[localBatchID];
+                        for (i = 0; i < localDataAvaliable.batches.length; i += 1) {
+                            if (localDataAvaliable.batches[i].id === localBatchID) {
+                                localDataAvaliable.batches.splice(i, 1);
+                            }
+                        }
+                        callback();
+                    });
                 }
-                funcs.push(function (callback) {
-                    //dataObj.callback();
-                    callback();
-                });
+
+                if (dataObj && dataObj.callback) {
+                    funcs.push(function (callback) {
+                        dataObj.callback();
+                        callback();
+                    });
+                }
+
                 funcs.push(expand);
                 queuePush(funcs);
                 callback();

@@ -10,7 +10,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
     //TODO: determine permissions using google drive if possible...
 
     //variable declarations
-    var activeFiles, lib, fuse, configFileName, getTableLines, addBarcodeData,
+    var activeFiles, lib, fuse, configFileName, getTableLines, addBarcodeData, addFilesToActiveList,
         fusionTablesSave, loginMenu, newTable, writeFile, currentConfig, bySubject,
         getOriginUITableLines, getBarcodeUITableLines, activeBarFiles, getUserName, currentDate,
         fusionTables_barWellFileColumns, fusionTablesBatchSave, run, reportError, RDF,
@@ -88,7 +88,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
 
     //Login and work with config file functions
     (function () {
-        var makeConfigFile, getTableListFromConfig, addFilesToActiveList, sortTriplesByDate, mainConfig, addFilesToObject;
+        var makeConfigFile, getTableListFromConfig, sortTriplesByDate, mainConfig, addFilesToObject;
         loginMenu = function (fusePackage, callback) {
             fuse = fusePackage;
             //variable definitions
@@ -370,8 +370,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                     tempTriples.push([RDF.list(writeFileObj.batchID), RDF.type, RDF.batch, Math.uuid(), currentDate(), userName()]);
                     tempTriples.push([RDF.list(writeFileObj.batchID), RDF.name, writeFileObj.data.name, Math.uuid(), currentDate(), userName()]);
                     tempTriples.push([RDF.list(writeFileObj.batchID), RDF.file, response.webContentLink, Math.uuid(), currentDate(), userName()]);
-                    files[RDF.flatFile].push(tempTriples[1]);
-                    files[RDF.batch].push(tempTriples[3]);
+                    addFilesToActiveList({rows:tempTriples});
                     fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) {
                         writeFileObj.callback();
                     });
@@ -380,11 +379,11 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         };
         saveBarcode = function (dataObj) {
             var doc, tempTrips, i, writeIt, tempTriples, createTriples;
-
+            console.log("number 1", JSON.parse(JSON.stringify(dataObj.data)));
             tempTriples = [];
             //This function creates a blob from the string and sends to to google
             writeIt = function (str, name, callback) {
-                var bb = new Blob([str], {type: "text/plain; charset=UTF-8"});
+                var bb = new Blob([str], {type: "text/plain"});
                 bb.name = name;
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
@@ -396,16 +395,16 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             //This function responds to the file being written to google
             createTriples = function (response) {
                 //TODO: Deal with error response
-                console.log(response);
                 tempTriples.push([dataObj.id, RDF.type, RDF.data, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.id, RDF.file, response.webContentLink, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.batchID, RDF.data, dataObj.id, Math.uuid(), currentDate(), userName()]);
                 tempTriples.push([dataObj.id, RDF.name, dataObj.name, Math.uuid(), currentDate(), userName()]);
+                addFilesToActiveList({rows:tempTriples});
                 fuse.submitLinesToTable(currentConfig, tripColumns, tempTriples, function (x) { console.log('written....')});
             };
             writeIt(JSON.stringify(dataObj.data), dataObj.name, dataObj.callback);
-            
         };
+
         addBarcodeData = function (barcodeObj) {
             //TODO: get rid of globals
             //TODO: deal with alerting the user of data being saved....
@@ -425,18 +424,22 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         lib.listBatches = function () {
             var i, result;
             result = [];
-            for (i = 0; i < files[RDF.batch].length; i += 1) {
-                result.push({id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], type: 'batch', date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], barcodes: bySubject[files[RDF.batch][i][0]][RDF.data].map(function (x) {
-                    return x[2];
-                })});
+            if (files[RDF.batch]) {
+                for (i = 0; i < files[RDF.batch].length; i += 1) {
+                    result.push({status: 'get', id: files[RDF.batch][i][0], name: files[RDF.batch][i][2], type: 'batch', date: files[RDF.batch][i][4], creator: files[RDF.batch][i][5], barcodes: bySubject[files[RDF.batch][i][0]][RDF.data].map(function (x) {
+                        return x[2];
+                    })});
+                }
             }
             return result;
         };
         lib.listData = function () {
             var i, result;
             result = [];
-            for (i = 0; i < files[RDF.data].length; i += 1) {
-                result.push({id: files[RDF.data][i][0], name: files[RDF.data][i][2], type: RDF.data, date: files[RDF.data][i][4], creator: files[RDF.data][i][5]});
+            if (files[RDF.data]) {
+                for (i = 0; i < files[RDF.data].length; i += 1) {
+                    result.push({status: 'get', id: files[RDF.data][i][0], name: files[RDF.data][i][2], type: RDF.data, date: files[RDF.data][i][4], creator: files[RDF.data][i][5]});
+                }
             }
             return result;
         };
