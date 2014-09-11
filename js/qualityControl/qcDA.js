@@ -10,7 +10,7 @@ KINOMICS.qualityControl.DA = (function () {
     lib = {};
     lib.functions = {
         postWash: ['js/qualityControl/postWashEq.js'],
-        cycleSeries: ['js/qualityControl/cyclingEq.js']
+        cycleSeries: ['js/qualityControl/cyclingEq.js', 'js/qualityControl/cyclingEq_orgin.js', 'js/qualityControl/cyclingEq_orgin4p.js'] //,
     };
 
     //preload equations
@@ -23,7 +23,7 @@ KINOMICS.qualityControl.DA = (function () {
                 sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
                 arr[ind] = sol;
                 arr[ind].string = x;
-                arr[ind].url = url;
+                arr[ind].uuid = url;
             };
         };
         //TODO: make this a better error function..
@@ -137,29 +137,22 @@ KINOMICS.qualityControl.DA = (function () {
             progressBar.width(percentFinished + '%');
             progressBar.text(percentFinished + '%');
         };
-        initializeMainObject = function (mainObj, func) {
-            var skip, i;
-            skip = -1;
-            //Does it already exist? - Right now this checks URL, ideal it will check screen
-            for (i = 0; i < mainObj.models.length; i += 1) {
-                if (mainObj.models.equation.url === func.url) {
-                    skip = i;
-                }
-            }
+        initializeMainObject = function (mainObj, ind, func) {
+            var i;
+
             //Add the needed components if not
-            if (skip < 0) {
-                skip = mainObj.models.length;
-                currentAnalysis.addObject({parent: mainObj.models, key: skip, child: {
+            if (!mainObj.models[ind]) {
+                currentAnalysis.addObject({parent: mainObj.models, key: ind, child: {
                     equation: func,
                     accurateData: [],
                     x_values: mainObj.xVals,
                     y_values: mainObj.medSigMBack
                 }});
                 for (i = 0; i < mainObj.medSigMBack.length; i += 1) {
-                    mainObj.models[skip].accurateData.push(true);
+                    mainObj.models[ind].accurateData.push(true);
                 }
             }
-            return mainObj.models[skip];
+            return mainObj.models[ind];
         };
 
         //Open workers
@@ -184,7 +177,7 @@ KINOMICS.qualityControl.DA = (function () {
                                 //Add all the equations making sure that they do not already exist
                                 for (j = 0; j <  lib.functions[type].length; j += 1) {
                                     // Initialize main object as needed
-                                    modelObj = initializeMainObject(typeObj, lib.functions[type][j]);
+                                    modelObj = initializeMainObject(typeObj, j, lib.functions[type][j]);
                                     //Finally submit the job
                                     submitObj = JSON.parse(JSON.stringify(modelObj));
                                     submitObj.uuid = modelObj.uuid;

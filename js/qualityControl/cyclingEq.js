@@ -15,26 +15,26 @@
 
 		x_vector.map(function (x) { x_values.push(x[0]); });
 		xS = JSON.parse(JSON.stringify(x_values));
-        xS = xS.sort();
-        xMin = xS.shift();
-        xMax = xS.pop();
-        y0 = y_values[x_vector.indexOf(xMin)];
-        yN = y_values[x_vector.indexOf(xMax)];
-        yMin = Math.min.apply(null, y_values);
-        yMax = Math.max.apply(null, y_values);
+                xS = xS.sort();
+                xMin = xS.shift();
+                xMax = xS.pop();
+                y0 = y_values[x_vector.indexOf(xMin)];
+                yN = y_values[x_vector.indexOf(xMax)];
+                yMin = Math.min.apply(null, y_values);
+                yMax = Math.max.apply(null, y_values);
 
-        //Deal with overall negative slopes
-        Ym = ((yN - y0) / (xMax - xMin) < 0) ? yMin : yMax;
+                //Deal with overall negative slopes
+                Ym = ((yN - y0) / (xMax - xMin) < 0) ? yMin : yMax;
 
-        //Assign parameters
-        vi = Ym / 5;
-        vi = vi === 0 ? -10 : vi;
-        Ym = Ym === 0 ? -10 : Ym;
-        // y0 = Ym === y0 ? Ym - 1 : y0;
-        // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
-        xMin = xMin || 10;
-        c = y0 / xMin || -10;
-        return [vi, c, Ym];
+                //Assign parameters
+                vi = Ym / 5;
+                vi = vi === 0 ? -10 : vi;
+                Ym = Ym === 0 ? -10 : Ym;
+                // y0 = Ym === y0 ? Ym - 1 : y0;
+                // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
+                xMin = xMin || 10;
+                c = y0 / xMin || -10;
+                return [vi, c, Ym];
 	},
 	description: 'For fitting postwash data'
 }

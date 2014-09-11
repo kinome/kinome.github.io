@@ -141,6 +141,10 @@ KINOMICS.fileManager.UI = (function () {
             analyses.push(analysis);
             currentLoaded = {};
             currentAnaDisplay.text('Current Analysis: ' + analysisName);
+            mainLib.table.update();
+            //Add analysis to table view
+            
+
         };
 
         setUpload = function (str) {
@@ -297,12 +301,14 @@ KINOMICS.fileManager.UI = (function () {
 
     lib.table = (function (mainLib) {
         //variable declarations
-        var createLine, addToAnalysis, addLineToTableTop, addLinesToTable, dataObj, lib, update;
+        var createLine, addToAnalysis, addLineToTableTop, addLinesToTable, anaObj, dataObj, lib, update;
 
         //variable definitions
         lib = {};
         table.hide();
         dataObj = thisDA.newDataObject();
+        anaObj = thisDA.newAnalysisObject({name: '', UI: false});
+        //TODO reset these when the backend changes.
 
         //user functions
         lib.update = function () {
@@ -416,6 +422,7 @@ KINOMICS.fileManager.UI = (function () {
             $('#defaultFile').hide();
             addLinesToTable(dataObj.listBatches());
             addLinesToTable(dataObj.listData());
+            addLinesToTable(anaObj.listAnalyses());
         };
 
         return lib;

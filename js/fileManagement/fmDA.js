@@ -9,13 +9,16 @@ KINOMICS.fileManager.DA = (function () {
 
     //variable declarations
     var lib, parseFile, run, saveChanges, addDataFile, localData,
-        reportError, reportErrorFromWorker, cdb, parseObj, localDataAvaliable;
+        reportError, reportErrorFromWorker, cdb, parseObj, localDataAvaliable,
+        localAnalyses, localAnalysesList;
 
 
     //variable definitions
     lib  = {};
     localData = {batch: {}, sample: {}};
     localDataAvaliable = {batches: [], samples: []};
+    localAnalyses = {};
+    localAnalysesList = [];
 
     //Define global functions
     lib.login = function (db, pack, parse, callback) {
@@ -25,7 +28,7 @@ KINOMICS.fileManager.DA = (function () {
     };
 
     lib.newAnalysisObject = function (initialObj) {
-        var ana, queue, queuePush, unloading;
+        var ana, queue, queuePush, unloading, localId, length;
 
         //TODO: check user input, add user docs
         unloading = false;
@@ -33,10 +36,22 @@ KINOMICS.fileManager.DA = (function () {
         ana = {};
         ana.data = lib.newDataObject();
         ana.id = Math.uuid();
+        localId = Math.uuid();
         ana.name = initialObj.name;
         ana.date = (new Date()).toISOString();
         KINOMICS.barcodes = ana.data;
         globs.push(['analysis', ana]);
+
+        if (initialObj.UI !== false) {
+            localAnalyses[localId] = ana;
+            length = localAnalysesList.length;
+            if (length > 0) {
+                localAnalysesList[length].status = 'local';
+            }
+            localAnalysesList.push({funcs: {save: ana.save}, status: 'current', name: ana.name, id: localId, type: 'analysis', date: (new Date()).toISOString() });
+
+        }
+
         queuePush = function (array) {
             var i;
             //Adds something to the adjacent place in the queue instead of the end.
@@ -55,9 +70,13 @@ KINOMICS.fileManager.DA = (function () {
             ana.unloadQueue();
         };
 
+        ana.listAnalyses = function () {
+            return localAnalysesList;
+        };
+
         ana.loadData = function (dataObj) {
             queuePush([function (qContinue) {
-                var data, callback;
+                var callback;
                 callback = function () {
                     dataObj.callback();
                     qContinue();
@@ -74,6 +93,7 @@ KINOMICS.fileManager.DA = (function () {
 
         ana.save = function (dataObj) {
             queuePush([function (callback) {
+                console.log('need to be able to save...');
                 callback();
             }]);
         };
@@ -324,9 +344,70 @@ KINOMICS.fileManager.DA = (function () {
                 callback();
             };
             collapse = function (callback) {
+                var i, obj, uuid, key, toCollapse, tarr;
+                toCollapse = [];
                 while (expanded.length > 0) {
                     (expanded.pop())();
                 }
+
+                //Now that those changes are accounted for, need to change all object parts to triples format
+                for (uuid in data.JSON.uuids) {
+                    if (data.JSON.uuids.hasOwnProperty(uuid)) {
+                        obj = data.JSON.uuids[uuid];
+
+                        //If it is not a string or an interger etc, then turn it into a reference
+                        if (typeof obj === 'object') {
+                            //Array
+                            if (obj.constructor === Array) {
+                                for (i = 0; i < obj.length; i += 1) {
+                                    if (typeof obj[i] === 'object') {
+                                        toCollapse.push([obj[i], uuid, i]);
+                                    }
+                                }
+                            //Object
+                            } else {
+                                for (key in obj) {
+                                    if (typeof obj[key] === 'object') {
+                                        toCollapse.push([obj[key], uuid, key]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                while (toCollapse.length > 0) {
+                    tarr = toCollapse.pop();
+                    //Idea: For objects that need to be decomposed in a special way, give them a specific function.
+                    if (tarr[0].uuid && data.JSON.uuids.hasOwnProperty(tarr[0])) {
+                        uuid = tarr[0].uuid;
+                        obj = JSON.parse(JSON.stringify(tarr[0]));
+                        data.JSON.uuids[uuid] = obj;
+                        data.JSON.uuids[tarr[1]][tarr[2]] = '&' + uuid;
+                        continue;
+                    }
+                    
+                    uuid = Math.uuid();
+                    obj = JSON.parse(JSON.stringify(tarr[0]));
+                    data.JSON.uuids[uuid] = obj;
+                    data.JSON.uuids[tarr[1]][tarr[2]] = '&' + uuid;
+
+                    if (obj.constructor === Array) {
+                        for (i = 0; i < obj.length; i += 1) {
+                            if (typeof obj[i] === 'object') {
+                                toCollapse.push([obj[i], uuid, i]);
+                            }
+                        }
+
+                    //Object
+                    } else {
+                        for (key in obj) {
+                            if (typeof obj[key] === 'object') {
+                                toCollapse.push([obj[i], uuid, key]);
+                            }
+                        }
+                    }
+                }
+
                 callback();
             };
         }());
@@ -482,7 +563,11 @@ KINOMICS.fileManager.DA = (function () {
                 return function (qContinue) {
                     // console.log('here: ' + uuid);
                     cdb.loadData({uuid: uuid, callback: function (response) {
-                        loadDataToJSON(JSON.parse(response));
+                        if (response === "") {
+                            console.log('failed grab... need to update icon');
+                        } else {
+                            loadDataToJSON(JSON.parse(response));
+                        }
                         data.expand(qContinue);
                     }});
                 };
