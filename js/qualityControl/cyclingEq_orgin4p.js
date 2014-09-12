@@ -1,5 +1,5 @@
 {
-	stringified: "y0+ymax(1-e^(-c*x))",
+	stringified: "y0+ymax(1-e^(-c*x-x0))",
 	func: function (xVector, P) {
 		//X must be represented as a vector ( [[1,2,4, ...], [2, ....], ... ])
 		// in order to be fit using fmincon, initial conditions are determined 
