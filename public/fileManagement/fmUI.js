@@ -42,6 +42,7 @@ KINOMICS.fileManager.UI = (function () {
     navigationBar = $('#colBrowse');
     table = $('#fileTable');
 
+    lib.navigationBar= {};
     lib.navigationBar.setDataType = function () {
         //Called when the page loads...
     }
