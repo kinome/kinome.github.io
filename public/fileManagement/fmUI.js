@@ -42,6 +42,10 @@ KINOMICS.fileManager.UI = (function () {
     navigationBar = $('#colBrowse');
     table = $('#fileTable');
 
+    lib.navigationBar.setDataType = function () {
+        //Called when the page loads...
+    }
+
     //local function definitions
     reportError = function (err) {
         return console.error("Kinomics File Manager User Interface Error: " + err + "\nTo display more information for any" +
