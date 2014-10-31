@@ -52,15 +52,10 @@
                     <!-- navigate between tabs -->
                     <div class="nav-collapse in collapse" style="height: auto; ">
                         <ul class="nav">
-                            <li class="active"><a href="#home" data-toogle="tab" id="tag1">Home</a>
-
-                            </li>
-                            <li><a href="#qualtityControl" data-toogle="tab" id="tag2">Quality Control</a>
-
-                            </li>
-                            <li><a href="#fileUpload" data-toogle="tab" id="tag3">Data</a>
-
-                            </li>
+                            <li class="active"><a href="#home" data-toogle="tab" id="tag1">Home</a></li>
+                            <li><a href="#fileUpload" data-toogle="tab" id="tag3">Data</a></li>
+                            <li><a href="#qualtityControl" data-toogle="tab" id="tag2">Data Visualization</a></li>
+                            <li><a href="#qualtityControl" data-toogle="tab" id="tag2">Download current data</a></li>
                             <!-- TODO: change to more logical view Login tablet/phone-->
                             <li class="hidden-desktop">
                                 <nav class='btn-group'>
@@ -71,7 +66,7 @@
                                     </a>
 <!-- TODO: fix this stuff for the iphone login... -->
                                     <!-- Options -->
-                                    <ul id="user-access-options" class="dropdown-menu">
+                                    <!-- <ul id="user-access-options" class="dropdown-menu">
                                         <li id='auth'><a href="javascript:fuse.authenticate(function(){});">Authenticate with Google Account</a>
 
                                         </li>
@@ -82,22 +77,22 @@
                                         <li><a href="javascript:s3dbfu.showmodal('loginAK');void(0);">S3DB with API Key</a>
 
                                         </li>
-                                    </ul>
+                                    </ul> -->
                                 </nav>
                             </li>
                             <!-- TODO: change to more logical view Choose Database Phone/Tablet-->
-                            <li class="hidden-desktop">
-                                <nav id="tableSwitch" class="btn-group">
+                            <!-- <li class="hidden-desktop">
+                                <nav id="tableSwitch" class="btn-group"> -->
                                     <!-- Title -->
-                                    <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <!-- <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                         <span class="curData"></span>
                                         <span class="caret"></span>
-                                    </button>
+                                    </button> -->
                                     <!-- Options Phone/Tablet-->
-                                    <ul class="dropdown-menu dbSelector">
+                                <!--     <ul class="dropdown-menu dbSelector">
                                     </ul>
                                 </nav>
-                            </li>
+                            </li> -->
 
                         </ul>
                         <!-- Login desktop-->
@@ -109,8 +104,7 @@
                             </a>
 
                             <!-- Options -->
-                            <ul id="user-access-options" class="dropdown-menu">
-<!-- TODO: fix the following line to something reasonable... -->
+                            <!-- <ul id="user-access-options" class="dropdown-menu">
                                 <li id='authFT'><a>Authenticate with Google Account</a>
 
                                 </li>
@@ -121,19 +115,19 @@
                                 <li><a href="javascript:s3dbfu.showmodal('loginAK');void(0);">S3DB with API Key</a>
 
                                 </li>
-                            </ul>
+                            </ul> -->
                         </nav>
                         <!-- Choose Database desktop-->
-                        <nav id="tableSwitch" class="btn-group pull-right visible-desktop">
-                            <!-- Title -->
+                        <!-- <nav id="tableSwitch" class="btn-group pull-right visible-desktop">
+                            
                             <button class="btn dropdown-toggle pull-right" data-toggle="dropdown" href="#">
                                 <span class="curData"></span>
                                 <span class="caret"></span>
                             </button>
-                            <!-- Options -->
+                            
                             <ul class="dropdown-menu dbSelector">
                             </ul>
-                        </nav>
+                        </nav> -->
                     </div>
                 </div>
                 <script id="template-upload" type="text/x-tmpl">
