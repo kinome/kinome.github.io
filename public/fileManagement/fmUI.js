@@ -64,17 +64,9 @@ KINOMICS.fileManager.UI = (function () {
     //define UI element function groups
     //Page set up - general
     (function () {
-        //variable declarations
-
-        //variable definitions
-
-        //set up login menu - fusion tables, allowing gapi to be here for getting the access token to determine user name.
-        $('#authFT').click(function () {
-            lib.formControl.setUpload('fuse');
-            thisDA.login(fuse, fusePackage, parseObj, lib.table.update);
-        });
-
-        //set up login menu - s3db
+        //'Login' right away
+        lib.formControl.setUpload('fuse');
+        thisDA.login(fuse, fusePackage, parseObj, lib.table.update);
     }());
 
     //Page set up, accesable elements
