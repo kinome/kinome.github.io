@@ -99,18 +99,12 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
 
             //update libraries :-) - closed for code collapsing purposes.
             (function () {
-                lib.writeFile = function (obj) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    TODO: user docs
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(writeFile)(obj);
-                };
-                lib.getTableLines = function (parseObj, callback) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    TODO: user docs
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(getTableLines)(parseObj, callback);
-                };
+                // lib.getTableLines = function (parseObj, callback) {
+                //     ////////////////////////////////////////////////////////////////////////////////
+                //     TODO: user docs
+                //     ////////////////////////////////////////////////////////////////////////////////
+                //     run(getTableLines)(parseObj, callback);
+                // };
                 lib.getUserName = function (callback) {
                     /*////////////////////////////////////////////////////////////////////////////////
                     TODO: user docs
