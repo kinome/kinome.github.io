@@ -501,6 +501,21 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         });
     };
 
+    //this is for loading data
+    (function () {
+        //TODO: deal with error from fusion tables call...
+        lib.loadData = function (dataObj) {
+            globFT.push(dataObj);
+            var file = bySubject[dataObj.uuid][RDF.file][0][2];
+            file = file.replace(/([\S\s]+id\=)([\S\s]+)(\&export[\S\s]+)/, "$2");
+            console.log(file, dataObj);
+            // fuse.readFile(file, function (response) {
+            //     dataObj.callback(response);
+            // });
+        };
+    }());
+
+
     reportError = function (err) {
         $('<div/>', {'class': 'alert alert-error', html:
             '<button type="button" class="close" data-dismiss="alert">×</button>' +
