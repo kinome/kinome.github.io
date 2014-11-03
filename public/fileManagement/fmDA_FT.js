@@ -92,15 +92,9 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         loginMenu = function (fusePackage, callback) {
             fuse = fusePackage;
             //variable definitions
-
-            //TODO: fix this so it does not randomly make new folder structures....
-            //login
-            fuse.login(function (log) {
-                //TODO: handle failed login...
-                lib.loggedIn = true;
+            lib.loggedIn = true;
                 $.getJSON('https://7f3d27bba7ddcc2ee9a1f12b367e81c165b25ae7.googledrive.com/host/0Bw9j7WvO_WpORkY3WVlLRVNSb0E', function (resp) {
-                    getTableListFromConfig(resp, callback);
-                });
+                getTableListFromConfig(resp, callback);
             });
 
             //update libraries :-) - closed for code collapsing purposes.
