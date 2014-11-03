@@ -235,14 +235,102 @@
                 <h1>Data Manager</h1>
                 <div id="homediv">
                     <div class="container">
-                        <div class="well span12" id="defaultFile">Data may take a while to load.<br /></div>
-                        <div id=tableDiv class="row">
-                            <div class="span12">
-                                <table role="presentation" class="table table-striped" id="fileTable">
-                                    <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
-                                </table>
+                        <!-- Default display -->
+                        <div class="well span11" id="defaultFile">Please login to either Google or S3DB and select appropriate database to save and display files.<br /></div>
+
+                        <!-- Logged in display -->
+                        <form id="fileupload" action="" method="POST" enctype="multipart/form-data">
+                            <div class="row">
+                                <!-- Side Navagation bar-->
+                                <div class="span3">
+                                    <div class="well fileOpts" id='colBrowse'>
+                                    </div>
+                                </div>
+
+                                <!-- File Upload options panel - S3DB-->
+                                <div class="span8">
+                                    <div class="well fileOpts" id="S3DBupload">
+                                        <h4>S3DB</h4>
+                                        <div class="row fileupload-buttonbar originRow">
+                                            <div class="span">
+                                                <!-- Add files -->    
+                                                <span class="btn btn-success fileinput-button inputBut">
+                                                    <span><i class="icon-plus icon-white"></i> Add files...</span>
+                                                    <input type="file" name="files[]" class="hiddenBut" multiple></input>
+                                                </span>
+
+                                                <!-- start multiple upload -->
+                                                <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i><span> Start upload</span></button>
+
+                                                <!-- Cancel Upload -->
+                                                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i><span> Cancel upload</span>
+
+                                                </button>
+                                            </div>
+
+                                            <!-- Progress bar for upload -->
+                                            <div class="span5 fileupload-progress fade">
+                                                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="bar" style="width:0%;"></div>
+                                                </div>
+                                                <div class="progress-extended">&nbsp;</div>
+                                            </div>
+                                        </div>
+                                        <div class="fileupload-loading"></div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="span">
+                                                <!-- Add files -->    
+                                                <p class="currentAnaDisp"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- File Upload options panel - Fusion Tables-->
+                                <div class="span9">
+                                    <div class="well fileOpts" id="fusionUpload">
+                                        <h4>Fusion Tables</h4>
+                                        <div class="row fileupload-buttonbar batch">
+                                            <div class="span">
+                                                <!-- Add files -->    
+                                                <span class="btn btn-success inputBut">
+                                                    <span><i class="icon-plus icon-white"></i> Add files...</span>
+                                                    <input type="file" name="files[]" class="hiddenBut" id= "FUSEsub" multiple></input>
+                                                </span>
+                                                <!-- start multiple upload -->
+                                                <button type="hidden" class="btn btn-primary start" id="multUp"><i class="icon-upload icon-white"></i><span> Start upload</span></button>
+                                            </div>
+                                        </div>
+                                        <div class="row fileupload-buttonbar analysis">
+                                            <div class="span">
+                                                <!-- Add files -->    
+                                                <span class="btn btn-success inputBut">
+                                                    <span><i class="icon-plus icon-white"></i> New Analysis...</span>
+                                                    <button class="hiddenBut" id= "NEWanalysis" multiple></input>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="span">
+                                                <!-- Add files -->    
+                                                <p class="currentAnaDisp"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <!-- Table -->
+                            <div id=tableDiv class="row">
+                                <div class="span12">
+                                    <table role="presentation" class="table table-striped" id="fileTable">
+                                        <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
