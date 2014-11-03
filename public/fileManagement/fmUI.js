@@ -237,7 +237,6 @@ KINOMICS.fileManager.UI = (function () {
         };
 
         setDataType = function (str) {
-            str = str || "batch";
             currentDataType = str || currentDataType;
             switch (currentDataType) {
             case 'origin':

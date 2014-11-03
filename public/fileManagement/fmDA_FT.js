@@ -148,6 +148,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                     }
                 }
             }
+            callback();
         };
 
         mainConfig = function (configFile) {
