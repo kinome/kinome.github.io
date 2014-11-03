@@ -54,13 +54,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
     };
     files = {
         rootFolder: function () {
-            var rF;
-            fuse.getRootFolder(function (x) {
-                rF = x;
-                files.rootFolder = function () {
-                    return rF;
-                };
-            });
+            return "0Bw9j7WvO_WpOSnRkR0dOOEFNdVk";
         }
     };
     files[RDF.flatFile] = [];
@@ -68,6 +62,12 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
     files[RDF.batch] = [];
     files[RDF.analysis] = [];
     files[RDF.query] = [];
+
+    userName = function () {
+        return "guest";
+    };
+
+
 
     //This is the only avaliable function on package load, once logged in other become avaliable.
     //It is designed this way so fusePackage will have to be defined.
@@ -99,7 +99,6 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 //TODO: handle failed login...
                 lib.loggedIn = true;
                 userName();
-                files.rootFolder();
                 fuse.getTablesByName(configFileName, getTableListFromConfig);
                 fuse.onComplete(callback);
             });
@@ -112,54 +111,17 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                     */////////////////////////////////////////////////////////////////////////////////
                     run(writeFile)(obj);
                 };
-                lib.saveBarcodes = function (barcodeArr, callback, uiUpdate) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    TODO: user docs
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(saveBarcodes)(barcodeArr, callback, uiUpdate);
-                };
-                lib.tablesSave = function (barcodeObj, callback) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    This function saves barcode objects to fusion tables based on the db property of
-                        the passed in barcode object.
-                    ARGV: 
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(fusionTablesSave)(barcodeObj, callback);
-                };
-
-                lib.batchSave = function (barcodeObj, callback) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    This function saves barcode objects to fusion tables based on the db property of
-                        the passed in barcode object.
-                    ARGV: 
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(fusionTablesBatchSave)(barcodeObj, callback);
-                };
-
                 lib.getTableLines = function (parseObj, callback) {
                     /*////////////////////////////////////////////////////////////////////////////////
                     TODO: user docs
                     */////////////////////////////////////////////////////////////////////////////////
                     run(getTableLines)(parseObj, callback);
                 };
-
                 lib.getUserName = function (callback) {
                     /*////////////////////////////////////////////////////////////////////////////////
                     TODO: user docs
                     */////////////////////////////////////////////////////////////////////////////////
-                    run(getUserName)(callback);
-                };
-                lib.saveBarcode = function (dataObj) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    TODO: user docs
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(saveBarcode)(dataObj);
-                };
-                lib.addBarcodeData = function (barcodeObj) {
-                    /*////////////////////////////////////////////////////////////////////////////////
-                    TODO: user docs
-                    */////////////////////////////////////////////////////////////////////////////////
-                    run(addBarcodeData)(barcodeObj);
+                    return "guest";
                 };
             }());
         };
@@ -582,16 +544,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
         });
     };
 
-    userName = function () {
-        //must be called once at login to initilize since this is an async call
-        var uName;
-        getUserName(function (x) {
-            uName = x;
-            userName = function () {
-                return uName;
-            };
-        });
-    };
+    
 
     currentDate = function () {
         return (new Date()).toISOString();

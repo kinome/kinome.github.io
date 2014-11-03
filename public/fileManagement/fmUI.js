@@ -290,6 +290,10 @@ KINOMICS.fileManager.UI = (function () {
         return lib;
     }(lib));
 
+    //When this library loads, then go ahead and update the table.
+    lib.table.update();
+
+
     return lib;
 }());
 
