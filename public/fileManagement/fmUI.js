@@ -430,10 +430,7 @@ KINOMICS.fileManager.UI = (function () {
     (function () {
         //'Login' right away
         lib.formControl.setUpload('fuse');
-        thisDA.login(fuse, fusePackage, parseObj, function () {
-            mainLib.table.update();
-            lib.table.update();
-        });
+        thisDA.login(fuse, fusePackage, parseObj, lib.table.update);
     }());
 
 
