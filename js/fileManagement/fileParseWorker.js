@@ -440,7 +440,8 @@
                 pamchipLocation: metaDataObj.PamChip_Location || undefined,
                 row: metaDataObj.Row || undefined,
                 temperature: metaDataObj.Temperature || undefined,
-                image: metaDataObj.Image || undefined
+                image: metaDataObj.Image || undefined,
+                meta: {}
             };
 
             //Make sure all the needed parts were defined and save arrays for data that changed through the experiment.
