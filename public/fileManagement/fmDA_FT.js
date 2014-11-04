@@ -509,7 +509,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             var file = bySubject[dataObj.uuid][RDF.file][0][2];
             file = file.replace(/([\S\s]+id\=)([\S\s]+)(\&export[\S\s]+)/, "$2");
             console.log(file, dataObj);
-            $.getJSON('https://80992cbab16e0370e98c40f672581ee533ebf686.googledrive.com/host', function (response) {
+            $.getJSON('https://80992cbab16e0370e98c40f672581ee533ebf686.googledrive.com/host' + file, function (response) {
                 dataObj.callback(response);
             });
             // fuse.readFile(file, function (response) {
