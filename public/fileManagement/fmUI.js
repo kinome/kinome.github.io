@@ -205,17 +205,6 @@ KINOMICS.fileManager.UI = (function () {
             $('<button />', {'class': "btn btn-primary", text: 'Create Analysis'}).click(newAnalysis).appendTo(tempElem);
             box.on('shown', function () { analysisTextBox.focus(); });
         }());
-        
-        //Create default analysis
-        (function () {
-            var analysisName;
-            analysisName = "guest_auto";
-            analysisTextBox.val("");
-            analysis = thisDA.newAnalysisObject({name: analysisName});
-            analyses.push(analysis);
-            currentLoaded = {};
-            currentAnaDisplay.text('Current Analysis: ' + analysisName);
-        }());
 
         return lib;
     }(lib));
@@ -431,6 +420,19 @@ KINOMICS.fileManager.UI = (function () {
         //'Login' right away
         lib.formControl.setUpload('fuse');
         thisDA.login(fuse, fusePackage, parseObj, lib.table.update);
+    }());
+
+    //Create default anaysis
+    (function () {
+        console.log('trying this...');
+        var analysisName;
+        analysisName = "guest_auto";
+        analysisTextBox.val("");
+        analysis = thisDA.newAnalysisObject({name: analysisName});
+        analyses.push(analysis);
+        currentLoaded = {};
+        currentAnaDisplay.text('Current Analysis: ' + analysisName);
+        lib.table.update
     }());
 
 
