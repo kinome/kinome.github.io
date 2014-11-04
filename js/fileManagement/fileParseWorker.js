@@ -440,8 +440,7 @@
                 pamchipLocation: metaDataObj.PamChip_Location || undefined,
                 row: metaDataObj.Row || undefined,
                 temperature: metaDataObj.Temperature || undefined,
-                image: metaDataObj.Image || undefined,
-                meta: {}
+                image: metaDataObj.Image || undefined
             };
 
             //Make sure all the needed parts were defined and save arrays for data that changed through the experiment.
@@ -459,7 +458,7 @@
                     }
                 }
             }
-
+            returnObj.meta = {};
             //Add in remaining metadata
             var metaToRemove = {
                 'Array':1,
