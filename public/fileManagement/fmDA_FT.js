@@ -93,7 +93,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             fuse = fusePackage;
             //variable definitions
             lib.loggedIn = true;
-                $.getJSON('https://7f3d27bba7ddcc2ee9a1f12b367e81c165b25ae7.googledrive.com/host/0Bw9j7WvO_WpORkY3WVlLRVNSb0E', function (resp) {
+                $.getJSON('https://googledrive.com/host/0Bw9j7WvO_WpOdDd0Vk5MazhzeEU', function (resp) {
                 getTableListFromConfig(resp, callback);
             });
 
