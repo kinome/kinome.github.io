@@ -135,6 +135,7 @@ KINOMICS.fileManager.UI = (function () {
 
         };
 
+
         setUpload = function (str) {
             if (str === 'fuse') {
                 saveToDb = fuse;
@@ -206,6 +207,9 @@ KINOMICS.fileManager.UI = (function () {
             $('<button />', {'class': "btn btn-primary", text: 'Create Analysis'}).click(newAnalysis).appendTo(tempElem);
             box.on('shown', function () { analysisTextBox.focus(); });
         }());
+        
+        //Create default analysis
+        newAnalysis("guest_default");
 
         return lib;
     }(lib));
