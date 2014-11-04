@@ -387,8 +387,14 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 bb.name = name;
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
-                        createTriples(response); 
-                        callback();
+                        console.log("testing", response);
+                        if (response.error) {
+                            console.error('This one did not write, trying agian.');
+                            writeIt(str, name, callback);
+                        } else {
+                            createTriples(response); 
+                            callback();
+                        }
                     });
             };
 
