@@ -608,7 +608,7 @@ KINOMICS.fileManager.DA = (function () {
             if (dataObj.self) {
                 //TODO: Just create a file out of self
             } else {
-                url = cdb.getDownloadLink(dataObj);
+                url = cdb.getDownloadURL(dataObj);
                 dataObj.callback(url);
             }
             return;
