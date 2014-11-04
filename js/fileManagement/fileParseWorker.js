@@ -459,6 +459,37 @@
                 }
             }
 
+            //Add in remaining metadata
+            var metaToRemove = {
+                'Array':1,
+                Barcode:1,
+                Col:1,
+                Cycle,Exposure_time:1,
+                Filter:1,
+                Image_timestamp:1,
+                GridID:1,
+                Grid_type:1,
+                Instrument_type:1,
+                Instrument_unit:1,
+                Lamp_power:1,
+                Lamp_refrence_power:1,
+                PamChip_Location:1,
+                Row:1,
+                Temperature:1,
+                'Image':1
+            };
+            for (meta in metaDataObj) {
+                if (metaDataObj.hasOwnProperty(meta) && !metaToRemove(meta)) {
+                    result = determineSameness(metaDataObj[meta]);
+                    if (result.array) {
+                        returnObj.meta[meta] = JSON.parse(JSON.stringify(result.array));
+                    } else {
+                        returnObj.meta[meta] = result;
+                    }
+                }
+            }
+
+
             //make sure both exposure time and cycle numbers were found
             if (returnObj.dataArr.cycle === undefined) {
                 throw "Must export cycle numbers from bionavigator in xtab format to use this parser.";
