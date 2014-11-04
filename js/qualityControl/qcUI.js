@@ -17,7 +17,7 @@ KINOMICS.qualityControl.UI = (function () {
     //library definitions
     workerObj = KINOMICS.workers;
     dataAnalysisObj = KINOMICS.qualityControl.DA;
-    fitCurvesWorkersFile = 'js/qualityControl/fitCurvesWorker.js';
+    fitCurvesWorkersFile = '/js/qualityControl/fitCurvesWorker.js';
     barcodes = KINOMICS.barcodes;
     currentAnalysis = KINOMICS.barcodes;
 
