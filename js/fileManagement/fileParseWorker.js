@@ -480,7 +480,7 @@
                 'Image':1
             };
             for (meta in metaDataObj) {
-                if (metaDataObj.hasOwnProperty(meta) && !metaToRemove(meta)) {
+                if (metaDataObj.hasOwnProperty(meta) && !metaToRemove[meta]) {
                     result = determineSameness(metaDataObj[meta]);
                     if (result.array) {
                         returnObj.meta[meta] = JSON.parse(JSON.stringify(result.array));
