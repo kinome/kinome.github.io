@@ -12,7 +12,7 @@ KINOMICS.fileManager.UI = (function () {
     var lib, fuse, files, analysis, analyses,
         run, reportError, fusePackage, s3db, qcUI,
         workersfile, workers, barcodes, barcodeCreator, thisDA,
-        navigationBar, table, parseObj, currentLoaded;
+        navigationBar, table, parseObj, currentLoaded, currentAnaDisplay;
 
     //variable definitions
     lib = {};
@@ -70,7 +70,7 @@ KINOMICS.fileManager.UI = (function () {
         //variable declarations
         var defaultMessage, s3dbPanel, fusePanel, lib, update,
             setUpload, saveToDb, panel, dbSelector, addFileToTable, newAnalysis, box,
-            analysisTextBox, currentAnaDisplay;
+            analysisTextBox;
 
         //variable definitions
         lib = {};
