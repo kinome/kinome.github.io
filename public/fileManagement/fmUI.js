@@ -427,7 +427,6 @@ KINOMICS.fileManager.UI = (function () {
         console.log('trying this...');
         var analysisName;
         analysisName = "guest_auto";
-        analysisTextBox.val("");
         analysis = thisDA.newAnalysisObject({name: analysisName});
         analyses.push(analysis);
         currentLoaded = {};
