@@ -387,6 +387,7 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
                 bb.name = name;
                 fuse.writeFile(bb, files[RDF.dataFolder], 
                     function (response) {
+                        //This error thing did not seem to work....
                         console.log("testing", response);
                         if (response.error) {
                             console.error('This one did not write, trying agian.');

@@ -269,15 +269,14 @@ KINOMICS.qualityControl.UI = (function () {
             for (i = 0; i < idsPerPage; i += 1) {
                 ind = i + tableStart;
                 if (ind < len) {
-                    if (barArr[ind] === barSelected) {
-                        html = '<b>' + barcodes[barArr[ind]].name + '</b>';
-                        barInd = ind;
+                    if (barcodes[barArr[ind]].meta.display_name && typeof barcodes[barArr[ind]].meta.display_name === "string") {
+                        html = barcodes[barArr[ind]].meta.display_name;
                     } else {
-                        if (barcodes[barArr[ind]].meta.display_name && typeof barcodes[barArr[ind]].meta.display_name === "string") {
-                            html = barcodes[barArr[ind]].meta.display_name;
-                        } else {
-                            html = barcodes[barArr[ind]].name;
-                        }
+                        html = barcodes[barArr[ind]].name;
+                    }
+                    if (barArr[ind] === barSelected) {
+                        html = '<b>' + html + '</b>';
+                        barInd = ind;
                     }
                     tableRows[0][i].html(html);
                     tableRows[0][i].data('barcodeWell', barArr[ind]);
