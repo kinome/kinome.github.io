@@ -432,7 +432,7 @@ KINOMICS.fileManager.UI = (function () {
         analyses.push(analysis);
         currentLoaded = {};
         currentAnaDisplay.text('Current Analysis: ' + analysisName);
-        lib.table.update
+        lib.table.update();
     }());
 
 
