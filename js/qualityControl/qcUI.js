@@ -273,8 +273,8 @@ KINOMICS.qualityControl.UI = (function () {
                         html = '<b>' + barcodes[barArr[ind]].name + '</b>';
                         barInd = ind;
                     } else {
-                        if (barcodes[barArr[ind]].display_name) {
-                            html = barcodes[barArr[ind]].display_name;
+                        if (barcodes[barArr[ind]].meta.display_name && typeof barcodes[barArr[ind]].meta.display_name === "string") {
+                            html = barcodes[barArr[ind]].meta.display_name;
                         } else {
                             html = barcodes[barArr[ind]].name;
                         }
