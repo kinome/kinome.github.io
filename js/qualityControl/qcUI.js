@@ -273,7 +273,11 @@ KINOMICS.qualityControl.UI = (function () {
                         html = '<b>' + barcodes[barArr[ind]].name + '</b>';
                         barInd = ind;
                     } else {
-                        html = barcodes[barArr[ind]].name;
+                        if (barcodes[barArr[ind]].display_name) {
+                            html = barcodes[barArr[ind]].display_name;
+                        } else {
+                            html = barcodes[barArr[ind]].name;
+                        }
                     }
                     tableRows[0][i].html(html);
                     tableRows[0][i].data('barcodeWell', barArr[ind]);

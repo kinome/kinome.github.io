@@ -131,8 +131,6 @@ KINOMICS.fileManager.UI = (function () {
             currentAnaDisplay.text('Current Analysis: ' + analysisName);
             mainLib.table.update();
             //Add analysis to table view
-            
-
         };
 
 
@@ -209,7 +207,13 @@ KINOMICS.fileManager.UI = (function () {
         }());
         
         //Create default analysis
-        newAnalysis("guest_default");
+        analysisName = "guest_auto";
+        analysisTextBox.val("");
+        analysis = thisDA.newAnalysisObject({name: analysisName});
+        analyses.push(analysis);
+        currentLoaded = {};
+        currentAnaDisplay.text('Current Analysis: ' + analysisName);
+        mainLib.table.update();
 
         return lib;
     }(lib));
