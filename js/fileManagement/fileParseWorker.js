@@ -402,7 +402,7 @@
 
         mergeMetaData = function (metaDataObj) {
             //variable declarations
-            var  prop, result, returnObj, makeNumber;
+            var meta, prop, result, returnObj, makeNumber;
 
             //function definitions
             makeNumber = function (x) {
