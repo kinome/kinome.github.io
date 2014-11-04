@@ -207,13 +207,16 @@ KINOMICS.fileManager.UI = (function () {
         }());
         
         //Create default analysis
-        analysisName = "guest_auto";
-        analysisTextBox.val("");
-        analysis = thisDA.newAnalysisObject({name: analysisName});
-        analyses.push(analysis);
-        currentLoaded = {};
-        currentAnaDisplay.text('Current Analysis: ' + analysisName);
-        mainLib.table.update();
+        (function () {
+            var analysisName;
+            analysisName = "guest_auto";
+            analysisTextBox.val("");
+            analysis = thisDA.newAnalysisObject({name: analysisName});
+            analyses.push(analysis);
+            currentLoaded = {};
+            currentAnaDisplay.text('Current Analysis: ' + analysisName);
+            mainLib.table.update();
+        }());
 
         return lib;
     }(lib));
