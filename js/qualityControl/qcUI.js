@@ -433,7 +433,20 @@ KINOMICS.qualityControl.UI = (function () {
                     barArr.push(bw);
                 }
             }
-            barArr = barArr.sort(function (a, b) { return barcodes[a].name > barcodes[b].name ? 1 : -1; });
+            barArr = barArr.sort(function (a, b) {
+                var aName, bName;
+                if (barcodes[a].meta.display_name && typeof barcodes[a].meta.display_name === "string") {
+                    aName = barcodes[a].meta.display_name;
+                } else {
+                    aName = barcodes[a].name;
+                }
+                if (barcodes[b].meta.display_name && typeof barcodes[b].meta.display_name === "string") {
+                    bName = barcodes[b].meta.display_name;
+                } else {
+                    bName = barcodes[b].name;
+                }
+                return aName > bName ? 1 : -1;
+            });
             if (barSelected) {
                 barCurrentPage = Math.floor(barArr.indexOf(barSelected) / idsPerPage) + 1;
             }
