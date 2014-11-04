@@ -394,7 +394,7 @@ KINOMICS.fileManager.UI = (function () {
                 tempElem = $('<td />').appendTo(trow);
                 $('<button>', {'class': 'btn btn-info', 
                                 html:"<i class='icon-download icon-white'></i>Download Data",
-                }).click(downloadFile).appendTo(tempElem);
+                }).click(downloadFile(obj)).appendTo(tempElem);
             }
 
              //Where cancel upload would be
