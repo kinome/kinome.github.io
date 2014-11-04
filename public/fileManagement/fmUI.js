@@ -288,7 +288,7 @@ KINOMICS.fileManager.UI = (function () {
 
     lib.table = (function (mainLib) {
         //variable declarations
-        var createLine, addToAnalysis, addLineToTableTop, addLinesToTable, anaObj, dataObj, lib, update;
+        var createLine, downloadFile, addToAnalysis, addLineToTableTop, addLinesToTable, anaObj, dataObj, lib, update;
 
         //variable definitions
         lib = {};
@@ -342,6 +342,15 @@ KINOMICS.fileManager.UI = (function () {
             };
         };
 
+        downloadFile = function (obj) {
+            return function (evt) {
+                var i, that = $(this);
+                evt.preventDefault();
+                that.unbind('click');
+                console.log(obj);
+            };
+        };
+
         addLineToTableTop = function (line) {
             //TODO: check user input...
             table.prepend(createLine(line));
@@ -376,20 +385,25 @@ KINOMICS.fileManager.UI = (function () {
 
             //Download Button - space
             if (obj.status === 'local') {
-                tempElem = $('<td />').appendTo(trow);
-                $('<button />', {'class': 'btn btn-info', html: "<i class='icon-upload icon-white'></i> Upload"}).click(function (evt) {
-                    evt.preventDefault();
-                    obj.funcs.save({callback: update});
-                }).appendTo(tempElem);
+                // tempElem = $('<td />').appendTo(trow);
+                // $('<button />', {'class': 'btn btn-info', html: "<i class='icon-upload icon-white'></i> Upload"}).click(function (evt) {
+                //     evt.preventDefault();
+                //     obj.funcs.save({callback: update});
+                // }).appendTo(tempElem);
             } else {
-                $('<td />').appendTo(trow);
+                tempElem = $('<td />').appendTo(trow);
+                $('<button>', {'class': 'btn btn-info', 
+                                html:"<i class='icon-download icon-white'></i>Download Data",
+                }).click(downloadFile).appendTo(tempElem);
             }
 
              //Where cancel upload would be
             tempElem = $("<td />").appendTo(trow);
-            $('<button />', {'class': 'btn btn-danger',
-                html: "<i class='icon-trash icon-white'></i> Remove From List"}).
-                appendTo(tempElem);
+
+            //Delete button
+            // $('<button />', {'class': 'btn btn-danger',
+            //     html: "<i class='icon-download icon-white'></i> Remove From List"}).
+            //     appendTo(tempElem);
             return trow;
         };
 
