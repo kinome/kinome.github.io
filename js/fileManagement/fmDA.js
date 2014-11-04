@@ -600,6 +600,20 @@ KINOMICS.fileManager.DA = (function () {
             queuePush(funcs);
         };
 
+        data.downloadURL = function (dataObj) {
+            //purpose of this funciton is is grab the actual data from data base
+            var url;
+
+            funcs = [];
+            if (dataObj.self) {
+                //TODO: Just create a file out of self
+            } else {
+                url = cdb.getDownloadLink(dataObj);
+                dataObj.callback(url);
+            }
+            return;
+        };
+
         data.listBatches = function () {
             //simply returns data list avaliable
             return ((cdb.listBatches()).concat(localDataAvaliable.batches).sort(function (a, b) {
@@ -727,6 +741,8 @@ KINOMICS.fileManager.DA = (function () {
             unloading = true;
             (queue[0])(callFunc);
         };
+
+
         return data;
     };
 

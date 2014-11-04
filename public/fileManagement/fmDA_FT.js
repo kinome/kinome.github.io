@@ -279,6 +279,10 @@ KINOMICS.fileManager.DA.fusionTables = (function () {
             }
             return result;
         };
+        lib.getDownloadURL = function (fileObj) {
+            return bySubject[dataObj.uuid][RDF.file][0][2];
+        }
+
     }());
 
 

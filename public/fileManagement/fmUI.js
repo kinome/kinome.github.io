@@ -347,6 +347,18 @@ KINOMICS.fileManager.UI = (function () {
                 var i, that = $(this);
                 evt.preventDefault();
                 that.unbind('click');
+                obj.callback = function (url) {
+                    console.log('here for url', url);
+                    var a, json;
+                    a = document.createElement("a");
+                    a.style = "display: none";
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = obj.name;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+                dataObj.downloadURL(obj)
                 console.log(obj);
             };
         };
