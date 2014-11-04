@@ -603,8 +603,7 @@ KINOMICS.fileManager.DA = (function () {
         data.downloadURL = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
             var url;
-
-            funcs = [];
+            
             if (dataObj.self) {
                 //TODO: Just create a file out of self
             } else {
