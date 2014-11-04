@@ -346,7 +346,7 @@ KINOMICS.fileManager.UI = (function () {
             return function (evt) {
                 var i, that = $(this);
                 evt.preventDefault();
-                that.unbind('click');
+                console.log(obj);
                 obj.callback = function (url) {
                     console.log('here for url', url);
                     var a, json;
@@ -358,8 +358,11 @@ KINOMICS.fileManager.UI = (function () {
                     a.click();
                     window.URL.revokeObjectURL(url);
                 };
-                dataObj.downloadURL(obj)
-                console.log(obj);
+                if (dataObj.type === 'analysis') {
+                    anaObj.downloadURL(obj);
+                } else {
+                    dataObj.downloadURL(obj)
+                }
             };
         };
 
