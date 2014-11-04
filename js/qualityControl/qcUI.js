@@ -445,6 +445,9 @@ KINOMICS.qualityControl.UI = (function () {
                 } else {
                     bName = barcodes[b].name;
                 }
+                if (aName === bName) {
+                    return 0;
+                }
                 return aName > bName ? 1 : -1;
             });
             if (barSelected) {
