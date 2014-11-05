@@ -463,7 +463,8 @@ KINOMICS.fileManager.UI = (function () {
         analysisName = "guest_auto";
         analysis = thisDA.newAnalysisObject({name: analysisName});
         analyses.push(analysis);
-        currentLoaded = {analysis.id: 1};
+        currentLoaded = {};
+        currentLoaded[analysis.id] = 1;
         currentAnaDisplay.text('Current Analysis: ' + analysisName);
         lib.table.update();
     }());
