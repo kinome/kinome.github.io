@@ -458,12 +458,10 @@ KINOMICS.fileManager.UI = (function () {
 
     //Create default anaysis
     (function () {
-        console.log('trying this...');
         var analysisName;
         analysisName = "guest_auto";
         analysis = thisDA.newAnalysisObject({name: analysisName});
         analyses.push(analysis);
-        console.log(analysis, JSON.stringify(analysis), analysis.toString());
         currentLoaded = {};
         currentLoaded[analysis.localID] = 1;
         currentAnaDisplay.text('Current Analysis: ' + analysisName);
