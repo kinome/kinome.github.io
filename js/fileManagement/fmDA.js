@@ -519,8 +519,7 @@ KINOMICS.fileManager.DA = (function () {
         };
 
         data.collapse = function (callback) {
-            collapse();
-            callback();
+            collapse(callback);
         };
 
         data.addObject = function (inputObj) {
