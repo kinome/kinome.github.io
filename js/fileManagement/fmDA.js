@@ -271,6 +271,7 @@ KINOMICS.fileManager.DA = (function () {
             };
             addObject = function (inputObj) {
                 var newUUID = Math.uuid();
+                collapse(function () {});
                 data.JSON.uuids[newUUID] = inputObj.child;
                 inputObj.parent[inputObj.key] = data.JSON.uuids[newUUID];
                 Object.defineProperty(data.JSON.uuids[newUUID], 'uuid', {
