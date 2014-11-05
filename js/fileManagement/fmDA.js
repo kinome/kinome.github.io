@@ -98,6 +98,23 @@ KINOMICS.fileManager.DA = (function () {
             }]);
         };
 
+        data.downloadURL = function (dataObj) {
+            //purpose of this funciton is is grab the actual data from data base
+            var url;
+
+            if (dataObj.self) {
+                var json, blob, url;
+                json = JSON.stringify(ana.data);
+                blob = new Blob([json], {type: "octet/stream"});
+                url = window.URL.createObjectURL(blob);
+                dataObj.callback(url);
+            } else {
+                url = cdb.getDownloadURL(dataObj);
+                dataObj.callback(url);
+            }
+            return;
+        };
+
         ana.unloadQueue = function (callback) {
             //All functions for this have one parameter: callback, they all call callFunc to indicate completion of task.
             var callFunc = function () {
@@ -603,7 +620,7 @@ KINOMICS.fileManager.DA = (function () {
         data.downloadURL = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
             var url;
-            
+
             if (dataObj.self) {
                 //TODO: Just create a file out of self
             } else {
