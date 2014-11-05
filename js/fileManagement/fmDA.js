@@ -538,6 +538,7 @@ KINOMICS.fileManager.DA = (function () {
             console.log(dataObj);
             loadDataToJSON = function (object) {
                 var prop, prop2, i, j, check, against;
+                if (data.JSON.parents.length) {data.collaps(function(){console.log('collapsing')})};
 
                 //This makes sure that identical data is not loaded on top of itself.
                 if (data.JSON.parents && object.parents) {
