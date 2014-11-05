@@ -104,7 +104,7 @@ KINOMICS.fileManager.DA = (function () {
 
             if (dataObj.self) {
                 var json, blob, url;
-                json = JSON.stringify(ana.data);
+                json = JSON.stringify(ana.data.JSON);
                 blob = new Blob([json], {type: "octet/stream"});
                 url = window.URL.createObjectURL(blob);
                 dataObj.callback(url);
