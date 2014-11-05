@@ -465,7 +465,7 @@ KINOMICS.fileManager.UI = (function () {
         analyses.push(analysis);
         console.log(analysis, JSON.stringify(analysis), analysis.toString());
         currentLoaded = {};
-        currentLoaded[analysis.id] = 1;
+        currentLoaded[analysis.localID] = 1;
         currentAnaDisplay.text('Current Analysis: ' + analysisName);
         lib.table.update();
     }());

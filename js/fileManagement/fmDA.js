@@ -37,6 +37,7 @@ KINOMICS.fileManager.DA = (function () {
         ana.data = lib.newDataObject();
         ana.id = Math.uuid();
         localId = Math.uuid();
+        ana.localID = localId;
         ana.name = initialObj.name;
         ana.date = (new Date()).toISOString();
         KINOMICS.barcodes = ana.data;
