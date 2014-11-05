@@ -187,12 +187,12 @@ KINOMICS.fileManager.UI = (function () {
             currentAnaDisplay = $('.currentAnaDisp').text('To begin analysis, please select or create an analysis.');
 
             //Gives the new analyisis Button Function.
-            $('#NEWanalysis').unbind();
-            $('#NEWanalysis').click(function (evt) {
-                evt.preventDefault();
-                box.modal('toggle');
-                analysisTextBox.focus();
-            });
+            // $('#NEWanalysis').unbind();
+            // $('#NEWanalysis').click(function (evt) {
+            //     evt.preventDefault();
+            //     box.modal('toggle');
+            //     analysisTextBox.focus();
+            // });
             box = $('<div />', {'aria-labelledby': "myModalLabel", 'aria-hidden': "true", role: 'dialog', tabindex: '-1', 'class': 'modal hide fade'}).appendTo('#tableDiv');
             $('<div />', {'class': 'modal-header', html: '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3>Give analysis a name.</h3>'}).appendTo(box);
             tempElem = $('<div />', {'class': 'modal-body', html: ''}).appendTo(box);
@@ -358,8 +358,13 @@ KINOMICS.fileManager.UI = (function () {
                     a.click();
                     window.URL.revokeObjectURL(url);
                 };
-                if (dataObj.type === 'analysis') {
-                    anaObj.downloadURL(obj);
+                if (dataObj.type === "analysis") {
+                    if (dataObj.status === "current") {
+                        obj.self = true;
+                        analysis.downloadURL(obj);
+                    } else {
+                        anaObj.downloadURL(obj);
+                    }
                 } else {
                     dataObj.downloadURL(obj)
                 }
