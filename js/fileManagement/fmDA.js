@@ -536,7 +536,7 @@ KINOMICS.fileManager.DA = (function () {
                 console.error('Cannot save when data has been loaded from database');
             };
 
-            if (data.hasOwnProperty('JSON') && data.JSON.hasOwnProperty('parents') && data.JSON.parents.length) {data.collaps(function(){console.log('collapsing')})};
+            if (data.hasOwnProperty('JSON') && data.JSON.hasOwnProperty('parents') && data.JSON.parents.length) {data.collapse(function(){})};
 
             loadDataToJSON = function (object) {
                 var prop, prop2, i, j, check, against;
