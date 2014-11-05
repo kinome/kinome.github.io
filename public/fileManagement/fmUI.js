@@ -358,8 +358,8 @@ KINOMICS.fileManager.UI = (function () {
                     a.click();
                     window.URL.revokeObjectURL(url);
                 };
-                if (dataObj.type === "analysis") {
-                    if (dataObj.status === "current") {
+                if (obj.type === "analysis") {
+                    if (obj.status === "current") {
                         obj.self = true;
                         analysis.downloadURL(obj);
                     } else {
