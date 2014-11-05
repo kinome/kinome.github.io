@@ -98,7 +98,7 @@ KINOMICS.fileManager.DA = (function () {
             }]);
         };
 
-        data.downloadURL = function (dataObj) {
+        ana.downloadURL = function (dataObj) {
             //purpose of this funciton is is grab the actual data from data base
             var url;
 
