@@ -91,10 +91,10 @@ KINOMICS.qualityControl.UI = (function () {
     //The following functions are for various elements of the page, in the order they appear top->bottom, left->right
     lib.fitCurvesBut = (function (mainLib) {
         //variable declarations
-        var element, fitCurves, fitCurvesClick, thislib, progressBar, tempElem, update, updateActive;
+        var element, fitCurves, fitCurvesClick, lib, progressBar, tempElem, update, updateActive;
 
         //variable definitions
-        thislib = {};
+        lib = {};
         fitCurves = dataAnalysisObj.fitCurves;
 
         //library definitions
@@ -105,12 +105,12 @@ KINOMICS.qualityControl.UI = (function () {
             */////////////////////////////////////////////////////////////////////////////////
             run(update)();
         };
-        thislib.update = updateActive;
+        lib.update = updateActive;
 
         //local functions
         fitCurvesClick = function () {
             element.unbind('click');
-            thislib.update = ""; //This is so the button cannot be updated while curves are being fit.
+            lib.update = ""; //This is so the button cannot be updated while curves are being fit.
             element.button('loading');
             barContainer.show();
             //fit the curves
@@ -126,7 +126,7 @@ KINOMICS.qualityControl.UI = (function () {
                     progressBar.hide();
                     progressBar.width('0%');
                     run(update)();
-                    thislib.update = updateActive; // Turns update feature back on.
+                    lib.update = updateActive; // Turns update feature back on.
                     mainLib.QCtable.update();
                     //mainLib.saveDataBut.update();
                     //TODO: update/create save button
@@ -169,7 +169,7 @@ KINOMICS.qualityControl.UI = (function () {
         barContainer = $('<div/>', {'class': "progress progress-striped active"}).appendTo(tempElem).hide();
         progressBar = $('<div/>', {'class': "bar", style: "width: 0%", id: "bar"}).appendTo(barContainer).hide();
 
-        return thislib;
+        return lib;
     }(lib));
 
     //This will be for the option element when there are more options...
@@ -185,7 +185,7 @@ KINOMICS.qualityControl.UI = (function () {
 
     lib.QCtable = (function (mainLib) {
         //variable declarations
-        var flagR, idsPerPage, thislib, slider, tableRows, update, prevPep, nextPep,
+        var flagR, idsPerPage, lib, slider, tableRows, update, prevPep, nextPep,
             barArr, barClicked, barPageElem, barSelected, barCurrentPage, barRefresh, pepInd,
             pepArr, pepClicked, pepPageElem, pepSelected, pepCurrentPage, pepRefresh, barInd;
 
@@ -194,13 +194,13 @@ KINOMICS.qualityControl.UI = (function () {
         barCurrentPage = 1;
         pepArr = [];
         pepCurrentPage = 1;
-        thislib = {};
+        lib = {};
         flagR = 0.8;
         tableRows = [[], []];
         idsPerPage = 10;
 
         //library definitions
-        thislib.update = function () {
+        lib.update = function () {
             /*////////////////////////////////////////////////////////////////////////////////
             This function takes no arguments, but checks if there are barcode_wells that need 
             to be added to the QC table.
@@ -208,14 +208,14 @@ KINOMICS.qualityControl.UI = (function () {
             run(update)();
         };
 
-        thislib.getCurrentBar = function () {
+        lib.getCurrentBar = function () {
             /*////////////////////////////////////////////////////////////////////////////////
             This function takes no arguments, and returns the current barcode displayed.
             */////////////////////////////////////////////////////////////////////////////////
             return barSelected === 0 ? 0 : barSelected || undefined;
         };
 
-        thislib.getCurrentPep = function () {
+        lib.getCurrentPep = function () {
             /*////////////////////////////////////////////////////////////////////////////////
             This function takes no arguments, and returns the current barcode displayed.
             */////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +269,7 @@ KINOMICS.qualityControl.UI = (function () {
             for (i = 0; i < idsPerPage; i += 1) {
                 ind = i + tableStart;
                 if (ind < len) {
-                    if (barcodes[barArr[ind]].hasOwnProperty('meta') && barcodes[barArr[ind]].meta.hasOwnProperty('display_name') && typeof barcodes[barArr[ind]].meta.display_name === "string") {
+                    if (barcodes[barArr[ind]].meta.display_name && typeof barcodes[barArr[ind]].meta.display_name === "string") {
                         html = barcodes[barArr[ind]].meta.display_name;
                     } else {
                         html = barcodes[barArr[ind]].name;
@@ -435,12 +435,12 @@ KINOMICS.qualityControl.UI = (function () {
             }
             barArr = barArr.sort(function (a, b) {
                 var aName, bName;
-                if (barcodes[barArr[a]].hasOwnProperty('meta') && barcodes[barArr[a]].meta.hasOwnProperty('display_name') && typeof barcodes[a].meta.display_name === "string") {
+                if (barcodes[a].meta.display_name && typeof barcodes[a].meta.display_name === "string") {
                     aName = barcodes[a].meta.display_name;
                 } else {
                     aName = barcodes[a].name;
                 }
-                if (barcodes[barArr[b]].hasOwnProperty('meta') && barcodes[barArr[b]].meta.hasOwnProperty('display_name') && typeof barcodes[b].meta.display_name === "string") {
+                if (barcodes[b].meta.display_name && typeof barcodes[b].meta.display_name === "string") {
                     bName = barcodes[b].meta.display_name;
                 } else {
                     bName = barcodes[b].name;
@@ -541,19 +541,19 @@ KINOMICS.qualityControl.UI = (function () {
             });
         }());
 
-        return thislib;
+        return lib;
     }(lib));
 
     lib.plots = (function (mainLib) {
         //variable declarations
-        var barcode, thislib, makePostWashFigure, makeTimeSeriesFigure, update,
+        var barcode, lib, makePostWashFigure, makeTimeSeriesFigure, update,
             figureInfoHeader, figureOneInfo,
             figureTwoInfo, chartClick, peptide;
 
         //variable definitions
-        thislib = {};
+        lib = {};
 
-        thislib.update = function () {
+        lib.update = function () {
             /*////////////////////////////////////////////////////////////////////////////////
             This function takes no arguments, but checks if there are barcode_wells that need 
             to be added to the QC table.
@@ -696,14 +696,15 @@ KINOMICS.qualityControl.UI = (function () {
                 figureColumn.hide();
                 figureInfoColumn.hide();
                 throw "Need to select both a peptide and a barcode to display figures";
+            } else {
+                figureColumn.show();
+                figureInfoColumn.show();
+                makePostWashFigure();
+                makeTimeSeriesFigure();
+                figureInfoHeader.html('<b>' + barcodes[barcode].name +
+                    '</b><br /><small>&nbsp;&nbsp;' + peptide + '</small>');
+                return true;
             }
-            figureColumn.show();
-            figureInfoColumn.show();
-            makePostWashFigure();
-            makeTimeSeriesFigure();
-            figureInfoHeader.html('<b>' + barcodes[barcode].name +
-                '</b><br /><small>&nbsp;&nbsp;' + peptide + '</small>');
-            return true;
         };
 
         chartClick = function (data, chart) {
@@ -755,7 +756,7 @@ KINOMICS.qualityControl.UI = (function () {
             $('<div/>', {id: 'chart2', style: 'height:221px'}).appendTo(figureColumn);
         }());
 
-        return thislib;
+        return lib;
     }(lib));
 
     return lib;
