@@ -11,9 +11,7 @@
 #   control -- always execute your commits manually!
 #
 #                                                       ~~ (c) SRW, 18 Jul 2013
-#                                                   ~~ last updated 06 Nov 2014
-
-#-  Temporary project directories
+#                                                   ~~ last updated 18 Jul 2013
 
 #-  Vim files (taken from http://git.io/qmQqxA)
 .*.s[a-w][a-z]
