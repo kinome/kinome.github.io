@@ -15,7 +15,7 @@
     fmincon = (function () {
         //please note - this is a minimized version of fmincon from amdjs_1.1.0.js
         //variable declarations
-        var sqrSumOfErrors, sqrSumOfDeviations, func;
+        var binomialProb, combine, factorialDivide, factorial, sqrSumOfErrors, sqrSumOfDeviations, func, binomialFit;
 
         //variable defintions
 
@@ -55,9 +55,8 @@
                     sse = sqrSumOfErrors(fun, X, y, x0);
                     if (Math.abs(1 - sse / lastItter) < options.minPer) {
                         break;
-                    } else {
-                        lastItter = sse;
                     }
+                    lastItter = sse;
                 }
             }
 
@@ -65,7 +64,7 @@
             SSDTot = sqrSumOfDeviations(y);
             SSETot = sqrSumOfErrors(fun, X, y, x0);
             corrIsh = 1 - SSETot / SSDTot;
-            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh};
+            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, binomFit: binomialFit(fun, X, y, x0)};
         };
 
         sqrSumOfErrors = function (fun, X, y, x0) {
@@ -96,7 +95,51 @@
             return error;
         };
 
+        binomialFit = function (fun, X, y, x0) {
+            var i, res1, res2, count = 0, tot = y.length - 1;
+            for (i = 0; i < tot; i += 1) {
+                res1 = fun(X[i], x0) - y[i];
+                res2 = fun(X[i + 1], x0) - y[i + 1];
+                if (res1 * res2 <= 0) {
+                    count += 1;
+                }
+            }
 
+            return binomialProb(tot, 0.5, [0, count]);
+        };
+
+        binomialProb = function (n, prob, range) {
+            var i, sol = 0;
+            for (i = range[0]; i <= range[1]; i += 1) {
+                sol += combine(n, i) * Math.pow(prob, i) * Math.pow(1 - prob, n - i);
+            }
+            return sol;
+        };
+
+        combine = function (n, r) {
+            return factorialDivide(n, Math.max(n - r, r)) / factorial(Math.min(n - r, r));
+        };
+
+        factorialDivide = function (top, bottom) {
+            var i, sol = 1;
+            if (top < bottom) {
+                return NaN;
+            }
+            for (i = top; i > bottom; i += -1) {
+                sol *= i;
+            }
+            return sol;
+        };
+
+        factorial = function (x) {
+            var ret = 1, i;
+            if (x >= 1) {
+                for (i = x; i > 1; i -= 1) {
+                    ret = ret * i;
+                }
+            }
+            return ret;
+        };
 
         //return function
         return func;
