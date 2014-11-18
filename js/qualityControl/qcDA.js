@@ -76,6 +76,7 @@ KINOMICS.qualityControl.DA = (function () {
         //variable defintions
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
+        data.binomFit = fit.binomFit;
         data.totalSqrErrors = fit.totalSqrErrors;
     };
 
