@@ -112,7 +112,7 @@
             var i, sol = 0, prob = 0.5; // Since this is my measure of goodness of fit, I set prob=0.5.
 
             //If it is predefined (should be for all in the standard data set)
-            if (binomialDict.hasOwnProperty(n) && binomialDict[n].hasOwnProperty(i) {
+            if (binomialDict.hasOwnProperty(n) && binomialDict[n].hasOwnProperty(i)) {
                 return binomialDict[n][i];
             }
 
