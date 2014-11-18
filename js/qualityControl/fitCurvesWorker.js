@@ -113,7 +113,7 @@
 
             //If it is predefined (should be for all in the standard data set)
             if (binomialDict.hasOwnProperty(n) && binomialDict[n].hasOwnProperty(end)) {
-                return binomialDict[n][end] + "worked...";
+                return binomialDict[n][end];
             }
 
             //Else actually calculate it.
