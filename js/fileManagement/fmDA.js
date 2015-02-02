@@ -462,7 +462,12 @@ KINOMICS.fileManager.DA = (function () {
             };
             parseFileString = function (callback) {
                 if (that.string) {
-                    parseFile({callback: callback});
+                    try {
+                        parseFile({callback: callback});    
+                    } catch (err) {
+                        reportError('Failed to Parse File, incorrect format:' + err);
+                    }
+                    
                 } else {
                     console.error('No file string found...');
                     callback();
@@ -780,7 +785,7 @@ KINOMICS.fileManager.DA = (function () {
 
     reportErrorFromWorker = function (err) {
         var message = err.message || err;
-        reportError(message + " In worker Package...");
+        reportError('Failed to parse file, ' + message + " Occured in worker package.");
     };
 
     run = function (func) {

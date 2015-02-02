@@ -137,21 +137,27 @@ KINOMICS.qualityControl.UI = (function () {
         update = function () {
             var i, upd = 0;
             element.button('complete');
-            barcodes = KINOMICS.barcodes.JSON.parents || barcodes;
-            currentAnalysis = KINOMICS.barcodes;
-            for (i = 0; i < barcodes.length; i += 1) {
-                $('#tempQCMessage').hide();
-                buttonWell.show();
-                if (barcodes[i].db.fit === false) {
-                    element.button('reset');
-                    element.unbind('click');
-                    element.click(fitCurvesClick);
-                } else if (!upd) {
-                    mainLib.QCtable.update();
-                    //mainLib.saveDataBut.update();
-                    upd += 1;
+            if(KINOMICS.barcodes) {
+                barcodes = KINOMICS.barcodes.JSON.parents || barcodes;
+                currentAnalysis = KINOMICS.barcodes;
+                for (i = 0; i < barcodes.length; i += 1) {
+                    $('#tempQCMessage').hide();
+                    buttonWell.show();
+                    if (barcodes[i].db.fit === false) {
+                        element.button('reset');
+                        element.unbind('click');
+                        element.click(fitCurvesClick);
+                    } else if (!upd) {
+                        mainLib.QCtable.update();
+                        //mainLib.saveDataBut.update();
+                        upd += 1;
+                    }
                 }
+            } else {
+                barcodes = [];
+                mainLib.QCtable.update();
             }
+            
         };
 
         //Actually create the element
@@ -423,6 +429,13 @@ KINOMICS.qualityControl.UI = (function () {
         update = function () {
             //variable declarations
             var bw;
+
+            //Barcode table hide if no data
+            if(! barcodes || barcodes.length < 1) {
+                qcBody.hide()
+                return;
+            }
+
             //variable definitions
             barArr = [];
             qcBody.show();
