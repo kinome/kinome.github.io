@@ -187,7 +187,7 @@ KINOMICS.fileManager.DA = (function () {
                 throw "input_obj was not defined";
             }
 
-            workersFile = 'js/fileManagement/fileParseWorker.js';
+            workersFile = '/js/fileManagement/fileParseWorker.js';
             workerObj = KINOMICS.workers;
 
             //variable definitions
@@ -441,6 +441,7 @@ KINOMICS.fileManager.DA = (function () {
                     data.string = dataObj.data;
                 } else if (dataObj.type === 'fileObj') {
                     fileObj = dataObj.data;
+                    dataObj.name = dataObj.name || fileObj.name;
                 } else {
                     console.error('Data Type not recognized. Please either use a file object, or a string with full batch file');
                 }
@@ -477,7 +478,8 @@ KINOMICS.fileManager.DA = (function () {
                 that = data;
                 samples = [];
                 localData.batch[localBatchID] = localData.batch[localBatchID] || [];
-                batchObj = {funcs: {save: data.save}, barcodes: localData.batch[localBatchID], status: 'local', name: fileObj.name, id: localBatchID, type: 'batch', date: (new Date()).toISOString() };
+
+                batchObj = {funcs: {save: data.save}, barcodes: localData.batch[localBatchID], status: 'local', name: dataObj.name, id: localBatchID, type: 'batch', date: (new Date()).toISOString() };
 
                 saveOne = function (id) {
                     return function (input_obj) {
