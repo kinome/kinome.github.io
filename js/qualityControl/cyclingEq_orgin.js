@@ -38,5 +38,7 @@
 		// }
         return [y0, Ym, c];
 	},
-	description: 'For fitting postwash data'
+	description: 'For fitting postwash data',
+	mathType: "y(c)=y_0+y_{max}(1-e^{-c*x})",
+	mathParams: ['y_0', 'y_{max}', 'k']
 }

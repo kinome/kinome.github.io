@@ -9,8 +9,9 @@ KINOMICS.qualityControl.DA = (function () {
     //Define variables
     lib = {};
     lib.functions = {
-        postWash: ['js/qualityControl/postWashEq.js'],
-        cycleSeries: ['js/qualityControl/cyclingEq.js', 'js/qualityControl/cyclingEq_orgin.js', 'js/qualityControl/cyclingEq_orgin4p.js'] //,
+        postWash: ['/js/qualityControl/postWashEq.js'],
+        // cycleSeries: ['js/qualityControl/cyclingEq.js', 'js/qualityControl/cyclingEq_orgin.js', 'js/qualityControl/cyclingEq_orgin4p.js'] //,
+        cycleSeries: ['/js/qualityControl/cyclingEq.js'] //,
     };
 
     //preload equations

@@ -9,7 +9,7 @@
 		//if (xVector[0] < P[1]) {return Infinity; }
 		return (1 / (1 / (P[0] * (xVector[0] - P[1])) + 1 / P[2]));
 		//return params[0]+1/(1/(params[1]*(xVector[0]-params[2]))+1/params[3]);
-	},
+	},        
 	setInitial: function (x_vector, y_values) {
 		var vi, Ym, c, xS, xMin, xMax, yMin, yMax, y0, x_values =[], yN, slope;
 
@@ -41,5 +41,7 @@
                 c = y0 / xMin || -10;
                 return [vi, c, Ym];
 	},
-	description: 'For fitting postwash data'
+	description: 'For fitting postwash data',
+        mathType: "y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}",
+        mathParams: ['v_i', 'c_0', 'y_{max}']
 }
