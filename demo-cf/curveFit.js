@@ -16,55 +16,6 @@ var currentData;
     equation: currentEq
   };
 
-  //Load equation(s) - async
-  (function () {
-    var type, i, suc, suc2, er;
-    suc = function (arr, ind) {
-      return function (x) {
-        var sol, url;
-        url = arr[ind];
-        sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
-        arr[ind] = sol;
-        arr[ind].string = x;
-        arr[ind].uuid = url;
-      };
-    };
-    suc2 = function (arr, ind) {
-      return function (x) {
-        var sol, url;
-        url = arr[ind];
-        sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
-        arr[ind] = sol;
-        arr[ind].string = x;
-        arr[ind].uuid = url;
-        $(document).ready(function(){buildUI()});
-      };
-    };
-
-    //TODO: make this a better error function..
-    er = function (x) {
-      console.error(x.error, 'it does not work...');
-    };
-
-    for (i = 0; i < functions.length; i += 1) {
-      if (i + 1 === functions.length) {
-        $.ajax({
-          dataType: "text",
-          url: functions[i],
-          success: suc2(functions, i),
-          error: er
-        });
-      } else {
-        $.ajax({
-          dataType: "text",
-          url: functions[i],
-          success: suc(functions, i),
-          error: er
-        });
-      }
-    }
-  })();
-
   //Functions
   selectEquation = function (ind) {
     currentData.equation = functions[ind];
@@ -276,5 +227,57 @@ var currentData;
     // ).appendTo(buttonDiv);
 
   };
+
+
+    //Load equation(s) - async
+  (function () {
+    var type, i, suc, suc2, er;
+    suc = function (arr, ind) {
+      return function (x) {
+        var sol, url;
+        url = arr[ind];
+        sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
+        arr[ind] = sol;
+        arr[ind].string = x;
+        arr[ind].uuid = url;
+      };
+    };
+    suc2 = function (arr, ind) {
+      return function (x) {
+        var sol, url;
+        url = arr[ind];
+        sol = eval('sol=' + x.replace(/[\S \t]+?\/\/[\S \t]+?[\r\n]+/g, '').replace(/[\n\r]+/g, ''));
+        arr[ind] = sol;
+        arr[ind].string = x;
+        arr[ind].uuid = url;
+        $(document).ready(function(){buildUI()});
+      };
+    };
+
+    //TODO: make this a better error function..
+    er = function (x) {
+      console.error(x.error, 'it does not work...');
+    };
+
+    for (i = 0; i < functions.length; i += 1) {
+      if (i + 1 === functions.length) {
+        $.ajax({
+          dataType: "text",
+          url: functions[i],
+          success: suc2(functions, i),
+          error: er
+        });
+      } else {
+        $.ajax({
+          dataType: "text",
+          url: functions[i],
+          success: suc(functions, i),
+          error: er
+        });
+      }
+    }
+  })();
+
+
 
 }());
