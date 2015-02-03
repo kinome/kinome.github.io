@@ -2,7 +2,7 @@ var currentData;
 (function () {
   'use strict';
 
-  var dataDiv, fitDiv, figureDiv, startingData, bodyDiv, tempDiv, equation, functions, currentEq, selectEquationDiv,
+  var buildUI, dataDiv, fitDiv, figureDiv, startingData, bodyDiv, tempDiv, equation, functions, currentEq, selectEquationDiv,
     createFigure, selectEquation, fitCurve, parseFitResults, parseAndFit, chartClick, buttonDiv, makeDropDown;
 
   //init
@@ -37,7 +37,6 @@ var currentData;
         arr[ind] = sol;
         arr[ind].string = x;
         arr[ind].uuid = url;
-        selectEquation(0);
         $(document).ready(function(){buildUI()});
       };
     };
@@ -266,6 +265,7 @@ var currentData;
     }
 
     selectEquationDiv = $('<div>').appendTo(buttonDiv);
+    selectEquation(0);
 
     //   '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">' +
     //   '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>' +
