@@ -15,6 +15,7 @@ google.load('visualization', '1', {packages: ['corechart']});
     $('#tag2').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
+        window.location.hash = "#model"
     });
     $('#tag3').click(function (e) {
         e.preventDefault();

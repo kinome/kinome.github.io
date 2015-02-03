@@ -215,6 +215,10 @@ var currentData;
       }(i));
     }
 
+    if(window.location.hash === '#model') {
+      $('#tag2').click();
+    }
+
     selectEquationDiv = $('<div>').appendTo(buttonDiv);
     selectEquation(0);
 
@@ -277,6 +281,8 @@ var currentData;
       }
     }
   })();
+
+
 
 
 
