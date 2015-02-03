@@ -38,7 +38,7 @@ var currentData;
         arr[ind].string = x;
         arr[ind].uuid = url;
         selectEquation(0);
-        $(document).ready(function(){makeDropDown()});
+        $(document).ready(function(){buildUI()});
       };
     };
 
@@ -231,8 +231,8 @@ var currentData;
   };
 
   //Set up page
-  (function () {
-    var dropDown;
+  buildUI = function () {
+    var dropDown, i, tempElem;
     bodyDiv = $('#qualtityControl');
     tempDiv = $('<div>', {'class': 'row'}).appendTo(bodyDiv);
     dataDiv = $('<div>', {'class': 'col span5'}).appendTo(tempDiv);
@@ -255,17 +255,14 @@ var currentData;
 
     dropDown = $('<br/><br/><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true"><span id="dropText">Select Equation</span><span class="caret"></span></button></div>').appendTo(buttonDiv);
     dropDown = $('<ul>', {'class': 'dropdown-menu', 'role': 'menu', 'aria-labelledby': 'dropdownMenu1'}).appendTo(dropDown);
-    makeDropDown = function () {
-      var tempElem;
-      for (var i = 0; i < functions.length; i += 1) {
-        (function (i) {
-          tempElem = $('<li>', {'role': 'presentation'}).appendTo(dropDown);
-          $('<a>', {'role': "menuitem", 'tabindex': "-1", 'href':"#"}).append(M.sToMathE(functions[i].mathType)).appendTo(tempElem).click(function (evt) {
-            evt.preventDefault();
-            selectEquation(i);
-          });
-        }(i));
-      }
+    for (i = 0; i < functions.length; i += 1) {
+      (function (i) {
+        tempElem = $('<li>', {'role': 'presentation'}).appendTo(dropDown);
+        $('<a>', {'role': "menuitem", 'tabindex': "-1", 'href':"#"}).append(M.sToMathE(functions[i].mathType)).appendTo(tempElem).click(function (evt) {
+          evt.preventDefault();
+          selectEquation(i);
+        });
+      }(i));
     }
 
     selectEquationDiv = $('<div>').appendTo(buttonDiv);
@@ -278,6 +275,6 @@ var currentData;
     //   '</ul></div>'
     // ).appendTo(buttonDiv);
 
-  })();
+  };
 
 }());
