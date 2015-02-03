@@ -38,7 +38,7 @@ var currentData;
         arr[ind].string = x;
         arr[ind].uuid = url;
         selectEquation(0);
-        makeDropDown();
+        $(document).ready(function(){makeDropDown()});
       };
     };
 
