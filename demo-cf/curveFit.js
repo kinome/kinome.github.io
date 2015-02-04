@@ -1,3 +1,5 @@
+/*global $, window, google, jQuery, requireJS*/
+
 var currentData;
 (function () {
   'use strict';
@@ -182,6 +184,10 @@ var currentData;
 
   //Set up page
   buildUI = function () {
+// console.log('I am here...'); return;
+  window["_GOOG_TRANS_EXT_VER"] = "1";
+  //google.load('visualization', '1.0', {packages: ['corechart']});
+
     var dropDown, i, tempElem;
     bodyDiv = $('#qualtityControl');
     tempDiv = $('<div>', {'class': 'row'}).appendTo(bodyDiv);
@@ -229,11 +235,10 @@ var currentData;
     //   '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>' + 
     //   '</ul></div>'
     // ).appendTo(buttonDiv);
-
   };
 
 
-    //Load equation(s) - async
+  //Load equation(s) - async
   (function () {
     var type, i, suc, suc2, er;
     suc = function (arr, ind) {
@@ -254,7 +259,7 @@ var currentData;
         arr[ind] = sol;
         arr[ind].string = x;
         arr[ind].uuid = url;
-        $(document).ready(function(){buildUI()});
+        //$(document).ready(function(){buildUI()});
       };
     };
 
@@ -282,7 +287,18 @@ var currentData;
     }
   })();
 
-
+  //Load all scripts
+  requireJS([
+    '/js/bootstrap/js/bootstrap.min.js',
+    '/js/qualityControl/UIsupport/jquery.nouislider.js',
+    "/js/qualityControl/UIsupport/jqmath-etc-0.2.0.min.js",
+    "https://apis.google.com/js/client.js",
+    "/js/general/nameSpace.js",
+    "/js/general/barcodeProto.js",
+    "/js/general/workersPackage.js",
+    "/js/general/amdjs_1.1.0.js",
+    "/js/general/wasInline.js"
+  ], buildUI, '/js/general/jquery-1.7.2.min.js');
 
 
 

@@ -156,60 +156,14 @@
         -->
         <div id="javascripts">
             <!-- Major Packages -->
-            <script src="../js/general/jquery-1.7.2.min.js"></script>
-            <script src="../js/bootstrap/js/bootstrap.min.js"></script>
-
-            <!-- Support Packages -->
-            <script src="../js/qualityControl/UIsupport/jquery.nouislider.js"></script>
-            <script src="../js/qualityControl/UIsupport/jqmath-etc-0.2.0.min.js"></script>
-            <script src="https://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
-            <script type="text/javascript" src="/js/general/jsapi.js"></script>
-
-            <!-- My Packages -->
-            <script src="../js/general/nameSpace.js"></script>
-            <script src="../js/general/barcodeProto.js"></script>
-            <script src="../js/general/workersPackage.js"></script>
-            <script src="../js/general/amdjs_1.1.0.js" type="text/javascript"></script>
+            <script src="/js/general/jquery-1.7.2.min.js"></script>
+            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+            <script type="text/javascript">
+              // Load the Visualization API and the piechart package.
+              google.load('visualization', '1.0', {'packages':['corechart']});
+            </script>
+            <script src='./requireJS.js'></script>
             <script src="./curveFit.js"></script>
-            <!-- // <script src="./publicqcDA.js"></script> -->
-            <!-- // <script src="../js/qualityControl/qcDA.js"></script> -->
-            <!-- // <script src="../js/fileManagement/fmDA.js"></script> -->
-            <!-- <script src="./fileManagement/fmDA_FT.js"></script> -->
-<!--            <script src="../js/fileManagement/fmDA_s3db.js"></script> -->
-            <!-- <script src="./fileManagement/fusionTables.js"></script> -->
-<!--         <script src="js/fileManagement/fileUploadManager.js"></script> -->
-
-            <!-- UI -->
-            <!-- // <script src="../js/qualityControl/qcUI.js"></script> -->
-            <!-- <script src="./fileManagement/fmUI.js"></script> -->
-
-            <!-- // <script src="./sampleData.js"></script> -->
-            
-            <!-- <script src="js/general/client.js" gapi_processed="true"></script> -->
-
-
-            <!-- S3DB/filemanagement form -->
-        <!--    <script src="js/fileManagement/s3dbInferface.js"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/jquery.ui.widget.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/tmpl.min.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/load-image.min.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/jquery.iframe-transport.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/jquery.fileupload.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/jquery.fileupload-fp.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/jquery.fileupload-ui.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/master/js/locale.js"
-            type="text/javascript"></script>
-            <script src="https://raw.github.com/ebadedude/S3DB-File-Upload/f893461cf3f9e55fa2c12a5536abc17cb7ab962b/s3dbfu.js"
-            type="text/javascript"></script>
-            -->
-            <!-- Makes the input botton invisible -->
             <style type="text/css">
                 .inputBut {
                     overflow:hidden;
@@ -235,9 +189,6 @@
                     padding:-200;
                 }
             </style>
-
-            <script src="../js/general/wasInline.js"></script>
-
         </div>
     </body>
 
