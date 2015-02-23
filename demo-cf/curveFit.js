@@ -111,7 +111,7 @@ var currentData;
             currentData.y_values.push(parseFloat(p[1]));
             currentData.accurateData.push(1);
         });
-        console.log(currentData);
+        //console.log(JSON.parse(JSON.stringify(currentData)));
         fitCurve(createFigure);
     };
 
@@ -120,7 +120,7 @@ var currentData;
         var worker, workerObj, workerFile;
         //variable declarations
         workerObj = KINOMICS.workers;
-        workerFile = 'tempFitter.js';
+        workerFile = '/js/qualityControl/fitCurvesWorker.js';
         //TODO: check user input
 
         //the point of this pattern is to start a worker only one time. No need to close it then...
@@ -132,6 +132,7 @@ var currentData;
             //variable definitions
             callback = callback || function (x) {if (x !== undefined) { console.log(x); } };
             typeObj = currentData;
+
 
             //TODO: check user input
             submitObj = JSON.parse(JSON.stringify(typeObj));
@@ -145,9 +146,8 @@ var currentData;
 
     parseFitResults = function (fitRes) {
         //variable declarations
-        var data, fit;
-        //Get location of original data
-        fit = fitRes.data.shift();
+        var data, fit = {};
+        fit = fitRes.data[1];
         data = currentData;
         //variable defintions
         data.parameters = fit.parameters;
