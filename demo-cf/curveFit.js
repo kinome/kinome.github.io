@@ -79,7 +79,7 @@ var currentData;
     tempElem = $("<dl/>").appendTo(fitDiv);
     tempElem = $('<small/>').appendTo(tempElem);
     $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
-    $('<dd/>').append("<i>W.W. runs p-val: " + (Math.round(data.binomFit * 100) / 100) + "<i>").appendTo(tempElem);
+    $('<dd/>').append("<i>W.W. runs p-val: " + (Math.round(data.WWtest * 100) / 100) + "<i>").appendTo(tempElem);
     $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
     $('<dd/>').append(M.sToMathE(data.equation.mathType)).appendTo(tempElem);
     $('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
@@ -154,7 +154,7 @@ var currentData;
     //variable defintions
     data.parameters = fit.parameters;
     data.R2 = fit.R2;
-    data.binomFit = fit.binomFit;
+    data.WWtest = fit.WWtest;
     data.totalSqrErrors = fit.totalSqrErrors;
   };
     
