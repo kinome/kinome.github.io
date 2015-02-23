@@ -183,8 +183,6 @@ var currentData;
     //Set up page
     buildUI = function () {
         // console.log('I am here...'); return;
-        window["_GOOG_TRANS_EXT_VER"] = "1";
-        google.load('visualization', '1.0', {packages: ['corechart']});
 
         //Add tab click stuff
         (function () {
@@ -301,9 +299,7 @@ var currentData;
     //Load all scripts
     requireJS([
         '/js/bootstrap/js/bootstrap.min.js',
-        '/js/qualityControl/UIsupport/jquery.nouislider.js',
         "/js/qualityControl/UIsupport/jqmath-etc-0.2.0.min.js",
-        "https://apis.google.com/js/client.js",
         //'https://www.google.com/jsapi', - this will for some reason reset the page, must be in the header.
         "/js/general/nameSpace.js",
         "/js/general/barcodeProto.js",
