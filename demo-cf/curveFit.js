@@ -3,7 +3,7 @@
 var currentData;
 (function () {
     'use strict';
-    
+
     var buildUI, dataDiv, fitDiv, figureDiv, startingData, bodyDiv, tempDiv, functions, currentEq, selectEquationDiv,
         createFigure, selectEquation, fitCurve, parseFitResults, parseAndFit, chartClick, buttonDiv;
 
@@ -111,7 +111,7 @@ var currentData;
             currentData.y_values.push(parseFloat(p[1]));
             currentData.accurateData.push(1);
         });
-        //console.log(currentData);
+        console.log(currentData);
         fitCurve(createFigure);
     };
 
