@@ -183,7 +183,7 @@ var currentData;
     //Set up page
     buildUI = function () {
         // console.log('I am here...'); return;
-        // window["_GOOG_TRANS_EXT_VER"] = "1";
+        window["_GOOG_TRANS_EXT_VER"] = "1";
         google.load('visualization', '1.0', {packages: ['corechart']});
 
         //Add tab click stuff
