@@ -184,7 +184,20 @@ var currentData;
     buildUI = function () {
         // console.log('I am here...'); return;
         // window["_GOOG_TRANS_EXT_VER"] = "1";
-        // google.load('visualization', '1.0', {packages: ['corechart']});
+        google.load('visualization', '1.0', {packages: ['corechart']});
+
+        //Add tab click stuff
+        (function () {
+            $('#tag1').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+            $('#tag2').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+                window.location.hash = '#model';
+            });
+        }());
 
         var dropDown, i, tempElem;
         bodyDiv = $('#qualtityControl');
@@ -295,7 +308,6 @@ var currentData;
         "/js/general/barcodeProto.js",
         "/js/general/workersPackage.js",
         "/js/general/amdjs_1.1.0.js",
-        "/js/general/wasInline.js"
     ], buildUI, '/js/general/jquery-1.7.2.min.js');
 
 
