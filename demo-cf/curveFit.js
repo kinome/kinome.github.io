@@ -304,6 +304,7 @@ var currentData;
         '/js/qualityControl/UIsupport/jquery.nouislider.js',
         "/js/qualityControl/UIsupport/jqmath-etc-0.2.0.min.js",
         "https://apis.google.com/js/client.js",
+        'https://www.google.com/jsapi',
         "/js/general/nameSpace.js",
         "/js/general/barcodeProto.js",
         "/js/general/workersPackage.js",
