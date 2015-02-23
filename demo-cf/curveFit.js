@@ -3,7 +3,7 @@
 var currentData;
 (function () {
     'use strict';
-
+    
     var buildUI, dataDiv, fitDiv, figureDiv, startingData, bodyDiv, tempDiv, functions, currentEq, selectEquationDiv,
         createFigure, selectEquation, fitCurve, parseFitResults, parseAndFit, chartClick, buttonDiv;
 
