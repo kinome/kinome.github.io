@@ -304,7 +304,7 @@ var currentData;
         '/js/qualityControl/UIsupport/jquery.nouislider.js',
         "/js/qualityControl/UIsupport/jqmath-etc-0.2.0.min.js",
         "https://apis.google.com/js/client.js",
-        'https://www.google.com/jsapi',
+        //'https://www.google.com/jsapi', - this will for some reason reset the page, must be in the header.
         "/js/general/nameSpace.js",
         "/js/general/barcodeProto.js",
         "/js/general/workersPackage.js",
