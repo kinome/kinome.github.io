@@ -121,7 +121,7 @@ var currentData;
     var worker, workerObj, workerFile;
     //variable declarations
     workerObj = KINOMICS.workers;
-    workerFile = '/js/qualityControl/fitCurvesWorker.js';
+    workerFile = 'https://raw.githubusercontent.com/adussaq/amd_cf/master/fitCurvesWorker.js';
     //TODO: check user input
 
     //the point of this pattern is to start a worker only one time. No need to close it then...

@@ -35,6 +35,12 @@
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-114-precomposed.png"></link>
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-72-precomposed.png"></link>
         <link rel="apple-touch-icon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-57-precomposed.png"></link>
+        <!-- This loads google charts stuff. -->
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+          // Load the Visualization API and the piechart package.
+          google.load('visualization', '1.0', {'packages':['corechart']});
+        </script>
     </head>
     <body class=" hasGoogleVoiceExt">
         <!-- Navigation bar at the top of the screen -->
@@ -56,12 +62,12 @@
                             <li><a href="#qualtityControl" data-toogle="tab" id="tag2">Data Visualization</a></li>
                             <!-- TODO: change to more logical view Login tablet/phone-->
                             <li class="hidden-desktop">
-                                <nav class='btn-group'>
+                                <!-- <nav class='btn-group'> -->
                                     <!-- Title -->    
-                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                   <!--  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                         <i class="icon-user"></i> <span class="username">Login</span>
                                         <span class="caret"></span>
-                                    </a>
+                                    </a> -->
 <!-- TODO: fix this stuff for the iphone login... -->
                                     <!-- Options -->
                                     <!-- <ul id="user-access-options" class="dropdown-menu">
@@ -76,7 +82,7 @@
 
                                         </li>
                                     </ul> -->
-                                </nav>
+                                <!-- </nav> -->
                             </li>
                             <!-- TODO: change to more logical view Choose Database Phone/Tablet-->
                             <!-- <li class="hidden-desktop">
@@ -157,11 +163,6 @@
         <div id="javascripts">
             <!-- Major Packages -->
             <script src="/js/general/jquery-1.7.2.min.js"></script>
-            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-            <script type="text/javascript">
-              // Load the Visualization API and the piechart package.
-              google.load('visualization', '1.0', {'packages':['corechart']});
-            </script>
             <script src='./requireJS.js'></script>
             <script src="./curveFit.js"></script>
             <style type="text/css">
