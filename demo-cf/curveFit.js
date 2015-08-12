@@ -9,7 +9,7 @@ var currentData;
 
     //init
     startingData = "c\ty\n32\t7\n37\t17\n42\t23\n47\t23\n52\t31\n57\t34\n62\t37\n67\t39\n72\t41\n77\t32\n82\t41\n92\t40";
-    functions = ['/js/qualityControl/cyclingEq.js', '/js/qualityControl/cyclingEq_orgin.js', '/js/qualityControl/cyclingEq_orgin4p.js'];
+    functions = ['/js/qualityControl/cyclingEq_orgin.js', '/js/qualityControl/cyclingEq_orgin4p.js', '/js/qualityControl/cyclingEq.js'];
     currentEq = {};
     currentData = {
         x_values: [],/*Array of Arrays*/
