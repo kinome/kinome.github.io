@@ -1,5 +1,5 @@
 /*jslint todo: true */
-/*global KINOMICS, console, gapi, FileReader, btoa, XMLHttpRequest */
+/*global KINOMICS, Promise, console, gapi, FileReader, btoa, XMLHttpRequest */
 
 //Global variables and function declarations
 //TODO: this is a big deal! I need to figure out how to determine if a file is too big to fit in one row in fusion tables and ammend my method if it is.
@@ -9,8 +9,9 @@ KINOMICS.fusionTables = (function () {
 
     //variable declarations
     var apiKey, clientId, currentOnComplete, getRow, getTablesByName, lib, login, onComplete, queryTable,
-        reportError, requests, isEmpty, getUserName, newTable,
-        run, runners, runClientRequest, scopes, submitLinesToTable, submitRequest, submitOverflowFunc, updateTableLine;
+        reportError, requests, isEmpty, getUserName, newTable, queues, makePromise,
+        run, runners, runClientRequest, scopes, submitLinesToTable, submitRequest, submitOverflowFunc, updateTableLine,
+        catchErrorBlank;
 
     //variable definitions
     lib = {};
@@ -19,6 +20,15 @@ KINOMICS.fusionTables = (function () {
     scopes = ['https://www.googleapis.com/auth/fusiontables', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/drive'];
     requests = [];
     currentOnComplete = [];
+    queues = {read: {arr: [Promise.resolve(true)]}, write: {arr: [Promise.resolve(true)]}};
+
+    //Define queue functions
+    queues.read.all = function () {
+        return Promise.all(queues.read.arr);
+    };
+    queues.write.all = function () {
+        return Promise.all(queues.write.arr);
+    };
 
     //function defintions
     lib.deleteTableLine = function () {
@@ -61,14 +71,14 @@ KINOMICS.fusionTables = (function () {
         /*////////////////////////////////////////////////////////////////////////////////////////
         TODO: write delete function
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(getUserName)(callback);
+        return run(getUserName)(callback);
     };
 
     lib.getRow = function (request, callback) {
         /*////////////////////////////////////////////////////////////////////////////////////////
         TODO: documentation
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(getRow)(request, callback);
+        return run(getRow)(request, callback);
     };
 
     lib.getTablesByName = function (name, callback) {
@@ -77,16 +87,16 @@ KINOMICS.fusionTables = (function () {
         These will be comments for the user....
         This function will grab a table by it's name
         *//////////////////////////////////////////////////////////////
-        run(getTablesByName)(name, callback);
+        return run(getTablesByName)(name, callback);
     };
 
-    lib.login = function (callback) {
+    lib.login = function () {
         /*/////////////////////////////////////////////////////////////
         TODO: fill in these comments
         These will be comments for the user....
         This will be the login command
         *//////////////////////////////////////////////////////////////
-        run(login)(callback);
+        return run(login)();
     };
 
     lib.onComplete = function (callback) {
@@ -96,14 +106,14 @@ KINOMICS.fusionTables = (function () {
         this is the on complete function for when there are no active 
             requests being called anywhere in the program.
         *//////////////////////////////////////////////////////////////
-        run(onComplete)(callback);
+        return run(onComplete)(callback);
     };
 
     lib.newTable = function (name, columns, otherParams, callback) {
         /*////////////////////////////////////////////////////////////////////////////////////////
         TODO: write these docs
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(newTable)(name, columns, otherParams, callback);
+        return run(newTable)(name, columns, otherParams, callback);
     };
 
     lib.queryTable = function (tableID, queryParams, callback) {
@@ -138,7 +148,7 @@ KINOMICS.fusionTables = (function () {
 
         Note: Left out 'GROUP BY' entirely and the 'ORDER BY' spatial relationship
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(queryTable)(tableID, queryParams, callback);
+        return run(queryTable)(tableID, queryParams, callback);
     };
 
     lib.submitLinesToTable = function (tableID, columnNames, columns, callback) {
@@ -152,7 +162,7 @@ KINOMICS.fusionTables = (function () {
                   and some other info as an object then as a stringified object, 
                   sure it can handle an error - reported as: return:{error:{..},..}
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(submitLinesToTable)(tableID, columnNames, columns, callback);
+        return run(submitLinesToTable)(tableID, columnNames, columns, callback);
     };
 
     lib.updateTableLine = function (tableID, columnChanges, rowID, callback) {
@@ -166,7 +176,7 @@ KINOMICS.fusionTables = (function () {
                   and some other info as an object then as a stringified object, 
                   sure it can handle an error - reported as: return:{error:{..},..}
         */////////////////////////////////////////////////////////////////////////////////////////
-        run(updateTableLine)(tableID, columnChanges, rowID, callback);
+        return run(updateTableLine)(tableID, columnChanges, rowID, callback);
     };
 
     //local functions
@@ -179,7 +189,7 @@ KINOMICS.fusionTables = (function () {
             path: path,
             params: {'sql': request}
         };
-        submitRequest(request, callback);
+        return submitRequest(request);
     };
 
     lib.getRootFolder = function (callback) {
@@ -396,7 +406,7 @@ KINOMICS.fusionTables = (function () {
     //Must be defined after the function is...
     runners = [{running: false, run: runClientRequest}, {running: false, run: runClientRequest}];
 
-    submitRequest = function (request, callback) {
+    submitRequest = function (request) {
         //variable declarations
         var i, len;
 
@@ -414,9 +424,28 @@ KINOMICS.fusionTables = (function () {
         }
     };
 
-    login = function (callback) {
-        gapi.client.setApiKey(apiKey);
-        gapi.auth.authorize({client_id: clientId, scope: scopes, auth: true}, callback);
+    login = function () {
+        //Make promise handles queueing and function execution.
+        var promise;
+        promise =  makePromise(function (resolve, reject) {
+            gapi.client.setApiKey(apiKey);
+            gapi.auth.authorize({client_id: clientId, scope: scopes, auth: true}, function (oauthTok) {
+                if (oauthTok.error) {
+                    reject(oauthTok.error);
+                } else {
+                    resolve(oauthTok);
+                }                
+            });
+        }, 'write'); //While this is a read function,
+        // It is too essential to not be queued as a write function
+
+        //Redefine this function so that login only occurs once
+        login = function () {
+            return promise;
+        };
+
+        //Return the promise
+        return promise;
     };
 
     onComplete = function (callback) {
@@ -597,6 +626,33 @@ KINOMICS.fusionTables = (function () {
             };
             submitRequest(request, callback);
         }
+    };
+
+    catchErrorBlank = function () {
+        return undefined;
+    };
+    makePromise = function (job, type) {
+        var ret;
+
+        //Do not try to write things not in order
+            //However as long as no writting is occuring
+            //Reading can be done at any point.    
+        ret = queues.write.all().then(function () {
+            return new Promise(job)
+        });
+        if (type === 'read') {
+            //If the function is of the read type, add it to the arr
+                //Then catch errors here so the all function keeps working
+            queues.read.arr.push(ret.catch(catchErrorBlank));
+        } else if (type === 'write') {
+            //If the function is of the read type, add it to the arr
+                //Then catch errors here so the all function keeps working
+            queues.write.arr.push(ret);
+        } else {
+            ret = Promise.reject(new Error(type +
+                ' is not a recognized type for makePromise function.'));
+        }
+        return ret;
     };
 
     return lib;
