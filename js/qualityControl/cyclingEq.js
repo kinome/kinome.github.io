@@ -32,13 +32,15 @@
                 }
 
                 //Assign parameters
-                vi = Ym / 5;
+                vi = Ym / 50; // This is determined via testing
                 vi = vi === 0 ? -10 : vi;
+                vi = vi > 500 ? 500 : vi; // From testing this seems like a good idea
+                vi = vi < -500 ? -500 : vi;
                 Ym = Ym === 0 ? -10 : Ym;
                 // y0 = Ym === y0 ? Ym - 1 : y0;
                 // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
                 xMin = xMin || 10;
-                c = y0 / xMin || -10;
+                c = 30; // Once again from testing this seem correct
                 return [vi, c, Ym];
 	},
 	description: 'For fitting postwash data',
