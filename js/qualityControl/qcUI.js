@@ -685,7 +685,7 @@ KINOMICS.qualityControl.UI = (function () {
             tempElem = $("<dl/>").appendTo(figureOneInfo);
             tempElem = $('<small/>').appendTo(tempElem);
             $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
-            $('<dd/>').append(M.sToMathE("Runs P-val= " + Math.round(data.WWtest * 1000) / 1000)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("Runs\ P-val= " + Math.round(data.WWtest * 10000) / 10000)).appendTo(tempElem);
             $('<dd/>').append(M.sToMathE("Linear R^2= " + Math.round(data.linearR2 * 100) / 100)).appendTo(tempElem);
             $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
             $('<dd/>').append(M.sToMathE("y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}")).appendTo(tempElem);

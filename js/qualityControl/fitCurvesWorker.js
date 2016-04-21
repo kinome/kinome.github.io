@@ -111,17 +111,21 @@
         var func;
 
         func = function (x, y) {
-            var i, j, m, b, xysum = 0, x2sum = 0, xsum = 0, ysum = 0, y2sum = 0, n = x.length, R2;
+            var i, j, m, b, xi, xysum = 0, x2sum = 0, xsum = 0, ysum = 0, y2sum = 0, n = x.length, R2;
 
             for (i = 0; i < n; i += 1) {
                 if (x[i].length === 1) {
-                    x[i] = x[i][0];
+                    xi = x[i][0];
+                } else if (x[i].length > 1) {
+                    xi = 0;
+                } else {
+                    xi = x[i];
                 }
                 ysum += y[i];
-                xsum += x[i];
-                x2sum += x[i] * x[i];
+                xsum += xi;
+                x2sum += xi * xi;
                 y2sum += y[i] * y[i];
-                xysum += x[i] * y[i];
+                xysum += xi * y[i];
             }
 
             m = (xysum - xsum * ysum / n) / (x2sum - xsum * xsum / n);
