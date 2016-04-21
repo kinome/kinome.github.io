@@ -22,7 +22,8 @@
         //function definitions
         func = function (fun, x0, X, y) {
             //variable definitions
-            var corrIsh, itt, lastItter, options, parI, SSDTot, sse, SSETot, x1;
+            var corrIsh, itt, lastItter, options, parI, SSDTot, sse, SSETot, x1,
+                    linCor;
 
             //variable declarations
             options = {
@@ -64,7 +65,13 @@
             SSDTot = sqrSumOfDeviations(y);
             SSETot = sqrSumOfErrors(fun, X, y, x0);
             corrIsh = 1 - SSETot / SSDTot;
-            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, WWtest: runsTest(fun, X, y, x0)};
+
+            if (X[0].length === 1) {
+                linCor = linearReg(X, y);
+                linCor = linCor.R2;
+            }
+
+            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor, WWtest: runsTest(fun, X, y, x0)};
         };
 
         sqrSumOfErrors = function (fun, X, y, x0) {
@@ -100,15 +107,48 @@
         return func;
     }());
 
+    linearReg = (function () {
+        var func;
+
+        func = function (x, y) {
+            var i, j, m, b, xysum = 0, x2sum = 0, xsum = 0, ysum = 0, y2sum = 0, n = x.length, R2;
+
+            for (i = 0; i < n; i += 1) {
+                if (x[i].length === 1) {
+                    x[i] = x[i][0];
+                }
+                ysum += y[i];
+                xsum += x[i];
+                x2sum += x[i] * x[i];
+                y2sum += y[i] * y[i];
+                xysum += x[i] * y[i];
+            }
+
+            m = (xysum - xsum * ysum / n) / (x2sum - xsum * xsum / n);
+            b = (ysum - m * xsum) / n;
+
+            R2 = Math.pow(xysum - xsum * ysum / n, 2) / (x2sum - xsum * xsum / n) / (y2sum - ysum * ysum / n);
+
+            return {parameters: [m, b], R2: R2};
+
+        };
+
+        return func;
+    }());
+
     determineRunningConditions = function (object) {
         //variable declarations
-        var i, X, xIni, yIni, length, equationObj;
+        var i, X, xIni, yIni, length, equationObj, linear = false, retObj;
         equationObj = eval('equationObj=' + object.equation.string);
         //variable defintions
         X = object.x_values;
         xIni = [];
         yIni = [];
         length = X.length;
+
+        if(object.simpleLinear) {
+            linear = true;
+        }
 
         //determine what points are 'good'
         for (i = 0; i < length; i += 1) {
@@ -117,7 +157,12 @@
                 yIni.push(object.y_values[i]);
             }
         }
-        return {params: equationObj.setInitial(xIni, yIni), X: xIni, y: yIni, func: equationObj.func};
+        if (linear) {
+            retObj = {x: xIni, y: yIni, linear: linear};
+        } else {
+            retObj = {params: equationObj.setInitial(xIni, yIni), X: xIni, y: yIni, func: equationObj.func, linear: linear};
+        }
+        return retObj;
     };
 
     self.onmessage = function (event) {
@@ -126,7 +171,11 @@
         //variable definitions
         runCond = determineRunningConditions(event.data[0]);
 
-        result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
+        if(runCond.linear) {
+            result = linearReg(runCond.X,runCond.y);
+        } else {
+            result = fmincon(runCond.func, runCond.params, runCond.X, runCond.y);
+        }
         //return result
         self.postMessage([event.data[0], result]);
     };
