@@ -7,7 +7,7 @@
     'use strict';
 
     //variable declarations
-    var fmincon, determineRunningConditions, runsTest;
+    var fmincon, determineRunningConditions, runsTest, linearReg;
 
     //variable definitions
 
