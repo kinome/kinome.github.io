@@ -42,7 +42,7 @@
                 // y0 = Ym === y0 ? Ym - 1 : y0;
                 // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
                 xMin = xMin || 10;
-                c = 30; 
+                c = 31; 
                         // Once again from testing this seem correct
                 return [vi, c, Ym];
 	},
