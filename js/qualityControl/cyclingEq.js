@@ -1,5 +1,5 @@
 {
-	stringified: "Yo + 1/[1/(k*[x-Xo])+1/Ymax]",
+	stringified: "1/[1/(vi*[x-Xo])+1/Ymax]",
 	func: function (xVector, P) {
 		//X must be represented as a vector ( [[1,2,4, ...], [2, ....], ... ])
 		// in order to be fit using fmincon, initial conditions are determined 
@@ -26,13 +26,15 @@
                 //Deal with overall negative slopes
                 slope = (yN - y0) / (xMax - xMin);
                 if (slope < 0) {
-                        Ym = yMin;
+                        //2.7 is determined from testing
+                        Ym = yMin * 2.7;
                 } else {
-                        Ym = yMax;
+                        //2.7 is determined from testing
+                        Ym = yMax * 2.7;
                 }
 
                 //Assign parameters
-                vi = Ym / 36; 
+                vi = Ym / 120; 
                         // This is determined via testing
                 vi = vi === 0 ? -10 : vi;
                 vi = vi > 80 ? 80 : vi; 

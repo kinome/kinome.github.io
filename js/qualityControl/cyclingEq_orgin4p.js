@@ -19,7 +19,7 @@
         xS = xS.sort();
         xMin = xS.shift();
         xMax = xS.pop();
-        y0 = y_values[x_values.indexOf(xMin)];
+        y0 = y_values[x_values.indexOf(xMin)] * 0.7;
         yN = y_values[x_values.indexOf(xMax)];
         yMin = Math.min.apply(null, y_values);
         yMax = Math.max.apply(null, y_values);
@@ -27,7 +27,9 @@
 
         //Deal with overall negative slopes
         Ym = (slope < 0) ? yMin : yMax;
-		c = (slope < 0) ? -0.1 : 0.1;
+        Ym *= 1.5;
+            //Determined from testing
+		c = (slope < 0) ? -0.02 : 0.02;
 		
 
         //Assign parameters
@@ -37,7 +39,7 @@
 		// } else {
 		// 	c = -1 * Math.log(exp) / x_values[1];
 		// }
-        return [y0, Ym, c, 1];
+        return [y0, Ym, c, 31];
 	},
 	description: 'For fitting postwash data',
 	mathType: "y(c)=y_0+y_{max}(1-e^{-k*(c-c_0)})",
