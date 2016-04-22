@@ -68,10 +68,9 @@
 
             if (X[0].length === 1) {
                 linCor = linearReg(X, y);
-                linCor = linCor.R2;
             }
 
-            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor, WWtest: runsTest(fun, X, y, x0)};
+            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
         };
 
         sqrSumOfErrors = function (fun, X, y, x0) {
