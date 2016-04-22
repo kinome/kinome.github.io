@@ -761,7 +761,7 @@ KINOMICS.qualityControl.UI = (function () {
             //tempElem = $('<div/>', {"class": "row"}).appendTo(figureInfoColumn);
             figureTwoInfo = $('<div/>', {"class": "span2"}).appendTo(figureInfoColumn);
     //Temp : 
-    figureInfoColumn.hide();
+    figureInfoColumn.remove();
             startNextPeptide();
             //TODO: add in title above figure legends - maybe... With highlighting is this needed?
 
