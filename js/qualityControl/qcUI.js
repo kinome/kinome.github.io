@@ -418,8 +418,8 @@ KINOMICS.qualityControl.UI = (function () {
             //variable declarations
             var tempElem;
             //variable definitions
-
-            tempElem = $('<div/>', {"class": 'row'}).appendTo(figureInfoColumn);
+// Temp change figureInfoColumn to tableSpot
+            tempElem = $('<div/>', {"class": 'row'}).appendTo(tableSpot);
             tempElem = $('<div/>', {"class": 'span2'}).appendTo(tempElem);
             tempElem = $('<div/>', {"class": 'btn-group'}).appendTo(tempElem);
             $('<button/>', {'class': 'btn', html: "<i class=icon-arrow-left></i>&nbsp;Prev"}).appendTo(tempElem).click(prevPep);
