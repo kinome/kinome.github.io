@@ -618,15 +618,15 @@ KINOMICS.qualityControl.UI = (function () {
 
             //Actual data to be listed
             figureTwoInfo.empty();
-            // $("<dt/>", {text: 'Figure 2:'}).appendTo(figureTwoInfo);
-            // tempElem = $("<dl/>").appendTo(figureTwoInfo);
-            // tempElem = $('<small/>').appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
-            // $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("y(t)=k·t+y_0")).appendTo(tempElem);
-            // $('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("k=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("y_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
+            $("<dt/>", {text: 'Figure 2:'}).appendTo(figureTwoInfo);
+            tempElem = $("<dl/>").appendTo(figureTwoInfo);
+            tempElem = $('<small/>').appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
+            $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("y(t)=k·t+y_0")).appendTo(tempElem);
+            $('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("k=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("y_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
 
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart2'));
@@ -681,18 +681,18 @@ KINOMICS.qualityControl.UI = (function () {
 
             //Actual data to be listed
             figureOneInfo.empty();
-            // $("<dt/>", {text: 'Figure 1:'}).appendTo(figureOneInfo);
-            // tempElem = $("<dl/>").appendTo(figureOneInfo);
-            // tempElem = $('<small/>').appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("Runs\ P-val= " + Math.round(data.WWtest * 10000) / 10000)).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("Linear R^2= " + Math.round(data.linearR2 * 100) / 100)).appendTo(tempElem);
-            // $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}")).appendTo(tempElem);
-            // $('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("v_{i}=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("c_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
-            // $('<dd/>').append(M.sToMathE("y_{max}=" + Math.round(params[2] * 100) / 100)).appendTo(tempElem);
+            $("<dt/>", {text: 'Figure 1:'}).appendTo(figureOneInfo);
+            tempElem = $("<dl/>").appendTo(figureOneInfo);
+            tempElem = $('<small/>').appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("R^2= " + Math.round(data.R2 * 100) / 100)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("Runs\ P-val= " + Math.round(data.WWtest * 10000) / 10000)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("Linear R^2= " + Math.round(data.linearR2 * 100) / 100)).appendTo(tempElem);
+            $('<dt/>', {text: 'Equation'}).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("y(c)={y_{max}·v_{i}·(c-c_0)}/{y_{max}+v_{i}·(c-c_0)}")).appendTo(tempElem);
+            $('<dt/>', {text: 'With parameters:'}).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("v_{i}=" + Math.round(params[0] * 100) / 100)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("c_0=" + Math.round(params[1] * 100) / 100)).appendTo(tempElem);
+            $('<dd/>').append(M.sToMathE("y_{max}=" + Math.round(params[2] * 100) / 100)).appendTo(tempElem);
 
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart1'));
