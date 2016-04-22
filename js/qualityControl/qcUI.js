@@ -769,9 +769,9 @@ KINOMICS.qualityControl.UI = (function () {
             tempElem = $('<div/>', {"class": "row"}).appendTo(figureColumn);
     //Temp: changed from span 3
             figureInfoHeader = $('<div/>', {"class": "offset1 span5"}).appendTo(tempElem);
-    //Temp: changed from 221 px height
-            $('<div/>', {id: 'chart1', style: 'height:400px'}).appendTo(figureColumn);
-            $('<div/>', {id: 'chart2', style: 'height:400px'}).appendTo(figureColumn);
+    //Temp: changed from 221 px height and added width
+            $('<div/>', {id: 'chart1', style: 'height:400px; width:525px;'}).appendTo(figureColumn);
+            $('<div/>', {id: 'chart2', style: 'height:400px; width:525px;'}).appendTo(figureColumn);
         }());
 
         return thislib;
