@@ -15,7 +15,7 @@
     fmincon = (function () {
         //please note - this is a minimized version of fmincon from amdjs_1.1.0.js
         //variable declarations
-        var sqrSumOfErrors, sqrSumOfDeviations, func;
+        var sqrSumOfErrors, sqrSumOfDeviations, func, calcCurvature;
 
         //variable defintions
 
@@ -64,10 +64,13 @@
             //I added the following 'R^2' like calculation.
             SSDTot = sqrSumOfDeviations(y);
             SSETot = sqrSumOfErrors(fun, X, y, x0);
-            corrIsh = 1 - SSETot / SSDTot;
+            corrIsh = 1 - Math.max(SSETot / SSDTot,1);
 
             if (X[0].length === 1) {
                 linCor = linearReg(X, y);
+                curve = calcCurvature(function(X_i) {
+                    return linCor.parameters[0] * X_i[0] + linCor.parameters[1];
+                }, fun, X);
             }
 
             return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
@@ -101,6 +104,7 @@
             return error;
         };
 
+        calcCurvature = function (linearModel, )
 
         //return function
         return func;
