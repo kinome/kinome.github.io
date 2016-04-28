@@ -23,7 +23,7 @@
         func = function (fun, x0, X, y) {
             //variable definitions
             var corrIsh, itt, lastItter, options, parI, SSDTot, sse, SSETot, x1,
-                    linCor;
+                    linCor, curve;
 
             //variable declarations
             options = {
@@ -68,11 +68,12 @@
 
             if (X[0].length === 1) {
                 linCor = linearReg(X, y);
-                curve = calcCurvature(function(X_i) {
-                    return linCor.parameters[0] * X_i[0] + linCor.parameters[1];
-                }, fun, X);
+                // curve = calcCurvature(function(X_i) {
+                //     return linCor.parameters[0] * X_i[0] + linCor.parameters[1];
+                // }, fun, x0, X, y);
             }
 
+            // return {curvature: curve, parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
             return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
         };
 
@@ -104,7 +105,36 @@
             return error;
         };
 
-        calcCurvature = function (linearModel, )
+        calcCurvature = function (linearFunc, nonLinear, params, X, y) {
+            var avg, error, length, m1, m2, i;
+            //variable definitions
+            error = 0;
+            avg = 0;
+            avgDiff = 0;
+            avgY = 0;
+            length = X.length;
+            
+            //find averages
+            for (i = 0; i < length; i += 1) {
+                m1 = nonLinear(X[i], params);
+                m2 = linearFunc(X[i]);
+                avg += m1 + m2;
+                avgY += y[i];
+            }
+
+            avg = avg / 2 / length;
+            //Normalize to a straight line going through the averages
+            for (i = 0; i < length; i += 1) {
+                m1 = nonLinear(X[i], params);
+                m2 = linearFunc(X[i]);
+                avgDiff += Math.pow((m1 + m2) / 2 - avg, 2);
+                error += Math.pow(m1 - m2, 2);
+            }
+
+            avg = avg / 2 / length;
+            
+            return error / avgDiff;
+        };
 
         //return function
         return func;
