@@ -64,7 +64,7 @@
             //I added the following 'R^2' like calculation.
             SSDTot = sqrSumOfDeviations(y);
             SSETot = sqrSumOfErrors(fun, X, y, x0);
-            corrIsh = 1 - Math.max(SSETot / SSDTot,1);
+            corrIsh = 1 - Math.min(SSETot / SSDTot,1);
 
             if (X[0].length === 1) {
                 linCor = linearReg(X, y);
