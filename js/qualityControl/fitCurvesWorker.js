@@ -68,13 +68,14 @@
 
             if (X[0].length === 1) {
                 linCor = linearReg(X, y);
-                // curve = calcCurvature(function(X_i) {
-                //     return linCor.parameters[0] * X_i[0] + linCor.parameters[1];
-                // }, fun, x0, X, y);
+                curve = calcCurvature(function(X_i) {
+                    return linCor.parameters[0] * X_i[0] + linCor.parameters[1];
+                }, fun, x0, X, y);
+                curve.push(Math.log10((1 - linCor.R2) / (1 - corrIsh)));
             }
 
-            // return {curvature: curve, parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
-            return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
+            return {curvature: curve, parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
+            // return {parameters: x0, totalSqrErrors: SSETot, R2: corrIsh, linearR2: linCor.R2, linear:linCor, WWtest: runsTest(fun, X, y, x0)};
         };
 
         sqrSumOfErrors = function (fun, X, y, x0) {
@@ -109,31 +110,29 @@
             var avg, error, length, m1, m2, i;
             //variable definitions
             error = 0;
+
+            //Calculating a number of things:
+                // Sum of deviations at each point
+                // Sqr difference between the models
+
             avg = 0;
             avgDiff = 0;
-            avgY = 0;
+            sumDiff = 0;
             length = X.length;
             
             //find averages
             for (i = 0; i < length; i += 1) {
                 m1 = nonLinear(X[i], params);
                 m2 = linearFunc(X[i]);
-                avg += m1 + m2;
-                avgY += y[i];
+                avgDiff += Math.pow(m1 - m2, 2);
+                sumDiff += Math.pow(m1 - y[i], 2);
+                sumDiff += Math.pow(m2 - y[i], 2);
             }
 
-            avg = avg / 2 / length;
-            //Normalize to a straight line going through the averages
-            for (i = 0; i < length; i += 1) {
-                m1 = nonLinear(X[i], params);
-                m2 = linearFunc(X[i]);
-                avgDiff += Math.pow((m1 + m2) / 2 - avg, 2);
-                error += Math.pow(m1 - m2, 2);
-            }
-
-            avg = avg / 2 / length;
+            avgDiff /= length;
+            sumDiff /= length / 2;
             
-            return error / avgDiff;
+            return [avgDiff, sumDiff];
         };
 
         //return function
