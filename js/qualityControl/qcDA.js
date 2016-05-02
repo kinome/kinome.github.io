@@ -80,6 +80,7 @@ KINOMICS.qualityControl.DA = (function () {
         data.WWtest = fit.WWtest;
         data.linearR2 = fit.linearR2;
         data.linearObj = fit.linear;
+        data.curvature = fit.curvature;
         data.totalSqrErrors = fit.totalSqrErrors;
     };
 
