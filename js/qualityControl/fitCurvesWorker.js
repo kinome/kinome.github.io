@@ -251,7 +251,7 @@
             }
 
             //Actually calculate the runs PDF
-            return runsPDF(counts[0], counts[1], typeRuns[0] + typeRuns[1]);
+            return [runsPDF(counts[0], counts[1], typeRuns[0] + typeRuns[1]), typeRuns[0] + typeRuns[1]];
         };
 
         runsPDF = function (n1, n2, r) {

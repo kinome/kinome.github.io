@@ -77,7 +77,8 @@ KINOMICS.qualityControl.DA = (function () {
         //variable defintions
         data.parameters = fit.parameters;
         data.R2 = fit.R2;
-        data.WWtest = fit.WWtest;
+        data.WWtest = fit.WWtest[0];
+        data.WWruns = fit.WWtest[1];
         data.linearR2 = fit.linearR2;
         data.linearObj = fit.linear;
         data.curvature = fit.curvature;
