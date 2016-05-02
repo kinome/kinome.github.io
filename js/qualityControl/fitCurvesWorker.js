@@ -130,8 +130,9 @@
             }
 
             avgDiff /= length;
+            errorDiff /= length;
 
-            return [avgDiff, sumDiff];
+            return [avgDiff, errorDiff];
         };
 
         //return function
