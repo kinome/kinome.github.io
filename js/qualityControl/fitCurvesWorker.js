@@ -107,7 +107,7 @@
         };
 
         calcCurvature = function (linearFunc, nonLinear, params, X, y) {
-            var avgDiff, sumDiff, error, length, m1, m2, i;
+            var avgDiff, sumDiff, errorDiff, error, length, m1, m2, i, e1, e2;
             //variable definitions
             error = 0;
 
@@ -116,7 +116,7 @@
                 // Sqr difference between the models
 
             avgDiff = 0;
-            sumDiff = 0;
+            errorDiff = 0;
             length = X.length;
 
             //find averages
@@ -124,12 +124,12 @@
                 m1 = nonLinear(X[i], params);
                 m2 = linearFunc(X[i]);
                 avgDiff += Math.pow(m1 - m2, 2);
-                sumDiff += Math.pow(m1 - y[i], 2);
-                sumDiff += Math.pow(m2 - y[i], 2);
+                e1 = Math.pow(m1 - y[i], 2);
+                e2 = Math.pow(m2 - y[i], 2);
+                errorDiff += Math.abs(e1 - e2);
             }
 
             avgDiff /= length;
-            sumDiff /= length / 2;
 
             return [avgDiff, sumDiff];
         };
