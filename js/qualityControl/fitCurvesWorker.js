@@ -126,7 +126,7 @@
                 avgDiff += Math.pow(m1 - m2, 2);
                 e1 = Math.pow(m1 - y[i], 2);
                 e2 = Math.pow(m2 - y[i], 2);
-                errorDiff += Math.abs(e1 - e2);
+                errorDiff += (e2 - e1) / Math.max(e1, e2);
             }
 
             avgDiff /= length;
