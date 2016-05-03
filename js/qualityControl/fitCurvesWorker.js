@@ -132,7 +132,7 @@
             avgDiff /= length;
             errorDiff /= length;
 
-            return [avgDiff, errorDiff];
+            return [avgDiff, errorDiff, runsTest(linearFunc, X, y, [])];
         };
 
         //return function
