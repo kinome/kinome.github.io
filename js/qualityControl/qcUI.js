@@ -418,8 +418,7 @@ KINOMICS.qualityControl.UI = (function () {
             //variable declarations
             var tempElem;
             //variable definitions
-// Temp change figureInfoColumn to tableSpot
-            tempElem = $('<div/>', {"class": 'row'}).appendTo(tableSpot);
+            tempElem = $('<div/>', {"class": 'row'}).appendTo(figureInfoColumn);
             tempElem = $('<div/>', {"class": 'span2'}).appendTo(tempElem);
             tempElem = $('<div/>', {"class": 'btn-group'}).appendTo(tempElem);
             $('<button/>', {'class': 'btn', html: "<i class=icon-arrow-left></i>&nbsp;Prev"}).appendTo(tempElem).click(prevPep);
@@ -760,18 +759,17 @@ KINOMICS.qualityControl.UI = (function () {
             figureOneInfo = $('<div/>', {"class": "span2"}).appendTo(figureInfoColumn);
             //tempElem = $('<div/>', {"class": "row"}).appendTo(figureInfoColumn);
             figureTwoInfo = $('<div/>', {"class": "span2"}).appendTo(figureInfoColumn);
-    //Temp : 
-    figureInfoColumn.remove();
+
             startNextPeptide();
             //TODO: add in title above figure legends - maybe... With highlighting is this needed?
 
             //Height must be there so the charts to not get bigger over time...
             tempElem = $('<div/>', {"class": "row"}).appendTo(figureColumn);
-    //Temp: changed from span 3
-            figureInfoHeader = $('<div/>', {"class": "offset1 span5"}).appendTo(tempElem);
-    //Temp: changed from 221 px height and added width
-            $('<div/>', {id: 'chart1', style: 'height:400px; width:525px;'}).appendTo(figureColumn);
-            $('<div/>', {id: 'chart2', style: 'height:400px; width:525px;'}).appendTo(figureColumn);
+
+            figureInfoHeader = $('<div/>', {"class": "offset1 span3"}).appendTo(tempElem);
+
+            $('<div/>', {id: 'chart1', style: 'height:221px;'}).appendTo(figureColumn);
+            $('<div/>', {id: 'chart2', style: 'height:221px;'}).appendTo(figureColumn);
         }());
 
         return thislib;
