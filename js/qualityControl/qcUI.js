@@ -576,12 +576,13 @@ KINOMICS.qualityControl.UI = (function () {
         makePostWashFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var eq, ind, chart, data, dataTable, i, length, max, options, params, tempElem;
+            var eq, ind, chart, data, models, dataTable, i, length, max, options, params, tempElem;
             //variable defintions
             eq = KINOMICS.postWashFunc;
             dataTable = [["exposure time", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             ind = 0;
             data = barcodes[barcode].peptides[peptide].postWash.models[ind];
+            models = barcodes[barcode].peptides[peptide].postWash.models;
             params = data.parameters;
             length = data.x_values.length;
             max = Math.max.apply(null, data.x_values);
@@ -630,17 +631,18 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart2'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick(data, chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(models, chart));
         };
 
         makeTimeSeriesFigure = function () {
             //variable declarations
             //TODO: combine these into one function...
-            var ind, eq, chart, data, dataTable, i, length, max, min, options, params, tempElem;
+            var ind, eq, chart, data, dataTable, i, length, max, min, options, models, params, tempElem;
 
             //variable defintions
             ind = 0;
             data = barcodes[barcode].peptides[peptide].cycleSeries.models[ind];
+            models = barcodes[barcode].peptides[peptide].cycleSeries.models;
             eq = data.equation.func;
             dataTable = [["Cycle Number", "read", "removed", "fit"], [-10, -10, -10, -10]]; //Initializes the plot
             params = data.parameters;
@@ -696,7 +698,7 @@ KINOMICS.qualityControl.UI = (function () {
             //This chart was added in a while back...    
             chart = new google.visualization.ComboChart(document.getElementById('chart1'));
             chart.draw(dataTable, options);
-            google.visualization.events.addListener(chart, 'select', chartClick(data, chart));
+            google.visualization.events.addListener(chart, 'select', chartClick(models, chart));
         };
 
         update = function () {
@@ -720,10 +722,10 @@ KINOMICS.qualityControl.UI = (function () {
             return true;
         };
 
-        chartClick = function (data, chart) {
+        chartClick = function (models, chart) {
             return function () {
                 //variable declarations
-                var point;
+                var point, data, i;
 
                 //variable definitions
                 point = chart.getSelection();
@@ -731,22 +733,27 @@ KINOMICS.qualityControl.UI = (function () {
                 barcodes[barcode].db.changed = true;
                 // mainLib.saveDataBut.update(); // update save data button
 
-                //Change from good to bad
-                if (point && Number(point.column) === 1) {
-                    data.accurateData[point.row - 1] = false;
-                    //refit curve...
-                //change from bad to good
-                } else if (point && Number(point.column) === 2) {
-                    data.accurateData[point.row - 1] = true;
-                }
+                for (i = 0; i < models.length; i += 1) {
+                    data = models[i];
+                    
+                    //Change from good to bad
+                    if (point && Number(point.column) === 1) {
+                        data.accurateData[point.row - 1] = false;
+                        //refit curve...
+                    //change from bad to good
+                    } else if (point && Number(point.column) === 2) {
+                        data.accurateData[point.row - 1] = true;
+                    }
 
-                //refit, then replot
-                dataAnalysisObj.fitCurve({
-                    workersLocation: workerObj,
-                    workersFile: fitCurvesWorkersFile,
-                    data: data,
-                    callback: function () { update(); mainLib.QCtable.update(); }
-                });
+                    //refit, then replot
+
+                    dataAnalysisObj.fitCurve({
+                        workersLocation: workerObj,
+                        workersFile: fitCurvesWorkersFile,
+                        data: data,
+                        callback: function () { update(); mainLib.QCtable.update(); }
+                    });
+                }
             };
         };
 
