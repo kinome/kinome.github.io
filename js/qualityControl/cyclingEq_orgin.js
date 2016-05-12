@@ -7,8 +7,12 @@
 
 		//Yo + 1/[1/(k*[x-Xo])+1/Ymax]   P[0]=k, P[1]= Xo, p[2] = Ymax
 		//if (xVector[0] < P[1]) {return Infinity; }
-		return (P[0] + P[1] * (1 - Math.pow(Math.E, -1 * P[2] * (xVector[0]-31))));
-		//return (1 / (1 / (P[0] * (xVector[0] - P[1])) + 1 / P[2]));
+
+		// return (P[0] + P[1] * (1 - Math.pow(Math.E, -1 * P[2] * (xVector[0]-31))));
+
+        return (P[0] + P[1] * (1 - Math.pow(Math.E, -1 * P[2] * (xVector[0]))));
+
+		// return (1 / (1 / (P[0] * (xVector[0] - P[1])) + 1 / P[2]));
 		//return params[0]+1/(1/(params[1]*(xVector[0]-params[2]))+1/params[3]);
 	},
 	setInitial: function (x_vector, y_values) {
