@@ -31,7 +31,7 @@
 
         //Deal with overall negative slopes
         Ym = (slope < 0) ? yMin : yMax;
-        // Ym *= 100;
+        // Ym *= 100; // Only works well with the -31
             //Determined from testing
 		c = (slope < 0) ? -0.02 : 0.02;
 

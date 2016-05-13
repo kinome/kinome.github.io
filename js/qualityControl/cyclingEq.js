@@ -38,14 +38,15 @@
                         // This is determined via testing
                 vi = vi === 0 ? -10 : vi;
                 vi = vi > 80 ? 80 : vi; 
-                        // From testing this seems like a good idea
+                        // This is determined via testing, >80 tend to diverge
                 vi = vi < -80 ? -80 : vi;
                 Ym = Ym === 0 ? -10 : Ym;
                 // y0 = Ym === y0 ? Ym - 1 : y0;
                 // c = Ym * y0 / (vi * (y0 - Ym)) + xMin;
                 xMin = xMin || 10;
                 c = 31; 
-                        // Once again from testing this seem correct
+                        //Determined by looking at the distribution of 
+                        // this value in well fit results.
                 return [vi, c, Ym];
 	},
 	description: 'For fitting postwash data',
