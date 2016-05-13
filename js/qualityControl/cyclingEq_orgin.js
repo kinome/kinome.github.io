@@ -31,9 +31,9 @@
 
         //Deal with overall negative slopes
         Ym = (slope < 0) ? yMin : yMax;
-        Ym *= 100;
+        // Ym *= 100;
             //Determined from testing
-		c = (slope < 0) ? -0.1 : 0.1;
+		c = (slope < 0) ? -0.02 : 0.02;
 
         //Assign parameters
 		// exp = 1 - (y_values[1] - y0) / Ym;
