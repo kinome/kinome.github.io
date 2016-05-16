@@ -447,7 +447,13 @@
             for (prop in returnObj) {
                 if (returnObj.hasOwnProperty(prop) && prop !== 'dataArr') {
                     if (returnObj[prop] === undefined) {
-                        throw "Error: file must contain " + prop + " and be exported in xTab form.";
+                        if (prop === "row" || prop === "image") {
+                            throw "Error: file must contain " + prop + " and be exported in xTab form.";
+                        } else {
+                            //Do nothing for now... should give a warning in the future.
+                            //console.warn("Error: file must contain " + prop + " and be exported in xTab form.");
+                        }
+                        
                     }
                     result = determineSameness(returnObj[prop]);
                     if (result.array) {
